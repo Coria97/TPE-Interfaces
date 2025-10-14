@@ -1,0 +1,194 @@
+/* Blocka Game Specific Styles */
+
+/* Canvas Container - Similar to game-image-container */
+.game-canvas-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Game Controls Bar */
+.blocka-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 15px 20px;
+  background-color: var(--neutral-surface-variant);
+  border: 1px solid var(--neutral-border);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.btn-primary {
+  padding: 10px 24px;
+  background-color: var(--rushgames-primary);
+  color: var(--neutral-black);
+  border: none;
+  border-radius: 6px;
+  font-family: var(--text-title);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--rushgames-primary-l1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(126, 211, 33, 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  padding: 10px 24px;
+  background-color: var(--neutral-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--neutral-border);
+  border-radius: 6px;
+  font-family: var(--text-title);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--neutral-surface-variant);
+  border-color: var(--rushgames-primary);
+}
+
+.timer-display,
+.level-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: var(--neutral-surface);
+  border-radius: 6px;
+  border: 1px solid var(--neutral-border);
+}
+
+.timer-label,
+.level-label {
+  font-family: var(--text-title);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+#timerValue,
+#levelValue {
+  font-family: var(--text-title);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--rushgames-primary);
+}
+
+/* Canvas Styles */
+#blockaCanvas {
+  border: 2px solid var(--neutral-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  background-color: var(--neutral-surface);
+}
+
+#blockaCanvas:hover {
+  border-color: var(--rushgames-primary);
+}
+
+/* Victory Controls */
+.victory-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 30px;
+  background-color: var(--neutral-surface-variant);
+  border: 2px solid var(--rushgames-primary);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.victory-controls h2 {
+  font-family: var(--text-title);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--rushgames-primary);
+  margin: 0;
+}
+
+.victory-controls p {
+  font-family: var(--text-title);
+  font-size: 18px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+#finalTime {
+  color: var(--rushgames-primary);
+  font-weight: 700;
+}
+
+.victory-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+/* Instructions component width */
+.game-layout > rush-blocka-instructions {
+  flex: 0 0 300px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .blocka-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  #blockaCanvas {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .game-layout > rush-blocka-instructions {
+    flex: 1;
+  }
+
+  .victory-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .victory-buttons button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Blocka - RushGame</title>
+    <link rel="stylesheet" href="./components/blocka/blocka.css" />
+    <link rel="stylesheet" href="./main.css" />
+    <link rel="stylesheet" href="./game.css" />
+    <link rel="stylesheet" href="./components/blocka/blocka.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <rushgame-navbar></rushgame-navbar>
+
+    <main id="game-page">
+      <!-- Breadcrumb -->
+      <rush-breadcrumb id="gameBreadcrumb"></rush-breadcrumb>
+
+      <!-- Game Title -->
+      <h1 class="game-title">Blocka: Rompecabezas de Linterna Verde</h1>
+
+      <!-- Game Layout: Canvas + Instructions -->
+      <div class="game-layout">
+        <div class="game-canvas-container">
+          <!-- Game Controls -->
+          <div class="blocka-controls">
+            <button id="btnStart" class="btn-primary">Comenzar</button>
+            <div class="timer-display">
+              <span class="timer-label">Tiempo:</span>
+              <span id="timerValue">00:00</span>
+            </div>
+            <div class="level-display">
+              <span class="level-label">Nivel:</span>
+              <span id="levelValue">1</span>
+            </div>
+          </div>
+
+          <!-- Canvas del juego -->
+          <canvas id="blockaCanvas" width="600" height="600"></canvas>
+
+          <!-- Victory Controls (hidden by default) -->
+          <div id="victoryControls" class="victory-controls" style="display: none;">
+            <h2>¡Nivel Completado!</h2>
+            <p>Tiempo: <span id="finalTime">00:00</span></p>
+            <div class="victory-buttons">
+              <button id="btnMenu" class="btn-secondary">Menú Principal</button>
+              <button id="btnNext" class="btn-primary">Siguiente Nivel</button>
+            </div>
+          </div>
+        </div>
+
+        <rush-blocka-instructions></rush-blocka-instructions>
+      </div>
+
+      <game-description
+        title="Blocka: Rompecabezas de Linterna Verde"
+        poster="./assets/peg-solitaire.png"
+        rating="4.8"
+        release-date="2025-01-01"
+        clamp="3"
+      >
+        <div slot="description">
+          Los Guardianes de Oa han creado un nuevo entrenamiento para los Linternas Verdes:
+          Blocka, un desafío mental que pone a prueba tu percepción espacial y velocidad.
+          Las imágenes del universo DC han sido fragmentadas y distorsionadas. Tu misión
+          es rotarlas correctamente antes de que el tiempo se agote. Cada nivel aumenta
+          la dificultad con nuevos filtros visuales. ¿Podrás demostrar que tienes la
+          concentración necesaria para portar el anillo de poder?
+        </div>
+      </game-description>
+
+      <comment-section></comment-section>
+    </main>
+
+    <!-- Footer -->
+    <rushgame-footer></rushgame-footer>
+
+    <!-- Scripts de componentes -->
+    <script src="./components/navbar/navbar.js" defer></script>
+    <script src="./components/breadcrumb/breadcrumb.js" defer></script>
+    <script src="./components/blocka-instructions/blocka-instructions.js" defer></script>
+    <script type="module" src="./components/game-description/game-description.js"></script>
+    <script type="module" src="./components/share-modal/share-modal.js"></script>
+    <script src="./components/footer/footer.js"></script>
+
+    <script src="./components/comments/reply-row/reply-row.js" defer></script>
+    <script src="./components/comments/action-row/action-row.js" defer></script>
+    <script src="./components/comments/input-row/input-row.js" defer></script>
+    <script src="./components/comments/replies-thread/replies-thread.js" defer></script>
+    <script src="./components/comments/comment-item/comment-item.js" defer></script>
+    <script src="./components/comments/comment-composer/comment-composer.js" defer></script>
+    <script src="./components/comments/comment-section/comment-section.js" defer></script>
+
+    <!-- Script principal del juego Blocka -->
+    <script src="./components/blocka/blocka.js" defer></script>
+  </body>
+</html>
