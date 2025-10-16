@@ -2,7 +2,8 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Web Component Navbar</title>
+    <title>Green Lantern: El Solitario Esmeralda - RushGame</title>
+    <link rel="stylesheet" href="./components/game-instructions/game-instructions.css" />
     <link rel="stylesheet" href="./main.css" />
     <link rel="stylesheet" href="./game.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -28,7 +29,7 @@
         <div class="game-image-container">
           <img src="./assets/peg-solitaire.png" alt="Tablero de Peg Solitaire" class="game-image" />
         </div>
-        <rush-game-instructions></rush-game-instructions>
+        <rush-game-instructions game-type="peg-solitaire"></rush-game-instructions>
       </div>
 
       <game-description
@@ -56,7 +57,7 @@
 
     <script src="./components/navbar/navbar.js" defer></script>
     <script src="./components/breadcrumb/breadcrumb.js" defer></script>
-    <script src="./components/game-instructions/game_instructions.js" defer></script>
+    <script src="./components/game-instructions/game-instructions.js" defer></script>
     <script type="module" src="./components/game-description/game-description.js"></script>
     <script type="module" src="./components/share-modal/share-modal.js"></script>
     <script src="./components/footer/footer.js"></script>
@@ -65,10 +66,8 @@
     <script src="./components/comments/action-row/action-row.js" defer></script>
     <script src="./components/comments/input-row/input-row.js" defer></script>
     <script src="./components/comments/replies-thread/replies-thread.js" defer></script>
-
     <script src="./components/comments/comment-item/comment-item.js" defer></script>
     <script src="./components/comments/comment-composer/comment-composer.js" defer></script>
-
     <script src="./components/comments/comment-section/comment-section.js" defer></script>
   </body>
 </html>

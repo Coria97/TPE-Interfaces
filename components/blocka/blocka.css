@@ -1,6 +1,9 @@
-/* Blocka Game Specific Styles */
+/* ========================================
+   BLOCKA GAME SPECIFIC STYLES
+   Game-specific UI components and layout
+   ======================================== */
 
-/* Canvas Container - Similar to game-image-container */
+/* Canvas Container - Main game container */
 .game-canvas-container {
   flex: 1;
   display: flex;
@@ -9,7 +12,7 @@
   gap: 20px;
 }
 
-/* Game Controls Bar */
+/* Game Controls Bar - Game control panel */
 .blocka-controls {
   display: flex;
   align-items: center;
@@ -22,6 +25,7 @@
   max-width: 600px;
 }
 
+/* Primary Button - Main action button */
 .btn-primary {
   padding: 10px 24px;
   background-color: var(--rushgames-primary);
@@ -38,7 +42,7 @@
 .btn-primary:hover {
   background-color: var(--rushgames-primary-l1);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(126, 211, 33, 0.3);
+  box-shadow: 0 4px 8px rgba(183, 243, 77, 0.3);
 }
 
 .btn-primary:active {
@@ -51,6 +55,7 @@
   transform: none;
 }
 
+/* Secondary Button - Secondary action button */
 .btn-secondary {
   padding: 10px 24px;
   background-color: var(--neutral-surface);
@@ -69,6 +74,7 @@
   border-color: var(--rushgames-primary);
 }
 
+/* Timer and Level Displays - Time and level indicators */
 .timer-display,
 .level-display {
   display: flex;
@@ -97,7 +103,7 @@
   color: var(--rushgames-primary);
 }
 
-/* Canvas Styles */
+/* Canvas Styles - Game canvas styling */
 #blockaCanvas {
   border: 2px solid var(--neutral-border);
   border-radius: 12px;
@@ -110,7 +116,7 @@
   border-color: var(--rushgames-primary);
 }
 
-/* Victory Controls */
+/* Victory Controls - Victory screen controls */
 .victory-controls {
   display: flex;
   flex-direction: column;
@@ -123,17 +129,6 @@
   width: 100%;
   max-width: 600px;
   animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .victory-controls h2 {
@@ -162,9 +157,33 @@
   margin-top: 10px;
 }
 
-/* Instructions component width */
-.game-layout > rush-blocka-instructions {
-  flex: 0 0 300px;
+/* ========================================
+   ANIMATIONS
+   Game-specific animations
+   ======================================== */
+
+/* Fade In - Victory screen animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY
+   Game accessibility settings
+   ======================================== */
+
+/* Reduced Motion - Respects user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .victory-controls {
+    animation: none;
+  }
 }
 
 /* Responsive */
@@ -179,7 +198,7 @@
     height: auto;
   }
 
-  .game-layout > rush-blocka-instructions {
+  .game-layout > rush-game-instructions {
     flex: 1;
   }
 

@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="./components/blocka/blocka.css" />
     <link rel="stylesheet" href="./main.css" />
     <link rel="stylesheet" href="./game.css" />
-    <link rel="stylesheet" href="./components/blocka/blocka.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -45,7 +44,7 @@
           <canvas id="blockaCanvas" width="600" height="600"></canvas>
 
           <!-- Victory Controls (hidden by default) -->
-          <div id="victoryControls" class="victory-controls" style="display: none;">
+          <div id="victoryControls" class="victory-controls" style="display: none">
             <h2>¡Nivel Completado!</h2>
             <p>Tiempo: <span id="finalTime">00:00</span></p>
             <div class="victory-buttons">
@@ -55,7 +54,7 @@
           </div>
         </div>
 
-        <rush-blocka-instructions></rush-blocka-instructions>
+        <rush-game-instructions game-type="blocka"></rush-game-instructions>
       </div>
 
       <game-description
@@ -66,12 +65,12 @@
         clamp="3"
       >
         <div slot="description">
-          Los Guardianes de Oa han creado un nuevo entrenamiento para los Linternas Verdes:
-          Blocka, un desafío mental que pone a prueba tu percepción espacial y velocidad.
-          Las imágenes del universo DC han sido fragmentadas y distorsionadas. Tu misión
-          es rotarlas correctamente antes de que el tiempo se agote. Cada nivel aumenta
-          la dificultad con nuevos filtros visuales. ¿Podrás demostrar que tienes la
-          concentración necesaria para portar el anillo de poder?
+          Los Guardianes de Oa han creado un nuevo entrenamiento para los Linternas Verdes: Blocka,
+          un desafío mental que pone a prueba tu percepción espacial y velocidad. Las imágenes del
+          universo DC han sido fragmentadas y distorsionadas. Tu misión es rotarlas correctamente
+          antes de que el tiempo se agote. Cada nivel aumenta la dificultad con nuevos filtros
+          visuales. ¿Podrás demostrar que tienes la concentración necesaria para portar el anillo de
+          poder?
         </div>
       </game-description>
 
@@ -84,7 +83,7 @@
     <!-- Scripts de componentes -->
     <script src="./components/navbar/navbar.js" defer></script>
     <script src="./components/breadcrumb/breadcrumb.js" defer></script>
-    <script src="./components/blocka-instructions/blocka-instructions.js" defer></script>
+    <script src="./components/game-instructions/game-instructions.js" defer></script>
     <script type="module" src="./components/game-description/game-description.js"></script>
     <script type="module" src="./components/share-modal/share-modal.js"></script>
     <script src="./components/footer/footer.js"></script>

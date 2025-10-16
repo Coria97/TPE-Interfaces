@@ -1,4 +1,4 @@
-class RushBlockaInstructions extends HTMLElement {
+class RushGameInstructions extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
@@ -14,15 +14,15 @@ class RushBlockaInstructions extends HTMLElement {
   async init() {
     try {
       const [html, css] = await Promise.all([
-        fetch('./components/blocka-instructions/blocka-instructions.html').then((res) => res.text()),
-        fetch('./components/blocka-instructions/blocka-instructions.css').then((res) => res.text()),
+        fetch('./components/game-instructions/game-instructions.html').then((res) => res.text()),
+        fetch('./components/game-instructions/game-instructions.css').then((res) => res.text()),
       ]);
 
       const template = document.createElement('template');
       template.innerHTML = `
         <style>${css}</style>
         ${html
-          .replace('<template id="blocka-instructions-template">', '')
+          .replace('<template id="game-instructions-template">', '')
           .replace('</template>', '')
           .replace(/<style>.*?<\/style>/s, '')}
       `;
@@ -33,7 +33,7 @@ class RushBlockaInstructions extends HTMLElement {
       this.setupElements();
       this.updateDisplay();
     } catch (error) {
-      console.error('Error loading RushBlockaInstructions component:', error);
+      console.error('Error loading RushGameInstructions component:', error);
     }
   }
 
@@ -68,6 +68,15 @@ class RushBlockaInstructions extends HTMLElement {
 
   renderIcon(type, iconData = {}) {
     switch (type) {
+      case 'mouse':
+        return `
+          <svg width="48" height="70" viewBox="0 0 48 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="10" width="40" height="56" rx="20" fill="var(--neutral-surface-variant)" stroke="var(--rushgames-primary)" stroke-width="4"/>
+            <rect x="20" y="10" width="8" height="20" rx="4" fill="var(--rushgames-primary)" />
+            <circle cx="24" cy="45" r="5" fill="var(--rushgames-primary)" />
+          </svg>
+        `;
+
       case 'mouse-left':
         return `
           <div class="icon-mouse">
@@ -137,8 +146,50 @@ class RushBlockaInstructions extends HTMLElement {
           </div>
         `;
 
+      case 'click':
+        return `
+          <div class="icon-chart">
+            <div class="chart-segment segment-green" style="--angle: ${iconData.angle || 90}deg"></div>
+            <div class="chart-center"></div>
+          </div>
+        `;
+
+      case 'move':
+        return `
+          <div class="icon-circles">
+            <div class="circle circle-green"></div>
+            <div class="circle circle-green"></div>
+            <div class="circle circle-gray"></div>
+          </div>
+        `;
+
+      case 'jump':
+        return `
+          <div class="icon-circles">
+            <div class="circle circle-gray"></div>
+            <div class="circle circle-gray"></div>
+            <div class="circle circle-green"></div>
+          </div>
+        `;
+
+      case 'objective':
+        return `
+          <div class="icon-target">
+            <div class="circle circle-green large"></div>
+          </div>
+        `;
+
+      case 'coins':
+        return `
+          <div class="icon-coin">
+            <div class="coin">
+              <span class="coin-text">R</span>
+            </div>
+          </div>
+        `;
+
       default:
-        return `<div class="rotate-square"></div>`;
+        return `<div class="circle circle-green"></div>`;
     }
   }
 
@@ -155,7 +206,7 @@ class RushBlockaInstructions extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['title', 'instructions'];
+    return ['title', 'instructions', 'game-type'];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -176,52 +227,44 @@ class RushBlockaInstructions extends HTMLElement {
           console.error('Error parsing instructions:', e);
         }
         break;
+      case 'game-type':
+        this.loadGameSpecificInstructions(newValue);
+        break;
+    }
+  }
+
+  loadGameSpecificInstructions(gameType) {
+    const instructionsMap = {
+      'peg-solitaire': [
+        { type: 'mouse-left', text: 'Haz clic izquierdo para seleccionar o interactuar.' },
+        { type: 'move', text: 'Selecciona una ficha y movela a un espacio vacio' },
+        { type: 'jump', text: 'Salta sobre una ficha para eliminarla.' },
+        { type: 'objective', text: 'El objetivo del juego es dejar una sola ficha en el tablero.' },
+        { type: 'coins', text: 'Podes usar tus RushCoins para deshacer una jugada.' },
+      ],
+      blocka: [
+        { type: 'mouse-left', text: 'Click izquierdo para rotar una pieza hacia la izquierda.' },
+        { type: 'mouse-right', text: 'Click derecho para rotar una pieza hacia la derecha.' },
+        { type: 'puzzle', text: 'Rota las 4 piezas hasta formar la imagen completa.' },
+        { type: 'filter', text: 'Las piezas tienen filtros que desaparecen al completar.' },
+        { type: 'timer', text: 'El cronómetro mide tu tiempo en cada nivel.' },
+        { type: 'target', text: 'Completa todos los niveles lo más rápido posible.' },
+      ],
+    };
+
+    if (instructionsMap[gameType]) {
+      this.setTitle('¿Cómo jugar?');
+      this.setInstructions(instructionsMap[gameType]);
     }
   }
 
   connectedCallback() {
-    console.log('RushBlockaInstructions connected to DOM');
+    console.log('RushGameInstructions connected to DOM');
   }
 
   disconnectedCallback() {
-    console.log('RushBlockaInstructions disconnected from DOM');
+    console.log('RushGameInstructions disconnected from DOM');
   }
 }
 
-// Configurar las instrucciones específicas de Blocka
-setTimeout(() => {
-  const instructions = [
-    { 
-      type: 'mouse-left', 
-      text: 'Click izquierdo para rotar una pieza hacia la izquierda.' 
-    },
-    { 
-      type: 'mouse-right', 
-      text: 'Click derecho para rotar una pieza hacia la derecha.' 
-    },
-    { 
-      type: 'puzzle', 
-      text: 'Rota las 4 piezas hasta formar la imagen completa.' 
-    },
-    { 
-      type: 'filter', 
-      text: 'Las piezas tienen filtros que desaparecen al completar.' 
-    },
-    { 
-      type: 'timer', 
-      text: 'El cronómetro mide tu tiempo en cada nivel.' 
-    },
-    { 
-      type: 'target', 
-      text: 'Completa todos los niveles lo más rápido posible.' 
-    },
-  ];
-
-  const blockaInstructions = document.querySelector('rush-blocka-instructions');
-  if (blockaInstructions) {
-    blockaInstructions.setTitle('¿Cómo jugar?');
-    blockaInstructions.setInstructions(instructions);
-  }
-}, 100);
-
-customElements.define('rush-blocka-instructions', RushBlockaInstructions);
+customElements.define('rush-game-instructions', RushGameInstructions);

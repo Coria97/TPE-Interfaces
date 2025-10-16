@@ -81,6 +81,10 @@
 
 .spinner-ring:nth-child(2) {
   border-right-color: var(--rushgames-accent);
+  width: 80%;
+  height: 80%;
+  top: 10%;
+  left: 10%;
   animation-duration: 2s;
   animation-direction: reverse;
 }
@@ -88,10 +92,10 @@
 .spinner-ring:nth-child(3) {
   border-bottom-color: var(--rushgames-secondary);
   animation-duration: 2.5s;
-  width: 80%;
-  height: 80%;
-  top: 10%;
-  left: 10%;
+  width: 60%;
+  height: 60%;
+  top: 20%;
+  left: 20%;
 }
 
 @keyframes spin {
