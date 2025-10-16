@@ -38,10 +38,15 @@
               <span class="level-label">Nivel:</span>
               <span id="levelValue">1</span>
             </div>
+            <select id="difficultySelect" class="difficulty-select">
+              <option value="4">4 Divisiones - 2x2 (Fácil)</option>
+              <option value="6" selected>6 Divisiones - 3x2 (Medio)</option>
+              <option value="8">8 Divisiones - 3x3 (Difícil)</option>
+            </select>
           </div>
 
           <!-- Canvas del juego -->
-          <canvas id="blockaCanvas" width="600" height="600"></canvas>
+          <canvas id="blockaCanvas" width="700" height="700"></canvas>
 
           <!-- Victory Controls (hidden by default) -->
           <div id="victoryControls" class="victory-controls" style="display: none">

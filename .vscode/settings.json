@@ -17,7 +17,7 @@
   // fin de línea coherente con el repo (y .gitattributes)
   "files.eol": "\n",
   "liveServer.settings.root": "/",
-  "liveServer.settings.port": 5500,
+  "liveServer.settings.port": 5501,
   "liveServer.settings.NoCssInject": true,
   "liveServer.settings.ignoreFiles": [
     "**/.venv/**",
