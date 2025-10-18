@@ -1,0 +1,39 @@
+<template id="blocka-template">
+  <link rel="stylesheet" href="./components/blocka/blocka.css" />
+  <link rel="stylesheet" href="./main.css" />
+  <link rel="stylesheet" href="./game.css" />
+
+  <!-- SOLO: container del juego (controls + canvas + victory) -->
+  <div class="game-canvas-container">
+    <!-- Game Controls -->
+    <div class="blocka-controls">
+      <button id="btnStart" class="btn-primary">Comenzar</button>
+      <div class="timer-display">
+        <span class="timer-label">Tiempo:</span>
+        <span id="timerValue">00:00</span>
+      </div>
+      <div class="level-display">
+        <span class="level-label">Nivel:</span>
+        <span id="levelValue">1</span>
+      </div>
+      <select id="difficultySelect" class="difficulty-select">
+        <option value="4">4 Divisiones - 2x2 (Fácil)</option>
+        <option value="6" selected>6 Divisiones - 3x2 (Medio)</option>
+        <option value="8">8 Divisiones - 3x3 (Difícil)</option>
+      </select>
+    </div>
+
+    <!-- Canvas del juego -->
+    <canvas id="blockaCanvas" width="700" height="700"></canvas>
+
+    <!-- Victory Controls (hidden by default) -->
+    <div id="victoryControls" class="victory-controls" style="display: none">
+      <h2>¡Nivel Completado!</h2>
+      <p>Tiempo: <span id="finalTime">00:00</span></p>
+      <div class="victory-buttons">
+        <button id="btnMenu" class="btn-secondary">Menú Principal</button>
+        <button id="btnNext" class="btn-primary">Siguiente Nivel</button>
+      </div>
+    </div>
+  </div>
+</template>

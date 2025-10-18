@@ -3,14 +3,22 @@
    Game-specific UI components and layout
    ======================================== */
 
+/* Forzar tamaño del componente y del canvas para que coincidan con el layout */
+:host,
+rushgame-blocka,
+.game-canvas-container {
+  display: block;
+  width: 700px;
+  box-sizing: border-box;
+}
+
 /* Canvas Container - Main game container */
 .game-canvas-container {
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  max-width: 750px;
+  gap: 16px;
+  width: 100%;
 }
 
 /* Difficulty Selector */
@@ -129,17 +137,23 @@
   color: var(--rushgames-primary);
 }
 
-/* Canvas Styles - Game canvas styling */
+/* dimensiones fijas del canvas (escala con max-width en responsive) */
 #blockaCanvas {
-  border: 2px solid var(--neutral-border);
+  width: 700px;
+  height: 700px;
+  max-width: 100%;
+  display: block;
   border-radius: 12px;
+  background: var(--neutral-surface);
+  border: 2px solid var(--neutral-border);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  background-color: var(--neutral-surface);
 }
 
-#blockaCanvas:hover {
-  border-color: var(--rushgames-primary);
+/* asegurar que controles y victory panel ocupen el ancho del componente */
+.blocka-controls,
+.victory-controls {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Victory Controls - Victory screen controls */
@@ -197,50 +211,5 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-/* ========================================
-   ACCESSIBILITY
-   Game accessibility settings
-   ======================================== */
-
-/* Reduced Motion - Respects user motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .victory-controls {
-    animation: none;
-  }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .difficulty-select {
-    font-size: 11px;
-    padding: 6px 8px;
-    min-width: 140px;
-  }
-
-  .blocka-controls {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-  }
-
-  #blockaCanvas {
-    max-width: 100%;
-    height: auto;
-  }
-
-  .game-layout > rush-game-instructions {
-    flex: 1;
-  }
-
-  .victory-buttons {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .victory-buttons button {
-    width: 100%;
   }
 }
