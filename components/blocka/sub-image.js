@@ -56,23 +56,44 @@ export default class SubImage {
   }
 
   draw(ctx) {
+    // Clip to the target quadrant to avoid overflow over other pieces
     ctx.save();
-    // Move to center, rotate, then draw
+    ctx.beginPath();
+    ctx.rect(this.canvasX, this.canvasY, this.width, this.height);
+    ctx.clip();
+
+    // Translate to center of the quadrant and rotate
     const centerX = this.canvasX + this.width / 2;
     const centerY = this.canvasY + this.height / 2;
     ctx.translate(centerX, centerY);
-    ctx.rotate((this.currentRotation * Math.PI) / 180);
+
+    const angleRad = (this.currentRotation * Math.PI) / 180;
+    ctx.rotate(angleRad);
+
+    // Determine destination size. If rotated 90 or 270, swap destination width/height
+    const normalized = ((this.currentRotation % 360) + 360) % 360;
+    let destW = this.width;
+    let destH = this.height;
+    if (normalized === 90 || normalized === 270) {
+      destW = this.height;
+      destH = this.width;
+    }
+
+    // Draw the exact source region into the quadrant (no scaling/distortion)
+    // Destination is centered at (0,0) because we've translated to center.
+    ctx.imageSmoothingEnabled = true;
     ctx.drawImage(
       this.image,
       this.sourceX,
       this.sourceY,
       this.width,
       this.height,
-      -this.width / 2,
-      -this.height / 2,
-      this.width,
-      this.height
+      -destW / 2,
+      -destH / 2,
+      destW,
+      destH
     );
+
     ctx.restore();
   }
 }

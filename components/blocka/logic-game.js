@@ -228,6 +228,16 @@ export class LogicGame {
       if (pieceCount >= this.difficulty) break;
     }
 
+    // Ensure pieceWidth/pieceHeight reflect the actual generated pieces (avoids small gaps)
+    if (this.subImages.length > 0) {
+      // Use average/first piece as reference; drawGrid will use exact positions of pieces
+      this.pieceWidth = this.subImages[0].width;
+      this.pieceHeight = this.subImages[0].height;
+    } else {
+      this.pieceWidth = pw;
+      this.pieceHeight = ph;
+    }
+
     // Apply filter to all sub-images
     await Promise.all(this.subImages.map((s) => s.applyFilter()));
   }
@@ -323,32 +333,49 @@ export class LogicGame {
     // Clear canvas
     this.ctx.fillStyle = '#14171b';
     this.ctx.fillRect(0, 0, this.canvasSize, this.canvasSize);
+    
     // Draw all sub-images and grid
     this.subImages.forEach((s) => s.draw(this.ctx));
     this.drawGrid();
   }
 
   drawGrid() {
-    // Draw grid lines on canvas
-    // Set styles
+    // Draw grid lines aligned to actual piece bounds (avoids gaps due to rounding)
     this.ctx.strokeStyle = '#2b323a';
     this.ctx.lineWidth = 2;
 
-    // Draw vertical
-    for (let i = 1; i < this.cols; i++) {
-      this.ctx.beginPath();
-      this.ctx.moveTo(i * this.pieceWidth, 0);
-      this.ctx.lineTo(i * this.pieceWidth, this.canvasSize);
-      this.ctx.stroke();
-    }
+    // Collect unique vertical positions (x)
+    const vPosSet = new Set();
+    const hPosSet = new Set();
+    this.subImages.forEach(s => {
+      vPosSet.add(s.canvasX);
+      vPosSet.add(s.canvasX + s.width);
+      hPosSet.add(s.canvasY);
+      hPosSet.add(s.canvasY + s.height);
+    });
 
-    // Draw horizontal
-    for (let i = 1; i < this.rows; i++) {
-      this.ctx.beginPath();
-      this.ctx.moveTo(0, i * this.pieceHeight);
-      this.ctx.lineTo(this.canvasSize, i * this.pieceHeight);
-      this.ctx.stroke();
-    }
+    const vPos = Array.from(vPosSet).sort((a,b)=>a-b);
+    const hPos = Array.from(hPosSet).sort((a,b)=>a-b);
+
+    // Draw vertical lines (exclude 0 and canvasSize boundaries if present)
+    vPos.forEach(x => {
+      if (x > 0 && x < this.canvasSize) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + 0.5, 0); // +0.5 to make 1px crisp line
+        this.ctx.lineTo(x + 0.5, this.canvasSize);
+        this.ctx.stroke();
+      }
+    });
+
+    // Draw horizontal lines
+    hPos.forEach(y => {
+      if (y > 0 && y < this.canvasSize) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, y + 0.5);
+        this.ctx.lineTo(this.canvasSize, y + 0.5);
+        this.ctx.stroke();
+      }
+    });
   }
 
   clearCanvas() {
