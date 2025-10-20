@@ -1,7 +1,4 @@
-// Reexportar el inicializador desde logic-game.js (lógica movida a archivos separados)
 export { initBlocka } from './logic-game.js';
-
-const TEMPLATE_URL = new URL('./blocka.html', import.meta.url).href;
 
 class RushgameBlocka extends HTMLElement {
   constructor() {
@@ -11,44 +8,46 @@ class RushgameBlocka extends HTMLElement {
 
   async connectedCallback() {
     try {
-      const res = await fetch(TEMPLATE_URL);
-      const text = await res.text();
-      const tmp = document.createElement('template');
-      tmp.innerHTML = text;
+      // Get template content and insert into shadow DOM
+      const response = await fetch('./components/blocka/blocka.html');
+      const responseText = await response.text();
+      
+      const template = document.createElement('template');
+      template.innerHTML = responseText;
 
-      const tplNode = tmp.content.querySelector('#blocka-template') || tmp.content;
-      const contentToInsert = tplNode.nodeName === 'TEMPLATE'
-        ? tplNode.content.cloneNode(true)
-        : tplNode.cloneNode(true);
+      const content = template.content.querySelector('#blocka-template').content.cloneNode(true);
 
-      this.shadow.appendChild(contentToInsert);
+      this.shadow.appendChild(content);
       await Promise.resolve();
 
-      // Inicializar la lógica del juego desde logic-game.js
+      // Initialize the game logic
       const gameModule = await import('./logic-game.js');
       this.game = gameModule.initBlocka(this.shadow);
 
-      const updateCanvasOffset = () => {
-        const canvas = this.shadow.querySelector('#blockaCanvas');
-        if (!canvas) return;
-        const canvasRect = canvas.getBoundingClientRect();
-        const hostRect = this.getBoundingClientRect();
-        const offset = Math.max(0, canvasRect.top - hostRect.top);
-        const parentForVar = this.parentElement || document.documentElement;
-        parentForVar.style.setProperty('--canvas-offset-top', `${offset}px`);
-        parentForVar.style.setProperty('--canvas-height', `${canvasRect.height}px`);
-      };
-
-      updateCanvasOffset();
-      window.addEventListener('resize', updateCanvasOffset);
-      this._updateCanvasOffset = updateCanvasOffset;
+      // Setup canvas offset updates on resize
+      this.updateCanvasOffset();
+      window.addEventListener('resize', this.updateCanvasOffset);
+      this._updateCanvasOffset = this.updateCanvasOffset;
 
     } catch (err) {
       console.error('Error cargando template blocka:', err);
     }
   }
 
+  updateCanvasOffset = () => {
+    // Update CSS variables for canvas offset and height
+    const canvas = this.shadow.querySelector('#blockaCanvas');
+    if (!canvas) return;
+    const canvasRect = canvas.getBoundingClientRect();
+    const hostRect = this.getBoundingClientRect();
+    const offset = Math.max(0, canvasRect.top - hostRect.top);
+    const parentForVar = this.parentElement || document.documentElement;
+    parentForVar.style.setProperty('--canvas-offset-top', `${offset}px`);
+    parentForVar.style.setProperty('--canvas-height', `${canvasRect.height}px`);
+  };
+
   disconnectedCallback() {
+    // Clean up event listeners and game instance
     if (this._updateCanvasOffset) {
       window.removeEventListener('resize', this._updateCanvasOffset);
       this._updateCanvasOffset = null;
@@ -59,6 +58,4 @@ class RushgameBlocka extends HTMLElement {
   }
 }
 
-if (!customElements.get('rushgame-blocka')) {
-  customElements.define('rushgame-blocka', RushgameBlocka);
-}
+customElements.define('rushgame-blocka', RushgameBlocka);

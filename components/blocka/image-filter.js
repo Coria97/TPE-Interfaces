@@ -1,5 +1,6 @@
 export class ImageFilter {
   static grayscale(imageData) {
+    // Convert image to grayscale
     const data = imageData.data;
     for (let i = 0; i < data.length; i += 4) {
       const r = data[i], g = data[i + 1], b = data[i + 2];
@@ -10,6 +11,7 @@ export class ImageFilter {
   }
 
   static brightness(imageData, factor = 1.3) {
+    // Increase brightness by a factor
     const data = imageData.data;
     for (let i = 0; i < data.length; i += 4) {
       data[i] = Math.min(255, data[i] * factor);
@@ -20,6 +22,7 @@ export class ImageFilter {
   }
 
   static invert(imageData) {
+    // Invert colors
     const data = imageData.data;
     for (let i = 0; i < data.length; i += 4) {
       data[i] = 255 - data[i];
@@ -30,6 +33,9 @@ export class ImageFilter {
   }
 
   static applyFilter(image, filterType) {
+    // Apply specified filter to the image and return a new Image object
+    
+    // Create a temporary canvas to manipulate image data
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = image.width;
     tempCanvas.height = image.height;
@@ -37,6 +43,7 @@ export class ImageFilter {
     tempCtx.drawImage(image, 0, 0);
     const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
 
+    // Apply the selected filter
     switch (filterType) {
       case 'grayscale':
         ImageFilter.grayscale(imageData);
@@ -51,6 +58,7 @@ export class ImageFilter {
         break;
     }
 
+    // Put the modified image data back and create a new Image
     tempCtx.putImageData(imageData, 0, 0);
     const filteredImage = new Image();
     filteredImage.src = tempCanvas.toDataURL();
