@@ -36,8 +36,13 @@ export class LogicGame {
       './assets/gl-6.jpg',
     ];
 
+    this.preloadedLevelImages = [];
+    this.selectedImageIndex = null;
+
     this.setupEventListeners();
+
     this.clearCanvas();
+
   }
 
   setupEventListeners() {
@@ -75,11 +80,12 @@ export class LogicGame {
 
   setDifficulty(newDifficulty) {
     if (this.isPlaying) return;
+    
+    // set new difficulty and recalculate rows/piece sizes
     this.difficulty = newDifficulty;
     this.rows = this.calculateRows(this.difficulty);
     this.pieceWidth = this.canvasSize / this.cols;
     this.pieceHeight = this.canvasSize / this.rows;
-    this.ctx.clearRect(0, 0, this.canvasSize, this.canvasSize);
     this.subImages = [];
   }
 
@@ -116,6 +122,9 @@ export class LogicGame {
   }
 
   async startGame() {
+    // Before starting, show selection animation
+    this.selectedImageIndex = await this.showSelectionAnimationCanvas();
+
     // Prevent starting if already playing
     this.isPlaying = true;
 
@@ -126,9 +135,7 @@ export class LogicGame {
     const btnStart = this.root.querySelector('#btnStart');
     if (btnStart) btnStart.disabled = true;
 
-    // Load current level image
-    const imageIndex = this.currentLevel % this.imageBank.length;
-    const imageUrl = this.imageBank[imageIndex];
+    const imageUrl = this.imageBank[this.selectedImageIndex];
     await this.loadImage(imageUrl);
 
     // Update level display
@@ -179,9 +186,11 @@ export class LogicGame {
   }
 
   async createSubImages() {
-    // Reset sub-images, select filter for current level
+    // Reset sub-images, use currentFilter assigned during startGame
     this.subImages = [];
-    const currentFilter = this.levelFilters[this.currentLevel % this.levelFilters.length];
+    const currentFilter = (typeof this.currentFilter !== 'undefined' && this.currentFilter !== null)
+      ? this.currentFilter
+      : (this.levelFilters[this.currentLevel % this.levelFilters.length]);
 
     // Recalculate sizes using exact canvasSize
     this.canvasSize = this.canvas.width; // internal pixel size
@@ -209,7 +218,7 @@ export class LogicGame {
         const canvasX = sourceX;
         const canvasY = sourceY;
 
-        // Create sub-image passing integer sizes
+        // Create sub-image passing integer sizes and currentFilter
         const subImage = new SubImage(
           this.currentImage,
           sourceX,
@@ -382,6 +391,140 @@ export class LogicGame {
     // Fill canvas with background color
     this.ctx.fillStyle = '#14171b';
     this.ctx.fillRect(0, 0, this.canvasSize, this.canvasSize);
+  }
+
+  async preloadLevelImages() {
+    const promises = this.imageBank.map((url, idx) => {
+      return new Promise((resolve) => {
+        // if already loaded, return it
+        if (this.preloadedLevelImages[idx]) return resolve(this.preloadedLevelImages[idx]);
+        // else load it
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.src = url;
+        img.onload = () => {
+          this.preloadedLevelImages[idx] = img;
+          resolve(img);
+        };
+      });
+    });
+    await Promise.all(promises);
+  }
+
+  drawLevelSelectorOnCanvas(highlightIndex = -1, selectedIndex = -1) {
+    // Canvas dimensions
+    const ctx = this.ctx;
+    const canvasW = this.canvas.width;
+    const canvasH = this.canvas.height;
+
+    // Thumbnail size
+    const thumbSize = 100;
+
+    // Strip layout
+    const stripHeight = Math.floor(canvasH * 0.2);
+    const padding = 12;
+    const total = this.imageBank.length;
+    const gap = 12;
+
+    // Center the strip vertically on the canvas
+    const centerCanvasY = Math.floor((canvasH - stripHeight) / 2);
+
+    // Save context state and clear canvas
+    ctx.save();
+    this.clearCanvas();
+
+    // Draw semi-transparent rounded background for the strip
+    ctx.fillStyle = 'rgba(0,0,0,0.36)';
+    ctx.beginPath();
+    ctx.roundRect(padding, centerCanvasY, canvasW - padding * 2, stripHeight, 10);
+    ctx.fill();
+
+    // Compute horizontal positioning so thumbnails are centered inside the strip
+    const totalThumbsWidth = total * thumbSize + (total - 1) * gap;
+    const startX = padding + Math.floor((canvasW - padding * 2 - totalThumbsWidth) / 2);
+    
+    // Draw each thumbnail slot
+    for (let i = 0; i < total; i++) {
+      const img = this.preloadedLevelImages[i];
+      
+      // Thumbnail area centered vertically inside the slot
+      const imgX = startX + i * (thumbSize + gap);
+      const imgY = centerCanvasY + Math.floor((stripHeight - thumbSize) / 2);
+
+      // Draw selection background (subtle) or highlight stroke
+      if (i === selectedIndex) {
+        ctx.fillStyle = 'rgba(80,200,120,0.18)';
+        ctx.fillRect(imgX - 4, centerCanvasY, thumbSize + 8, stripHeight - 2);
+      } 
+      else if (i === highlightIndex) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(imgX - 4, centerCanvasY, thumbSize + 8, stripHeight - 2);
+      }
+
+      // Draw the image scaled to fit inside thumbnail area
+      ctx.drawImage(img, 0, 0, img.width, img.height, imgX, imgY, thumbSize, thumbSize);
+    }
+
+    // Restore context to previous state
+    ctx.restore();
+  }
+
+  async showSelectionAnimationCanvas() {
+    // Charge level images if not done yet
+    await this.preloadLevelImages();
+
+    const total = this.imageBank.length;
+    const targetIndex = Math.floor(Math.random() * total);
+
+    // Animation roulette variables
+    
+    // Cycles + targetIndex steps
+    const steps = 2 * total + targetIndex;
+    let step = 0;
+    let idx = 0;
+    const baseDelay = 80;
+    const accel = 6;
+
+    return new Promise((resolve) => {
+      const tick = () => {
+        // Calculate highlight index
+        const highlight = idx % total;
+
+        // Draw strip with highlight
+        this.drawLevelSelectorOnCanvas(highlight, -1);
+
+        // Advance step and index
+        step++;
+        idx++;
+
+        // Calculate remaining steps
+        const remaining = steps - step;
+
+        // Calculate delay with acceleration effect
+        const delay = baseDelay + Math.round((Math.max(0, remaining) / steps) * accel * baseDelay);
+
+        if (step > steps) {
+          // Animation finished, resolve with selected index
+          this.drawLevelSelectorOnCanvas(-1, highlight);
+          
+          setTimeout(() => {
+            // clear strip after short delay
+            const canvasW = this.canvas.width;
+            const canvasH = this.canvas.height;
+            const stripHeight = Math.min(96, Math.floor(canvasH * 0.14));
+            const y = Math.floor((canvasH - stripHeight) / 2);
+            this.clearCanvas();
+            resolve(highlight);
+          }, 340);
+          return;
+        }
+        setTimeout(tick, delay);
+      };
+
+      // start the animation
+      tick();
+    });
   }
 }
 
