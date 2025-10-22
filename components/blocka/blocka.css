@@ -46,17 +46,24 @@ rushgame-blocka,
   box-shadow: 0 0 0 2px rgba(183, 243, 77, 0.2);
 }
 
+.difficulty-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Game Controls Bar - Game control panel */
 .blocka-controls {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
   padding: 15px 20px;
   background-color: var(--neutral-surface-variant);
   border: 1px solid var(--neutral-border);
   border-radius: 8px;
   width: 100%;
   max-width: 750px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 /* Primary Button - Main action button */
@@ -106,6 +113,38 @@ rushgame-blocka,
 .btn-secondary:hover {
   background-color: var(--neutral-surface-variant);
   border-color: var(--rushgames-primary);
+}
+
+/* Help Button - Botón de Ayudita */
+.btn-help {
+  padding: 10px 20px;
+  background-color: var(--rushgames-secondary);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 6px;
+  font-family: var(--text-title);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-help:hover:not(:disabled) {
+  background-color: var(--rushgames-secondary-d1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(16, 194, 124, 0.3);
+}
+
+.btn-help:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-help:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background-color: var(--neutral-surface);
+  color: var(--text-secondary);
 }
 
 /* Timer and Level Displays - Time and level indicators */

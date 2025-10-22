@@ -2,45 +2,52 @@ import { ImageFilter } from './image-filter.js';
 
 export default class SubImage {
   constructor(image, sourceX, sourceY, width, height, canvasX, canvasY, correctRotation, filterType = null) {
-    this.image = image; // This may be modified if a filter is applied
-    this.originalImage = image; // To keep the unmodified image
-    this.sourceX = Math.round(sourceX); // Source position in the original image
-    this.sourceY = Math.round(sourceY); // Source position in the original image
-    this.width = Math.round(width); // Width of the sub-image (already integer)
-    this.height = Math.round(height); // Height of the sub-image (already integer)
-    this.canvasX = Math.round(canvasX); // Canvas X position
-    this.canvasY = Math.round(canvasY); // Canvas Y position
-    this.correctRotation = correctRotation; // Correct rotation angle (0, 90, 180, 270)
-    this.currentRotation = 0; // Current rotation angle
-    this.filterType = filterType; // Type of filter to apply
-    this.hasFilter = false; // Flag to track if filter is applied
-    this.randomizeRotation(); // Randomize initial rotation
+    this.image = image;
+    this.originalImage = image;
+    this.sourceX = Math.round(sourceX);
+    this.sourceY = Math.round(sourceY);
+    this.width = Math.round(width);
+    this.height = Math.round(height);
+    this.canvasX = Math.round(canvasX);
+    this.canvasY = Math.round(canvasY);
+    this.correctRotation = correctRotation;
+    this.currentRotation = 0;
+    this.filterType = filterType;
+    this.hasFilter = false;
+    this.isFixed = false; // 🆕 Nueva propiedad para ayudita
+    this.randomizeRotation();
   }
 
   randomizeRotation() {
-    // Randomly set current rotation to one of the incorrect angles
     const possibleRotations = [0, 90, 180, 270].filter((r) => r !== this.correctRotation);
     const randomIndex = Math.floor(Math.random() * possibleRotations.length);
     this.currentRotation = possibleRotations[randomIndex];
   }
 
   rotateLeft() {
-    // Rotate counter-clockwise
+    // 🆕 No rotar si está fija
+    if (this.isFixed) return;
     this.currentRotation = (this.currentRotation - 90 + 360) % 360;
   }
 
   rotateRight() {
-    // Rotate clockwise
+    // 🆕 No rotar si está fija
+    if (this.isFixed) return;
     this.currentRotation = (this.currentRotation + 90) % 360;
   }
 
   isCorrect() {
-    // Check if current rotation matches the correct rotation
     return this.currentRotation === this.correctRotation;
   }
 
+  // 🆕 Nuevo método para fijar la pieza
+  fixToCorrectRotation() {
+    this.currentRotation = this.correctRotation;
+    this.isFixed = true;
+    this.removeFilter(); // Mostrar sin filtro para que sea obvio que está correcta
+  }
+
   async applyFilter() {
-    // Apply filter if specified and not already applied
     if (this.filterType && !this.hasFilter) {
       this.image = await ImageFilter.applyFilter(this.originalImage, this.filterType);
       this.hasFilter = true;
@@ -48,7 +55,6 @@ export default class SubImage {
   }
 
   removeFilter() {
-    // Remove filter and restore original image
     if (this.hasFilter) {
       this.image = this.originalImage;
       this.hasFilter = false;
@@ -56,13 +62,11 @@ export default class SubImage {
   }
 
   draw(ctx) {
-    // Clip to the target quadrant to avoid overflow over other pieces
     ctx.save();
     ctx.beginPath();
     ctx.rect(this.canvasX, this.canvasY, this.width, this.height);
     ctx.clip();
 
-    // Translate to center of the quadrant and rotate
     const centerX = this.canvasX + this.width / 2;
     const centerY = this.canvasY + this.height / 2;
     ctx.translate(centerX, centerY);
@@ -70,7 +74,6 @@ export default class SubImage {
     const angleRad = (this.currentRotation * Math.PI) / 180;
     ctx.rotate(angleRad);
 
-    // Determine destination size. If rotated 90 or 270, swap destination width/height
     const normalized = ((this.currentRotation % 360) + 360) % 360;
     let destW = this.width;
     let destH = this.height;
@@ -79,8 +82,6 @@ export default class SubImage {
       destH = this.width;
     }
 
-    // Draw the exact source region into the quadrant (no scaling/distortion)
-    // Destination is centered at (0,0) because we've translated to center.
     ctx.imageSmoothingEnabled = true;
     ctx.drawImage(
       this.image,
@@ -95,5 +96,14 @@ export default class SubImage {
     );
 
     ctx.restore();
+
+    // 🆕 Dibujar borde verde si está fija
+    if (this.isFixed) {
+      ctx.save();
+      ctx.strokeStyle = '#7ed321';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(this.canvasX + 2, this.canvasY + 2, this.width - 4, this.height - 4);
+      ctx.restore();
+    }
   }
 }
