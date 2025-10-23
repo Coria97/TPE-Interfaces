@@ -2,21 +2,18 @@ import SubImage from './sub-image.js';
 
 export class LogicGame {
   constructor(root) {
-    this.root = root; // shadowRoot
+    this.root = root;
     
-    // Game settings
     this.difficulty = 6;
     this.cols = 2; 
     this.rows = this.calculateRows(this.difficulty);
     
-    // Canvas and context
     this.canvas = root.querySelector('#blockaCanvas');
     this.ctx = this.canvas.getContext('2d');
     this.canvasSize = this.canvas.width;
     this.pieceWidth = this.canvasSize / this.cols;
     this.pieceHeight = this.canvasSize / this.rows;
 
-    // Game state
     this.currentImage = null;
     this.subImages = [];
     this.isPlaying = false;
@@ -24,6 +21,7 @@ export class LogicGame {
     this.timerSeconds = 0;
     this.timerInterval = null;
     this.levelRecords = {};
+    this.helpUsed = false; // 🆕 Flag para controlar si se usó la ayuda
     
     this.levelFilters = [null, 'grayscale', 'brightness', 'invert', 'grayscale', 'brightness'];
 
@@ -46,16 +44,18 @@ export class LogicGame {
   }
 
   setupEventListeners() {
-    // Handle left and right clicks on canvas
     this.canvas.addEventListener('click', (e) => this.handleClick(e, 'left'));
     this.canvas.addEventListener('contextmenu', (e) => {
       e.preventDefault();
       this.handleClick(e, 'right');
     });
 
-    // UI buttons
     const btnStart = this.root.querySelector('#btnStart');
     btnStart?.addEventListener('click', () => this.startGame());
+
+    // 🆕 Event listener del botón de ayuda
+    const btnHelp = this.root.querySelector('#btnHelp');
+    btnHelp?.addEventListener('click', () => this.useHelp());
 
     const difficultySelect = this.root.querySelector('#difficultySelect');
     difficultySelect?.addEventListener('change', (e) => {
@@ -89,11 +89,51 @@ export class LogicGame {
     this.subImages = [];
   }
 
+  // 🆕 Método para usar la ayudita
+  useHelp() {
+    if (!this.isPlaying || this.helpUsed) return;
+
+    // Filtrar piezas incorrectas que no estén fijas
+    const incorrectPieces = this.subImages.filter(s => !s.isFixed && !s.isCorrect());
+
+    if (incorrectPieces.length === 0) {
+      console.log('⚠️ No hay piezas incorrectas para ayudar');
+      return;
+    }
+
+    // Seleccionar una pieza aleatoria
+    const randomIndex = Math.floor(Math.random() * incorrectPieces.length);
+    const selectedPiece = incorrectPieces[randomIndex];
+
+    // Fijar la pieza en su rotación correcta
+    selectedPiece.fixToCorrectRotation();
+
+    // Sumar 5 segundos como penalización
+    this.timerSeconds += 5;
+    this.updateTimerDisplay();
+
+    // Marcar ayuda como usada
+    this.helpUsed = true;
+
+    // Actualizar botón
+    const btnHelp = this.root.querySelector('#btnHelp');
+    if (btnHelp) {
+      btnHelp.disabled = true;
+      btnHelp.textContent = 'Ayuda Usada';
+    }
+
+    // Redibujar
+    this.draw();
+
+    console.log('🆘 Ayudita usada! +5 segundos al timer');
+
+    // Verificar victoria por si era la última pieza
+    this.checkVictory();
+  }
+
   startTimer() {
-    // Initialize and start the game timer
     this.timerSeconds = 0;
     this.updateTimerDisplay();
-    // Start the timer interval, when 1000 ms pass, increment seconds and update display
     this.timerInterval = setInterval(() => {
       this.timerSeconds++;
       this.updateTimerDisplay();
@@ -101,20 +141,17 @@ export class LogicGame {
   }
 
   updateTimerDisplay() {
-    // Update timer display in UI
     const timerValue = this.root.querySelector('#timerValue');
     if (timerValue) timerValue.textContent = this.formatTime(this.timerSeconds);
   }
 
   formatTime(seconds) {
-    // Format seconds as MM:SS
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }
 
   stopTimer() {
-    // Stop the game timer
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
       this.timerInterval = null;
@@ -127,52 +164,53 @@ export class LogicGame {
 
     // Prevent starting if already playing
     this.isPlaying = true;
+    this.helpUsed = false;
 
-    // Hide victory panel if visible
     this.hideVictoryPanel();
 
-    // Disable start button
     const btnStart = this.root.querySelector('#btnStart');
+    const btnHelp = this.root.querySelector('#btnHelp');
+    const difficultySelect = this.root.querySelector('#difficultySelect');
+    
     if (btnStart) btnStart.disabled = true;
+    if (difficultySelect) difficultySelect.disabled = true;
+    
+    if (btnHelp) {
+      btnHelp.disabled = false;
+      btnHelp.textContent = 'Ayudita (+5s)';
+    }
 
     const imageUrl = this.imageBank[this.selectedImageIndex];
     await this.loadImage(imageUrl);
 
-    // Update level display
     const levelValue = this.root.querySelector('#levelValue');
     if (levelValue) levelValue.textContent = String(this.currentLevel + 1);
 
-    // Create sub-images and start timer
     await this.createSubImages();
     this.startTimer();
     this.draw();
   }
 
   loadImage(url) {
-    // Load image from URL
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.crossOrigin = 'anonymous';
       img.onload = () => {
-        // Draw image to temporary canvas
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = this.canvasSize;
         tempCanvas.height = this.canvasSize;
         const tempCtx = tempCanvas.getContext('2d');
         
-        // Scale and center image
         const scale = Math.max(this.canvasSize / img.width, this.canvasSize / img.height);
         const scaledWidth = img.width * scale;
         const scaledHeight = img.height * scale;
         const x = (this.canvasSize - scaledWidth) / 2;
         const y = (this.canvasSize - scaledHeight) / 2;
 
-        // Fill background and draw image
         tempCtx.fillStyle = '#000000';
         tempCtx.fillRect(0, 0, this.canvasSize, this.canvasSize);
         tempCtx.drawImage(img, x, y, scaledWidth, scaledHeight);
 
-        // Save processed image
         const processedImg = new Image();
         processedImg.onload = () => {
           this.currentImage = processedImg;
@@ -192,29 +230,20 @@ export class LogicGame {
       ? this.currentFilter
       : (this.levelFilters[this.currentLevel % this.levelFilters.length]);
 
-    // Recalculate sizes using exact canvasSize
-    this.canvasSize = this.canvas.width; // internal pixel size
+    this.canvasSize = this.canvas.width;
     this.rows = this.rows || this.calculateRows(this.difficulty);
-    // pw is piece width, ph is piece height
     const pw = this.canvasSize / this.cols;
     const ph = this.canvasSize / this.rows;
 
-    // Generate pieces row by row with integer coordinates/sizes
     let pieceCount = 0;
     for (let row = 0; row < this.rows; row++) {
       for (let col = 0; col < this.cols; col++) {
-        // Stop when we reached the intended number of pieces
         if (pieceCount >= this.difficulty) break;
 
-        // Source position (rounded)
         const sourceX = Math.round(col * pw);
         const sourceY = Math.round(row * ph);
-
-        // Source size: ensure last column/row consumes remaining pixels
         const width = Math.round(col === this.cols - 1 ? this.canvasSize - sourceX : pw);
         const height = Math.round(row === this.rows - 1 ? this.canvasSize - sourceY : ph);
-
-        // Canvas position: align with source (rounded)
         const canvasX = sourceX;
         const canvasY = sourceY;
 
@@ -237,9 +266,7 @@ export class LogicGame {
       if (pieceCount >= this.difficulty) break;
     }
 
-    // Ensure pieceWidth/pieceHeight reflect the actual generated pieces (avoids small gaps)
     if (this.subImages.length > 0) {
-      // Use average/first piece as reference; drawGrid will use exact positions of pieces
       this.pieceWidth = this.subImages[0].width;
       this.pieceHeight = this.subImages[0].height;
     } else {
@@ -247,58 +274,57 @@ export class LogicGame {
       this.pieceHeight = ph;
     }
 
-    // Apply filter to all sub-images
     await Promise.all(this.subImages.map((s) => s.applyFilter()));
   }
 
   handleClick(event, button) {
-    // Ignore clicks if not playing
     if (!this.isPlaying) return;
     
-    // Calculate which piece was clicked
-    const rect = this.canvas.getBoundingClientRect(); // Get canvas position
+    const rect = this.canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
     const col = Math.floor(x / this.pieceWidth);
     const row = Math.floor(y / this.pieceHeight);
     const index = row * this.cols + col;
     
-    // Rotate the clicked piece, redraw, and check for victory
     if (index >= 0 && index < this.subImages.length) {
+      const piece = this.subImages[index];
+      
+      // 🆕 Verificar si la pieza está fija
+      if (piece.isFixed) {
+        console.log('⚠️ Esta pieza está fija (ayuda usada)');
+        return;
+      }
+
       if (button === 'left') 
-        this.subImages[index].rotateLeft();
+        piece.rotateLeft();
       else 
-        this.subImages[index].rotateRight();
+        piece.rotateRight();
+      
       this.draw();
       this.checkVictory();
     }
   }
 
   checkVictory() {
-    // Check if all pieces are correctly oriented
     const allCorrect = this.subImages.every((s) => s.isCorrect());    
     
-    // If not all correct, continue with the game
     if (!allCorrect) return;
     
-    // Else, handle victory 
     this.isPlaying = false;
     this.stopTimer();
     
-    // Update level record if it's a new best time
     const levelKey = `level_${this.currentLevel}`;
     if (!this.levelRecords[levelKey] || this.timerSeconds < this.levelRecords[levelKey]) {
       this.levelRecords[levelKey] = this.timerSeconds;
     }
     
-    // Remove filters from all pieces and redraw
     this.subImages.forEach((s) => s.removeFilter());
     this.draw();
     setTimeout(() => this.showVictoryPanel(), 500);
   }
 
   showVictoryPanel() {
-    // Show victory panel with final time
     const victoryPanel = this.root.querySelector('#victoryControls');
     const finalTime = this.root.querySelector('#finalTime');
     if (victoryPanel && finalTime) {
@@ -312,17 +338,28 @@ export class LogicGame {
   }
 
   hideVictoryPanel() {
-    // Hide victory panel
     const victoryPanel = this.root.querySelector('#victoryControls');
     if (victoryPanel) victoryPanel.style.display = 'none';
   }
 
   goToMenu() {
-    // Return to menu and reset game state
     this.currentLevel = 0;
+    this.helpUsed = false; // 🆕 Resetear ayuda
     this.hideVictoryPanel();
+    
     const btnStart = this.root.querySelector('#btnStart');
+    const btnHelp = this.root.querySelector('#btnHelp');
+    const difficultySelect = this.root.querySelector('#difficultySelect');
+    
     if (btnStart) btnStart.disabled = false;
+    if (difficultySelect) difficultySelect.disabled = false;
+    
+    // 🆕 Deshabilitar ayuda en menú
+    if (btnHelp) {
+      btnHelp.disabled = true;
+      btnHelp.textContent = 'Ayudita (+5s)';
+    }
+    
     this.clearCanvas();
     const levelValue = this.root.querySelector('#levelValue');
     if (levelValue) levelValue.textContent = '1';
@@ -331,7 +368,6 @@ export class LogicGame {
   }
 
   nextLevel() {
-    // Advance to next level or restart
     this.currentLevel++;
     if (this.currentLevel >= this.imageBank.length) 
       this.currentLevel = 0;
@@ -339,21 +375,17 @@ export class LogicGame {
   }
 
   draw() {
-    // Clear canvas
     this.ctx.fillStyle = '#14171b';
     this.ctx.fillRect(0, 0, this.canvasSize, this.canvasSize);
     
-    // Draw all sub-images and grid
     this.subImages.forEach((s) => s.draw(this.ctx));
     this.drawGrid();
   }
 
   drawGrid() {
-    // Draw grid lines aligned to actual piece bounds (avoids gaps due to rounding)
     this.ctx.strokeStyle = '#2b323a';
     this.ctx.lineWidth = 2;
 
-    // Collect unique vertical positions (x)
     const vPosSet = new Set();
     const hPosSet = new Set();
     this.subImages.forEach(s => {
@@ -366,17 +398,15 @@ export class LogicGame {
     const vPos = Array.from(vPosSet).sort((a,b)=>a-b);
     const hPos = Array.from(hPosSet).sort((a,b)=>a-b);
 
-    // Draw vertical lines (exclude 0 and canvasSize boundaries if present)
     vPos.forEach(x => {
       if (x > 0 && x < this.canvasSize) {
         this.ctx.beginPath();
-        this.ctx.moveTo(x + 0.5, 0); // +0.5 to make 1px crisp line
+        this.ctx.moveTo(x + 0.5, 0);
         this.ctx.lineTo(x + 0.5, this.canvasSize);
         this.ctx.stroke();
       }
     });
 
-    // Draw horizontal lines
     hPos.forEach(y => {
       if (y > 0 && y < this.canvasSize) {
         this.ctx.beginPath();
@@ -388,7 +418,6 @@ export class LogicGame {
   }
 
   clearCanvas() {
-    // Fill canvas with background color
     this.ctx.fillStyle = '#14171b';
     this.ctx.fillRect(0, 0, this.canvasSize, this.canvasSize);
   }

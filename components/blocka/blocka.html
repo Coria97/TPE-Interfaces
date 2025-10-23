@@ -3,11 +3,11 @@
   <link rel="stylesheet" href="./main.css" />
   <link rel="stylesheet" href="./game.css" />
 
-  <!-- SOLO: container del juego (controls + canvas + victory) -->
   <div class="game-canvas-container">
     <!-- Game Controls -->
     <div class="blocka-controls">
       <button id="btnStart" class="btn-primary">Comenzar</button>
+      <button id="btnHelp" class="btn-help" disabled>Ayudita (+5s)</button>
       <div class="timer-display">
         <span class="timer-label">Tiempo:</span>
         <span id="timerValue">00:00</span>
@@ -23,7 +23,7 @@
       </select>
     </div>
 
-    <!-- Canvas del juego -->
+    <!-- Game Canvas -->
     <canvas id="blockaCanvas" width="700" height="700"></canvas>
 
     <!-- Victory Controls (hidden by default) -->
