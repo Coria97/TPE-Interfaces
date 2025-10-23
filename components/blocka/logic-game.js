@@ -564,18 +564,31 @@ export class LogicGame {
         ctx.strokeRect(x - 4, y - 4, thumbWidth + 8, thumbHeight + 8);
       }
 
-      // Dibujar imagen manteniendo proporción
+      // Dibujar imagen cubriendo todo el thumbnail (cover) y recortando centrado
       if (img) {
-        const scale = Math.min(thumbWidth / img.width, thumbHeight / img.height);
-        const scaledW = img.width * scale;
-        const scaledH = img.height * scale;
-        
-        // Centrar imagen en su celda
-        const offsetX = (thumbWidth - scaledW) / 2;
-        const offsetY = (thumbHeight - scaledH) / 2;
-        
-        ctx.drawImage(img, 0, 0, img.width, img.height, 
-                     x + offsetX, y + offsetY, scaledW, scaledH);
+        // Usar "cover": escalar para que la imagen ocupe todo el área del thumbnail
+        // y luego recortar la parte central de la imagen original para evitar bordes visibles.
+        const srcW = img.width;
+        const srcH = img.height;
+
+        // Tamaño del área fuente que mapearemos al thumbnail para mantener cover centrado
+        const desiredSrcW = Math.min(srcW, thumbWidth * (srcH / thumbHeight));
+        const desiredSrcH = Math.min(srcH, thumbHeight * (srcW / thumbWidth));
+
+        // Calcular escala para cubrir (no dejar barras negras)
+        // En lugar de calcular desiredSrc*, más robusto usar ratio y recorte central:
+        const scale = Math.max(thumbWidth / srcW, thumbHeight / srcH);
+        const drawW = srcW * scale;
+        const drawH = srcH * scale;
+
+        // Cuando usamos drawImage con fuente recortada, calculamos la región fuente centrada
+        const sWidth = Math.min(srcW, Math.round(thumbWidth / scale));
+        const sHeight = Math.min(srcH, Math.round(thumbHeight / scale));
+        const sx = Math.max(0, Math.round((srcW - sWidth) / 2));
+        const sy = Math.max(0, Math.round((srcH - sHeight) / 2));
+
+        // Dibujar la región fuente escalada exactamente al tamaño del thumbnail
+        ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, thumbWidth, thumbHeight);
       }
       
       // Borde sutil alrededor de cada thumbnail
@@ -591,7 +604,6 @@ export class LogicGame {
     const total = this.imageBank.length;
     const targetIndex = Math.floor(Math.random() * total);
     
-    // Más ciclos para una animación más fluida
     const steps = 3 * total + targetIndex;
     let step = 0;
     let idx = 0;
