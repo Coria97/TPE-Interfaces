@@ -21,8 +21,11 @@ export class LogicGame {
     this.timerSeconds = 0;
     this.timerInterval = null;
     this.levelRecords = {};
-    this.helpUsed = false; // 🆕 Flag para controlar si se usó la ayuda
-    
+    this.helpUsed = false; // Flag to control if help was used
+
+    this.maxTimeSeconds = null; // Maximum time for the level (null = no limit)
+    this.lastResultWasWin = false; // To control the action of the next/retry button
+
     this.levelFilters = [null, 'grayscale', 'brightness', 'invert', 'grayscale', 'brightness'];
 
     this.imageBank = [
@@ -53,7 +56,6 @@ export class LogicGame {
     const btnStart = this.root.querySelector('#btnStart');
     btnStart?.addEventListener('click', () => this.startGame());
 
-    // 🆕 Event listener del botón de ayuda
     const btnHelp = this.root.querySelector('#btnHelp');
     btnHelp?.addEventListener('click', () => this.useHelp());
 
@@ -89,43 +91,46 @@ export class LogicGame {
     this.subImages = [];
   }
 
-  // 🆕 Método para usar la ayudita
   useHelp() {
     if (!this.isPlaying || this.helpUsed) return;
 
-    // Filtrar piezas incorrectas que no estén fijas
+    // Filter incorrect pieces
     const incorrectPieces = this.subImages.filter(s => !s.isFixed && !s.isCorrect());
 
     if (incorrectPieces.length === 0) {
-      console.log('⚠️ No hay piezas incorrectas para ayudar');
       return;
     }
 
-    // Seleccionar una pieza aleatoria
+    // Select a random piece
     const randomIndex = Math.floor(Math.random() * incorrectPieces.length);
     const selectedPiece = incorrectPieces[randomIndex];
 
-    // Fijar la pieza en su rotación correcta
+    // Fix the piece to its correct rotation
     selectedPiece.fixToCorrectRotation();
 
-    // Sumar 5 segundos como penalización
+    // Add 5 seconds as a penalty
     this.timerSeconds += 5;
     this.updateTimerDisplay();
 
-    // Marcar ayuda como usada
+    // Mark help as used
     this.helpUsed = true;
 
-    // Actualizar botón
+    // Check if time limit is exceeded after penalty
+    if (this.maxTimeSeconds !== null && this.timerSeconds >= this.maxTimeSeconds) {
+      // call time up handler and exit
+      this.handleTimeUp();
+      return;
+    }
+    
+    // Update button
     const btnHelp = this.root.querySelector('#btnHelp');
     if (btnHelp) {
       btnHelp.disabled = true;
       btnHelp.textContent = 'Ayuda Usada';
     }
 
-    // Redibujar
+    // Redraw canvas to reflect fixed piece
     this.draw();
-
-    console.log('🆘 Ayudita usada! +5 segundos al timer');
 
     // Verificar victoria por si era la última pieza
     this.checkVictory();
@@ -134,15 +139,40 @@ export class LogicGame {
   startTimer() {
     this.timerSeconds = 0;
     this.updateTimerDisplay();
+    // clear previous interval if any
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+
     this.timerInterval = setInterval(() => {
       this.timerSeconds++;
       this.updateTimerDisplay();
+
+      // Check time limit
+      if (this.maxTimeSeconds !== null && this.timerSeconds >= this.maxTimeSeconds) {
+        // time's up - handle loss
+        this.handleTimeUp();
+      }
     }, 1000);
   }
 
   updateTimerDisplay() {
     const timerValue = this.root.querySelector('#timerValue');
-    if (timerValue) timerValue.textContent = this.formatTime(this.timerSeconds);
+    if (timerValue) {
+      // show as MM:SS
+      timerValue.textContent = this.formatTime(this.timerSeconds);
+      // if there's a maxTime, also show remaining as small hint
+      const timerHint = this.root.querySelector('#timerHint');
+      if (timerHint) {
+        if (this.maxTimeSeconds === null) {
+          timerHint.textContent = '';
+        } else {
+          const remaining = Math.max(0, this.maxTimeSeconds - this.timerSeconds);
+          timerHint.textContent = ` / ${this.formatTime(remaining)}`;
+        }
+      }
+    }
   }
 
   formatTime(seconds) {
@@ -166,7 +196,22 @@ export class LogicGame {
     this.isPlaying = true;
     this.helpUsed = false;
 
-    this.hideVictoryPanel();
+    // set maxTime based on difficulty
+    switch (this.difficulty) {
+      case 4:
+        this.maxTimeSeconds = null; // no limit
+        break;
+      case 6:
+        this.maxTimeSeconds = 60; // 1 minute
+        break;
+      case 8:
+        this.maxTimeSeconds = 30; // 30 seconds
+        break;
+      default:
+        this.maxTimeSeconds = null;
+    }
+
+    this.hideResultPanel();
 
     const btnStart = this.root.querySelector('#btnStart');
     const btnHelp = this.root.querySelector('#btnHelp');
@@ -189,6 +234,21 @@ export class LogicGame {
     await this.createSubImages();
     this.startTimer();
     this.draw();
+  }
+
+  handleTimeUp() {
+    if (!this.isPlaying) return;
+    this.isPlaying = false;
+    this.stopTimer();
+
+    // reveal result as loss
+    this.subImages.forEach((s) => s.removeFilter());
+    this.draw();
+
+    // mark last result
+    this.lastResultWasWin = false;
+
+    setTimeout(() => this.showResultPanel(false), 300);
   }
 
   loadImage(url) {
@@ -289,8 +349,8 @@ export class LogicGame {
     
     if (index >= 0 && index < this.subImages.length) {
       const piece = this.subImages[index];
-      
-      // 🆕 Verificar si la pieza está fija
+
+      // Check if the piece is fixed
       if (piece.isFixed) {
         console.log('⚠️ Esta pieza está fija (ayuda usada)');
         return;
@@ -321,31 +381,42 @@ export class LogicGame {
     
     this.subImages.forEach((s) => s.removeFilter());
     this.draw();
-    setTimeout(() => this.showVictoryPanel(), 500);
+
+    // mark last result as win
+    this.lastResultWasWin = true;
+
+    setTimeout(() => this.showResultPanel(true), 500);
   }
 
-  showVictoryPanel() {
-    const victoryPanel = this.root.querySelector('#victoryControls');
+  showResultPanel(isWin) {
+    const resultPanel = this.root.querySelector('#resultPanel');
     const finalTime = this.root.querySelector('#finalTime');
-    if (victoryPanel && finalTime) {
-      finalTime.textContent = this.formatTime(this.timerSeconds);
-      victoryPanel.style.display = 'flex';
-      const btnNext = this.root.querySelector('#btnNext');
-      if (btnNext) {
-        btnNext.textContent = this.currentLevel >= this.imageBank.length - 1 ? 'Reiniciar' : 'Siguiente Nivel';
-      }
+    const resultTitle = this.root.querySelector('#resultTitle');
+    const btnNext = this.root.querySelector('#btnNext');
+
+    if (!resultPanel || !finalTime || !resultTitle || !btnNext) return;
+
+    finalTime.textContent = this.formatTime(this.timerSeconds);
+    if (isWin) {
+      resultTitle.textContent = '¡Nivel Completado!';
+      btnNext.textContent = this.currentLevel >= this.imageBank.length - 1 ? 'Reiniciar' : 'Siguiente Nivel';
+    } else {
+      resultTitle.textContent = 'Tiempo Agotado';
+      btnNext.textContent = 'Reintentar';
     }
+
+    resultPanel.style.display = 'flex';
   }
 
-  hideVictoryPanel() {
-    const victoryPanel = this.root.querySelector('#victoryControls');
-    if (victoryPanel) victoryPanel.style.display = 'none';
+  hideResultPanel() {
+    const resultPanel = this.root.querySelector('#resultPanel');
+    if (resultPanel) resultPanel.style.display = 'none';
   }
 
   goToMenu() {
     this.currentLevel = 0;
-    this.helpUsed = false; // 🆕 Resetear ayuda
-    this.hideVictoryPanel();
+    this.helpUsed = false; // Reset help
+    this.hideResultPanel();
     
     const btnStart = this.root.querySelector('#btnStart');
     const btnHelp = this.root.querySelector('#btnHelp');
@@ -353,8 +424,8 @@ export class LogicGame {
     
     if (btnStart) btnStart.disabled = false;
     if (difficultySelect) difficultySelect.disabled = false;
-    
-    // 🆕 Deshabilitar ayuda en menú
+
+    // Disable help in menu
     if (btnHelp) {
       btnHelp.disabled = true;
       btnHelp.textContent = 'Ayudita (+5s)';
@@ -364,13 +435,19 @@ export class LogicGame {
     const levelValue = this.root.querySelector('#levelValue');
     if (levelValue) levelValue.textContent = '1';
     this.timerSeconds = 0;
+    this.maxTimeSeconds = null;
     this.updateTimerDisplay();
   }
 
   nextLevel() {
-    this.currentLevel++;
-    if (this.currentLevel >= this.imageBank.length) 
-      this.currentLevel = 0;
+    // Si el último resultado fue victoria avanzamos al siguiente nivel,
+    // si fue derrota, reintentamos el mismo nivel
+    if (this.lastResultWasWin) {
+      this.currentLevel++;
+      if (this.currentLevel >= this.imageBank.length) 
+        this.currentLevel = 0;
+    }
+    // startGame ya maneja la selección de imagen y reinicio
     this.startGame();
   }
 

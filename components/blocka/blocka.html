@@ -10,7 +10,7 @@
       <button id="btnHelp" class="btn-help" disabled>Ayudita (+5s)</button>
       <div class="timer-display">
         <span class="timer-label">Tiempo:</span>
-        <span id="timerValue">00:00</span>
+        <span id="timerValue">00:00</span><span id="timerHint"></span>
       </div>
       <div class="level-display">
         <span class="level-label">Nivel:</span>
@@ -26,9 +26,9 @@
     <!-- Game Canvas -->
     <canvas id="blockaCanvas" width="700" height="700"></canvas>
 
-    <!-- Victory Controls (hidden by default) -->
-    <div id="victoryControls" class="victory-controls" style="display: none">
-      <h2>¡Nivel Completado!</h2>
+    <!-- Result Panel (win / lose) -->
+    <div id="resultPanel" class="result-controls" style="display: none">
+      <h2 id="resultTitle">Resultado</h2>
       <p>Tiempo: <span id="finalTime">00:00</span></p>
       <div class="victory-buttons">
         <button id="btnMenu" class="btn-secondary">Menú Principal</button>

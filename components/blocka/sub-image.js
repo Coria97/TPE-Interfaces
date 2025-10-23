@@ -14,7 +14,7 @@ export default class SubImage {
     this.currentRotation = 0;
     this.filterType = filterType;
     this.hasFilter = false;
-    this.isFixed = false; // 🆕 Nueva propiedad para ayudita
+    this.isFixed = false;
     this.randomizeRotation();
   }
 
@@ -25,13 +25,11 @@ export default class SubImage {
   }
 
   rotateLeft() {
-    // 🆕 No rotar si está fija
     if (this.isFixed) return;
     this.currentRotation = (this.currentRotation - 90 + 360) % 360;
   }
 
   rotateRight() {
-    // 🆕 No rotar si está fija
     if (this.isFixed) return;
     this.currentRotation = (this.currentRotation + 90) % 360;
   }
@@ -40,7 +38,6 @@ export default class SubImage {
     return this.currentRotation === this.correctRotation;
   }
 
-  // 🆕 Nuevo método para fijar la pieza
   fixToCorrectRotation() {
     this.currentRotation = this.correctRotation;
     this.isFixed = true;
@@ -97,7 +94,7 @@ export default class SubImage {
 
     ctx.restore();
 
-    // 🆕 Dibujar borde verde si está fija
+    // Draw green border if fixed
     if (this.isFixed) {
       ctx.save();
       ctx.strokeStyle = '#7ed321';

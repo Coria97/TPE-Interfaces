@@ -174,10 +174,11 @@ rushgame-blocka,
   text-transform: uppercase;
 }
 
+#timerHint,
 #timerValue,
 #levelValue {
   font-family: var(--text-title);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--rushgames-primary);
 }
@@ -199,8 +200,8 @@ rushgame-blocka,
   box-sizing: border-box;
 }
 
-/* Victory Controls - Victory screen controls */
-.victory-controls {
+/* Results Controls */
+.result-controls {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -215,7 +216,7 @@ rushgame-blocka,
   box-sizing: border-box;
 }
 
-.victory-controls h2 {
+.result-controls h2 {
   font-family: var(--text-title);
   font-size: 20px;
   font-weight: 700;
@@ -223,7 +224,7 @@ rushgame-blocka,
   margin: 0;
 }
 
-.victory-controls p {
+.result-controls p {
   font-family: var(--text-title);
   font-size: 14px;
   color: var(--text-secondary);
