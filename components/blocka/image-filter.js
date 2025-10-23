@@ -1,10 +1,10 @@
 export class ImageFilter {
   static grayscale(imageData) {
-    // Convert image to grayscale
+    // Convert image to grayscale using BT.601 luma coefficients
     const data = imageData.data;
     for (let i = 0; i < data.length; i += 4) {
       const r = data[i], g = data[i + 1], b = data[i + 2];
-      const gray = (r + g + b) / 3;
+      const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
       data[i] = data[i + 1] = data[i + 2] = gray;
     }
     return imageData;
