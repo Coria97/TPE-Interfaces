@@ -1,7 +1,23 @@
 // components/game-description/game-description.js
 class GameDescription extends HTMLElement {
   static get observedAttributes() {
-    return ['title', 'poster', 'rating', 'release-date'];
+    return [
+      'title',
+      'poster',
+      'rating',
+      'release-date',
+      'clamp',
+      'facebook',
+      'x',
+      'instagram',
+      'tiktok',
+      'youtube',
+      'facebook-text',
+      'x-text',
+      'instagram-text',
+      'tiktok-text',
+      'youtube-text'
+    ];
   }
   constructor() {
     super();
@@ -57,6 +73,9 @@ class GameDescription extends HTMLElement {
     this._mounted = true;
     this.#render();
 
+    // Inicializar links de redes según atributos actuales
+    this.#initSocials();
+
     // Toggle buttons
     this.$('.gd__toggle-expanded')?.addEventListener('click', () => {
       this.toggleAttribute('expanded');
@@ -75,8 +94,27 @@ class GameDescription extends HTMLElement {
     });
   }
 
-  attributeChangedCallback() {
-    if (this._mounted) this.#render();
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (!this._mounted) return;
+    if (oldValue === newValue) return;
+
+    // cambios en urls/plataformas
+    if (['facebook', 'x', 'instagram', 'tiktok', 'youtube'].includes(name)) {
+      this.#applySocial(name);
+      return;
+    }
+
+    // cambios en los textos de las redes (e.g. 'facebook-text')
+    if (name.endsWith('-text')) {
+      const platform = name.split('-')[0];
+      this.#applySocial(platform);
+      return;
+    }
+
+    // Para otros atributos re-render completo (title, poster, rating, release-date, clamp)
+    if (['title', 'poster', 'rating', 'release-date', 'clamp'].includes(name)) {
+      this.#render();
+    }
   }
 
   #openShareModal() {
@@ -114,6 +152,49 @@ class GameDescription extends HTMLElement {
     }
   }
 
+  #initSocials() {
+    const platforms = ['facebook', 'x', 'instagram', 'tiktok', 'youtube'];
+    for (const p of platforms) {
+      // #applySocial leerá tanto la URL (atributo 'p') como el texto (atributo `${p}-text`)
+      this.#applySocial(p);
+    }
+  }
+
+  #applySocial(platform, value) {
+    const anchor = this.$(`.gd__social-link[data-platform="${platform}"]`);
+    if (!anchor) return;
+
+    const url = this.getAttribute(platform);
+    const textAttr = this.getAttribute(`${platform}-text`);
+    const textEl = anchor.querySelector('.gd__social-text');
+
+    if (!url) {
+      // ocultar si no hay URL
+      anchor.style.display = 'none';
+      return;
+    }
+
+    anchor.href = url;
+    anchor.style.display = '';
+
+    // actualizar texto visible: si viene atributo `${platform}-text` usarlo,
+    // si no, intentar derivar algo del URL (host/path) o dejar el texto que ya tenía la plantilla.
+    if (textEl) {
+      if (textAttr) {
+        textEl.textContent = textAttr;
+      } else {
+        try {
+          const u = new URL(url);
+          // mostrar el handle/path o el hostname como fallback
+          const path = u.pathname.replace(/^\/+/, '');
+          textEl.textContent = path ? (path.startsWith('@') ? path : path.split('/').pop()) : u.hostname;
+        } catch {
+          // no es una URL válida: dejar texto actual
+        }
+      }
+    }
+  }
+
   #render() {
     // Título
     const elTitle = this.$('.gd__title');
@@ -145,6 +226,10 @@ class GameDescription extends HTMLElement {
       t.textContent = d;
       t.dateTime = d;
     }
+
+    // Clamp (si cambia por atributo)
+    const clamp = this.getAttribute('clamp');
+    if (clamp) this.shadowRoot.host.style.setProperty('--clamp-lines', clamp);
   }
 }
 customElements.define('game-description', GameDescription);

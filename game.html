@@ -2,7 +2,8 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Green Lantern: El Solitario Esmeralda - RushGame</title>
+    <title>RushGame - Juego</title>
+    <link rel="stylesheet" href="./components/blocka/blocka.css" />
     <link rel="stylesheet" href="./components/game-instructions/game-instructions.css" />
     <link rel="stylesheet" href="./main.css" />
     <link rel="stylesheet" href="./game.css" />
@@ -14,7 +15,7 @@
     />
   </head>
   <body>
-    <!-- Uso directo del componente -->
+    <!-- Navbar -->
     <rushgame-navbar></rushgame-navbar>
 
     <main id="game-page">
@@ -22,32 +23,12 @@
       <rush-breadcrumb id="gameBreadcrumb"></rush-breadcrumb>
 
       <!-- Game Title -->
-      <h1 class="game-title">Green Lantern: El Solitario Esmeralda</h1>
+      <h1 id="gameTitle" class="game-title">Cargando juego...</h1>
 
-      <!-- Game Layout: Image + Instructions -->
-      <div class="game-layout">
-        <div class="game-image-container">
-          <img src="./assets/peg-solitaire.png" alt="Tablero de Peg Solitaire" class="game-image" />
-        </div>
-        <rush-game-instructions game-type="peg-solitaire"></rush-game-instructions>
-      </div>
+      <!-- Game Layout: Image/Canvas + Instructions -->
+      <div id="gameLayout" class="game-layout"></div>
 
-      <game-description
-        title="Green Lantern: El Solitario Esmeralda"
-        poster="./assets/GameCover.jpg"
-        rating="5.0"
-        release-date="2009-01-01"
-        clamp="3"
-      >
-        <div slot="description">
-          En un rincón olvidado del universo, los Guardianes del Oa te encomiendan la misión más
-          insólita jamás vista: ¡resolver el enigma cósmico del Peg Solitaire! Como nuevo recluta
-          del Cuerpo de Linternas Verdes, deberás dominar este ancestral juego de estrategia que ha
-          desafiado a los más grandes héroes de la galaxia. Cada movimiento cuenta, cada salto
-          elimina una pieza, y tu objetivo es dejar solo una ficha en el tablero. ¿Tienes lo que se
-          necesita para convertirte en el próximo protector del sector 2814?
-        </div>
-      </game-description>
+      <div id="gameDescriptionContainer"></div>
 
       <comment-section></comment-section>
     </main>
@@ -55,19 +36,157 @@
     <!-- Footer -->
     <rushgame-footer></rushgame-footer>
 
-    <script src="./components/navbar/navbar.js" defer></script>
-    <script src="./components/breadcrumb/breadcrumb.js" defer></script>
-    <script src="./components/game-instructions/game-instructions.js" defer></script>
+    <!-- Component scripts (common) -->
+    <script src="./components/navbar/navbar.js"></script>
+    <script src="./components/breadcrumb/breadcrumb.js"></script>
+    <script src="./components/game-instructions/game-instructions.js"></script>
     <script type="module" src="./components/game-description/game-description.js"></script>
     <script type="module" src="./components/share-modal/share-modal.js"></script>
     <script src="./components/footer/footer.js"></script>
 
-    <script src="./components/comments/reply-row/reply-row.js" defer></script>
-    <script src="./components/comments/action-row/action-row.js" defer></script>
-    <script src="./components/comments/input-row/input-row.js" defer></script>
-    <script src="./components/comments/replies-thread/replies-thread.js" defer></script>
-    <script src="./components/comments/comment-item/comment-item.js" defer></script>
-    <script src="./components/comments/comment-composer/comment-composer.js" defer></script>
-    <script src="./components/comments/comment-section/comment-section.js" defer></script>
+    <script src="./components/comments/reply-row/reply-row.js"></script>
+    <script src="./components/comments/action-row/action-row.js"></script>
+    <script src="./components/comments/input-row/input-row.js"></script>
+    <script src="./components/comments/replies-thread/replies-thread.js"></script>
+    <script src="./components/comments/comment-item/comment-item.js"></script>
+    <script src="./components/comments/comment-composer/comment-composer.js"></script>
+    <script src="./components/comments/comment-section/comment-section.js"></script>
+    <!-- load Blocka dynamically only when requested (no static import) -->
+
+    <script>
+      (function () {
+        const games = {
+          "peg-solitaire": {
+            title: "Green Lantern: El Solitario Esmeralda",
+            poster: "./assets/peg-solitaire.png",
+            rating: "5.0",
+            releaseDate: "2009-01-01",
+            clamp: "3",
+            type: "peg-solitaire",
+            description:
+              "En un rincón olvidado del universo, los Guardianes del Oa te encomiendan la misión más insólita jamás vista: ¡resolver el enigma cósmico del Peg Solitaire! Como nuevo recluta del Cuerpo de Linternas Verdes, deberás dominar este ancestral juego de estrategia que ha desafiado a los más grandes héroes de la galaxia.",
+            facebook: "https://facebook.com/groups/pegsolitaire",
+            x: "https://x.com/PegSolitaireGame",
+            instagram: "https://instagram.com/pegsolitaire_official",
+            tiktok: "https://tiktok.com/@pegsolitaire",
+            youtube: "https://youtube.com/@PegSolitaireGameplay",
+            // textos/handles visibles para cada red
+            facebookText: "Peg Solitaire Fans",
+            xText: "@PegSolitaireGame",
+            instagramText: "@pegsolitaire_official",
+            tiktokText: "@pegsolitaire",
+            youtubeText: "Peg Solitaire Gameplay"
+          },
+          "blocka": {
+            title: "Blocka: Rompecabezas de Linterna Verde",
+            poster: "./assets/gameCover.jpg",
+            rating: "4.8",
+            releaseDate: "2025-01-01",
+            clamp: "3",
+            type: "blocka",
+            description:
+              "Los Guardianes de Oa han creado un nuevo entrenamiento para los Linternas Verdes: Blocka, un desafío mental que pone a prueba tu percepción espacial y velocidad. Las imágenes del universo DC han sido fragmentadas y distorsionadas. Tu misión es rotarlas correctamente antes de que el tiempo se agote.",
+            facebook: "https://facebook.com/groups/blocka",
+            x: "https://x.com/BlockaGame",
+            instagram: "https://instagram.com/blocka_official",
+            tiktok: "https://tiktok.com/@blocka_game",
+            youtube: "https://youtube.com/@BlockaGameplay",
+            facebookText: "Blocka Fans",
+            xText: "@BlockaGame",
+            instagramText: "@blocka_official",
+            tiktokText: "@blocka_game",
+            youtubeText: "Blocka Gameplay"
+          }
+        };
+
+        const params = new URLSearchParams(location.search);
+        const gameId = params.get("game") || "peg-solitaire";
+        const data = games[gameId] || games["peg-solitaire"];
+
+        document.title = `${data.title} - RushGame`;
+        document.getElementById("gameTitle").textContent = data.title;
+
+        function escapeHtml(str) {
+          return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+        }
+        function escapeHtmlAttr(str) {
+          return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;")
+            .replace(/</g, "&lt;");
+        }
+        function showInstructions(type) {
+          return `<rush-game-instructions game-type="${type}"></rush-game-instructions>`;
+        }
+
+        const layout = document.getElementById("gameLayout");
+        if (data.type === "peg-solitaire") {
+          layout.innerHTML = `
+            <div class="game-image-container">
+              <img src="${data.poster}"
+                   alt="${escapeHtmlAttr(data.title)}"
+                   class="game-image"
+                   onerror="this.style.display='none'; console.warn('Imagen no encontrada: ${data.poster}')"
+              />
+            </div>
+            ${showInstructions("peg-solitaire")}
+          `;
+        } else if (data.type === "blocka") {
+          // Mantener la misma estructura visual que en game-blocka.html
+          layout.innerHTML = `
+            <rushgame-blocka></rushgame-blocka>
+            ${showInstructions("blocka")}
+          `;
+
+          // Import dinámico y creación segura del custom element.
+          // El <rushgame-blocka> ya está en el DOM; cuando se defina/upgradeará.
+          import("./components/blocka/blocka.js")
+            .then(() => {
+              const tag = "rushgame-blocka";
+              if (!customElements.get(tag)) {
+                return customElements.whenDefined(tag).catch((err) => {
+                  console.error(`El custom element ${tag} no se definió:`, err);
+                  layout.innerHTML = '<div class="error">Error inicializando Blocka (revisá la consola).</div>';
+                });
+              }
+            })
+            .catch((err) => {
+              console.error("Error importando components/blocka/blocka.js:", err);
+              const blockaEl = layout.querySelector("rushgame-blocka");
+              if (blockaEl) blockaEl.replaceWith(document.createElement("div")).textContent = "No se pudo cargar el juego Blocka. Revisa la consola.";
+            });
+         }
+
+        const descContainer = document.getElementById("gameDescriptionContainer");
+
+        // construir atributos sociales + textos solo si están definidos
+        const socialKeys = ['facebook','x','instagram','tiktok','youtube'];
+        const socialAttrs = socialKeys.flatMap((k) => {
+          const parts = [];
+          if (data[k]) parts.push(`${k}="${escapeHtmlAttr(data[k])}"`);
+          const txtProp = `${k}Text`;
+          if (data[txtProp]) parts.push(`${k}-text="${escapeHtmlAttr(data[txtProp])}"`);
+          return parts;
+        }).join(' ');
+
+         descContainer.innerHTML = `
+           <game-description
+             title="${escapeHtmlAttr(data.title)}"
+             poster="${escapeHtmlAttr(data.poster)}"
+             rating="${data.rating}"
+             release-date="${data.releaseDate}"
+             clamp="${data.clamp}"
+             ${socialAttrs}
+           >
+             <div slot="description">
+               ${escapeHtml(data.description)}
+             </div>
+           </game-description>
+         `;
+      })();
+    </script>
   </body>
 </html>

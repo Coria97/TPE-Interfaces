@@ -63,6 +63,7 @@ class RushGameCard extends HTMLElement {
 
     if (this.playBtn) {
       this.playBtn.addEventListener('click', (e) => {
+        e.preventDefault();
         e.stopPropagation();
         this.handlePlayClick();
       });
@@ -140,8 +141,35 @@ class RushGameCard extends HTMLElement {
   }
 
   handlePlayClick() {
-    // Redirect to game.html
-    window.location.href = 'game.html';
+    // if the card is inside an <a> tag, follow that link (but avoid following a generic game.html without params)
+    const outerLink = this.closest('a');
+    if (outerLink && outerLink.href && !outerLink.href.includes('game.html')) {
+      window.location.href = outerLink.href;
+      return;
+    }
+
+    // Prefer explicit attribute, then internal data, then fallback to gameData
+    let id = this.getAttribute('game-id') || this.dataset.game || this.dataset.gameId || this.gameData.id || '';
+
+    // If still empty, try to derive a slug from the title and map to known keys (heuristic)
+    if (!id && this.gameData && this.gameData.title) {
+      const slug = this.gameData.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+      const known = ['peg-solitaire', 'blocka'];
+      if (known.includes(slug)) id = slug;
+    }
+
+    if (!id) {
+      console.warn('RushGameCard: no game-id found on card. Expected attribute game-id="blocka" or similar.');
+      // keep current behavior but be explicit
+      window.location.href = 'game.html';
+      return;
+    }
+
+    const target = `game.html?game=${encodeURIComponent(id)}`;
+    window.location.href = target;
   }
 
   rotateLeft() {

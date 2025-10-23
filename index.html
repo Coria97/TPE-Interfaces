@@ -18,14 +18,25 @@
     <rushgame-navbar></rushgame-navbar>
 
     <rushgame-carrousel title="Recomendados para ti" api-source="true" max-games="8">
-      <rushgame-card
-        game-id="peg-solitaire"
-        title="Peg Solitaire"
-        image="./assets/GameCover.jpg"
-        rating="4.2"
-        category="Puzzle"
-      >
-      </rushgame-card>
+      <a href="./game.html?game=peg-solitaire" style="text-decoration:none; color:inherit;">
+        <rushgame-card
+          game-id="peg-solitaire"
+          title="Peg Solitaire"
+          image="./assets/peg-solitaire.png"
+          rating="4.2"
+          category="Puzzle"
+        ></rushgame-card>
+      </a>
+
+      <a href="./game.html?game=blocka" style="text-decoration:none; color:inherit;">
+        <rushgame-card
+          game-id="blocka"
+          title="Blocka"
+          image="./assets/GameCover.jpg"
+          rating="5"
+          category="Puzzle"
+        ></rushgame-card>
+      </a>
     </rushgame-carrousel>
     <rushgame-category-carousel id="categoryCarousel"></rushgame-category-carousel>
     <rushgame-carrousel title="Mas jugados" api-source="true" max-games="10"> </rushgame-carrousel>
