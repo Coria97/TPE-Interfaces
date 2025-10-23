@@ -518,117 +518,108 @@ export class LogicGame {
   }
 
   drawLevelSelectorOnCanvas(highlightIndex = -1, selectedIndex = -1) {
-    // Canvas dimensions
     const ctx = this.ctx;
     const canvasW = this.canvas.width;
     const canvasH = this.canvas.height;
-
-    // Thumbnail size
-    const thumbSize = 100;
-
-    // Strip layout
-    const stripHeight = Math.floor(canvasH * 0.2);
-    const padding = 12;
+    
+    // Calcular cuadrícula óptima
     const total = this.imageBank.length;
-    const gap = 12;
+    const cols = Math.ceil(Math.sqrt(total));
+    const rows = Math.ceil(total / cols);
+    
+    // Calcular tamaño de cada thumbnail
+    const gap = 20;
+    const padding = 30;
+    const availableWidth = canvasW - (2 * padding) - ((cols - 1) * gap);
+    const availableHeight = canvasH - (2 * padding) - ((rows - 1) * gap);
+    
+    const thumbWidth = Math.floor(availableWidth / cols);
+    const thumbHeight = Math.floor(availableHeight / rows);
 
-    // Center the strip vertically on the canvas
-    const centerCanvasY = Math.floor((canvasH - stripHeight) / 2);
-
-    // Save context state and clear canvas
-    ctx.save();
+    // Limpiar canvas
     this.clearCanvas();
 
-    // Draw semi-transparent rounded background for the strip
-    ctx.fillStyle = 'rgba(0,0,0,0.36)';
-    ctx.beginPath();
-    ctx.roundRect(padding, centerCanvasY, canvasW - padding * 2, stripHeight, 10);
-    ctx.fill();
+    // Dibujar fondo semi-transparente
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.49)';
+    ctx.fillRect(0, 0, canvasW, canvasH);
 
-    // Compute horizontal positioning so thumbnails are centered inside the strip
-    const totalThumbsWidth = total * thumbSize + (total - 1) * gap;
-    const startX = padding + Math.floor((canvasW - padding * 2 - totalThumbsWidth) / 2);
-    
-    // Draw each thumbnail slot
+    // Dibujar cada thumbnail
     for (let i = 0; i < total; i++) {
+      const row = Math.floor(i / cols);
+      const col = i % cols;
+      
+      const x = padding + col * (thumbWidth + gap);
+      const y = padding + row * (thumbHeight + gap);
+      
       const img = this.preloadedLevelImages[i];
       
-      // Thumbnail area centered vertically inside the slot
-      const imgX = startX + i * (thumbSize + gap);
-      const imgY = centerCanvasY + Math.floor((stripHeight - thumbSize) / 2);
-
-      // Draw selection background (subtle) or highlight stroke
+      // Dibujar selección o resaltado
       if (i === selectedIndex) {
-        ctx.fillStyle = 'rgba(80,200,120,0.18)';
-        ctx.fillRect(imgX - 4, centerCanvasY, thumbSize + 8, stripHeight - 2);
+        ctx.fillStyle = 'rgba(18, 189, 75, 0.77)';
+        ctx.fillRect(x - 4, y - 4, thumbWidth + 8, thumbHeight + 8);
       } 
       else if (i === highlightIndex) {
-        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+        ctx.strokeStyle = 'rgba(23, 167, 23, 0.58)';
         ctx.lineWidth = 3;
-        ctx.strokeRect(imgX - 4, centerCanvasY, thumbSize + 8, stripHeight - 2);
+        ctx.strokeRect(x - 4, y - 4, thumbWidth + 8, thumbHeight + 8);
       }
 
-      // Draw the image scaled to fit inside thumbnail area
-      ctx.drawImage(img, 0, 0, img.width, img.height, imgX, imgY, thumbSize, thumbSize);
+      // Dibujar imagen manteniendo proporción
+      if (img) {
+        const scale = Math.min(thumbWidth / img.width, thumbHeight / img.height);
+        const scaledW = img.width * scale;
+        const scaledH = img.height * scale;
+        
+        // Centrar imagen en su celda
+        const offsetX = (thumbWidth - scaledW) / 2;
+        const offsetY = (thumbHeight - scaledH) / 2;
+        
+        ctx.drawImage(img, 0, 0, img.width, img.height, 
+                     x + offsetX, y + offsetY, scaledW, scaledH);
+      }
+      
+      // Borde sutil alrededor de cada thumbnail
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x, y, thumbWidth, thumbHeight);
     }
-
-    // Restore context to previous state
-    ctx.restore();
   }
 
   async showSelectionAnimationCanvas() {
-    // Charge level images if not done yet
     await this.preloadLevelImages();
 
     const total = this.imageBank.length;
     const targetIndex = Math.floor(Math.random() * total);
-
-    // Animation roulette variables
     
-    // Cycles + targetIndex steps
-    const steps = 2 * total + targetIndex;
+    // Más ciclos para una animación más fluida
+    const steps = 3 * total + targetIndex;
     let step = 0;
     let idx = 0;
-    const baseDelay = 80;
-    const accel = 6;
+    const baseDelay = 100;
+    const accel = 8;
 
     return new Promise((resolve) => {
       const tick = () => {
-        // Calculate highlight index
         const highlight = idx % total;
-
-        // Draw strip with highlight
         this.drawLevelSelectorOnCanvas(highlight, -1);
-
-        // Advance step and index
+        
         step++;
         idx++;
-
-        // Calculate remaining steps
+        
         const remaining = steps - step;
-
-        // Calculate delay with acceleration effect
         const delay = baseDelay + Math.round((Math.max(0, remaining) / steps) * accel * baseDelay);
 
         if (step > steps) {
-          // Animation finished, resolve with selected index
           this.drawLevelSelectorOnCanvas(-1, highlight);
-          
           setTimeout(() => {
-            // clear strip after short delay
-            const canvasW = this.canvas.width;
-            const canvasH = this.canvas.height;
-            const stripHeight = Math.min(96, Math.floor(canvasH * 0.14));
-            const y = Math.floor((canvasH - stripHeight) / 2);
             this.clearCanvas();
             resolve(highlight);
-          }, 340);
+          }, 400);
           return;
         }
         setTimeout(tick, delay);
       };
 
-      // start the animation
       tick();
     });
   }
