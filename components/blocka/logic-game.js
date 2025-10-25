@@ -44,6 +44,7 @@ export class LogicGame {
 
     this.clearCanvas();
 
+    this.drawLevelSelectorOnCanvas
   }
 
   setupEventListeners() {

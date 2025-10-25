@@ -123,22 +123,28 @@
 
         const layout = document.getElementById("gameLayout");
         if (data.type === "peg-solitaire") {
-          layout.innerHTML = `
-            <div class="game-image-container">
-              <img src="${data.poster}"
-                   alt="${escapeHtmlAttr(data.title)}"
-                   class="game-image"
-                   onerror="this.style.display='none'; console.warn('Imagen no encontrada: ${data.poster}')"
-              />
-            </div>
-            ${showInstructions("peg-solitaire")}
-          `;
+            layout.innerHTML = '<rushgame-blocka></rushgame-blocka>';
+            layout.innerHTML += showInstructions("peg-solitaire");
+
+            import("./components/peg-solitaire/peg-solitaire.js")
+              .then(() => {
+                const tag = "rushgame-peg-solitaire";
+                if (!customElements.get(tag)) {
+                  return customElements.whenDefined(tag).catch((err) => {
+                    console.error(`El custom element ${tag} no se definió:`, err);
+                    layout.innerHTML = '<div class="error">Error inicializando Peg Solitaire (revisá la consola).</div>';
+                  });
+                }
+              })
+              .catch((err) => {
+                console.error("Error importando components/peg-solitaire/peg-solitaire.js:", err);
+                const pegSolitaireEl = layout.querySelector("rushgame-peg-solitaire");
+                if (pegSolitaireEl) pegSolitaireEl.replaceWith(document.createElement("div")).textContent = "No se pudo cargar el juego Peg Solitaire. Revisa la consola.";
+              });
         } else if (data.type === "blocka") {
           // Mantener la misma estructura visual que en game-blocka.html
-          layout.innerHTML = `
-            <rushgame-blocka></rushgame-blocka>
-            ${showInstructions("blocka")}
-          `;
+          layout.innerHTML = '<rushgame-blocka></rushgame-blocka>';
+          layout.innerHTML += showInstructions("blocka");
 
           // Import dinámico y creación segura del custom element.
           // El <rushgame-blocka> ya está en el DOM; cuando se defina/upgradeará.
