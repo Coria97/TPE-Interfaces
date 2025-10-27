@@ -1,4 +1,4 @@
-class Chip {
+export default class Chip {
     constructor(color, posX, posY, radius, canvas, context) {
         this.color = color;
         this.posX = posX;
