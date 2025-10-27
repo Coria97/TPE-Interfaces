@@ -88,4 +88,28 @@ game-description {
 comment-section {
   margin-top: 20px;
 }
+/* Contenedor del juego Peg Solitaire: anchura fija que replica el tamaño del canvas */
+.game-layout > rushgame-peg-solitaire {
+  flex: 0 0 700px; /* ancho fijo */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Panel de instrucciones para Peg Solitaire */
+.game-layout > rushgame-peg-solitaire ~ rush-game-instructions {
+  flex: 0 0 360px;
+  box-sizing: border-box;
+  align-self: stretch;
+  margin-top: var(--canvas-offset-top, 0px);
+}
+
+/* Responsive: en pantallas estrechas */
+@media (max-width: 1100px) {
+  .game-layout > rushgame-peg-solitaire {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+}
 

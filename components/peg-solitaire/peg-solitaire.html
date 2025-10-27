@@ -1,0 +1,52 @@
+<template id="peg-solitaire-template">
+  <link rel="stylesheet" href="./components/peg-solitaire/peg-solitaire.css" />
+  <link rel="stylesheet" href="./main.css" />
+  <link rel="stylesheet" href="./game.css" />
+
+  <div class="game-canvas-container">
+    <!-- Game Controls -->
+    <div class="peg-controls">
+      <button id="btnStart" class="btn-primary">Comenzar Misión</button>
+      <button id="btnReset" class="btn-secondary" disabled>Reiniciar</button>
+      
+      <div class="timer-display">
+        <span class="timer-label">Tiempo:</span>
+        <span id="timerValue">00:00</span><span id="timerHint"> / 05:00</span>
+      </div>
+      
+      <div class="moves-display">
+        <span class="moves-label">Movimientos:</span>
+        <span id="movesValue">0</span>
+      </div>
+    </div>
+
+    <!-- Game Canvas -->
+    <canvas id="pegCanvas" width="700" height="700"></canvas>
+
+    <!-- Result Panel -->
+    <div id="resultPanel" class="result-controls" style="display: none">
+      <h2 id="resultTitle">Resultado</h2>
+      <p id="resultMessage">Mensaje del resultado</p>
+      
+      <div class="result-stats">
+        <div class="stat-item">
+          <span class="stat-label">Tiempo:</span>
+          <span id="finalTime" class="stat-value">00:00</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Movimientos:</span>
+          <span id="finalMoves" class="stat-value">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Fichas restantes:</span>
+          <span id="finalPieces" class="stat-value">0</span>
+        </div>
+      </div>
+      
+      <div class="result-buttons">
+        <button id="btnMenu" class="btn-secondary">Menú Principal</button>
+        <button id="btnRetry" class="btn-primary">Reintentar</button>
+      </div>
+    </div>
+  </div>
+</template>
