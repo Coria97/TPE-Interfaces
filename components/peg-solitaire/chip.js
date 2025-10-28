@@ -1,4 +1,3 @@
-
 export default class Chip {
     constructor(id, height, width, isAvailable, isEmpty, posX, posY, context, canvas, radius) {
         this.id = id;
@@ -15,7 +14,8 @@ export default class Chip {
         this.possibleChipEats = [];
         this.radius = radius;
         this.color = isAvailable ? (isEmpty ? 'lightgrey' : 'brown') : 'darkgrey';
-
+        this.image = new Image();
+        this.image.src = './assets/chip.png';
         this.calculatePossibleMoves();
         this.calculatePossibleChipEats();
     }
@@ -68,20 +68,57 @@ export default class Chip {
         }
     }
 
-    draw(context) {
+    draw() {
         if (this.isAvailable) {
             if (!this.isEmpty) {
-                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-                this.ctx.beginPath();
-                this.ctx.arc(this.posX, this.posY, this.radius, 0, Math.PI * 2);
-                this.ctx.fill();
-                this.ctx.strokeStyle = 'rgba(126, 211, 33, 0.3)';
-                this.ctx.lineWidth = 2;
-                this.ctx.stroke();
+                this.drawChip();
+            } else {
+                this.drawEmptySquare();
             }
-        } else {
-            
-            
         }
+    }
+
+    drawEmptySquare() {
+        // Draw hole
+        this.ctx.beginPath();
+        this.ctx.arc(this.posX, this.posY, this.radius, 0, Math.PI * 2);
+
+        const holeGradient = this.ctx.createRadialGradient(
+            this.posX, this.posY, 0,
+            this.posX, this.posY, this.radius
+        );
+        holeGradient.addColorStop(0, '#1a2329');
+        holeGradient.addColorStop(1, '#0d1116');
+        this.ctx.fillStyle = holeGradient;
+        this.ctx.fill();
+
+        // Border for chip
+        this.ctx.strokeStyle = 'rgba(126, 211, 33, 0.3)';
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
+        this.ctx.closePath();
+    }
+
+    drawChip() {
+        const imgSize = this.radius * 2.3;
+        const imgX = this.posX - imgSize / 2;
+        const imgY = this.posY - imgSize / 2;
+
+        // Draw chip image clipped to circle
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.arc(this.posX, this.posY, this.radius, 0, Math.PI * 2);
+        this.ctx.clip();        
+        this.ctx.drawImage(this.image, imgX, imgY, imgSize, imgSize);
+        this.ctx.restore();
+        this.ctx.closePath();
+
+        // Draw chip border
+        this.ctx.beginPath();
+        this.ctx.arc(this.posX, this.posY, this.radius, 0, Math.PI * 2);
+        this.ctx.strokeStyle = 'rgba(126, 211, 33, 0.95)';
+        this.ctx.lineWidth = 3;
+        this.ctx.stroke();
+        this.ctx.closePath();
     }
 }
