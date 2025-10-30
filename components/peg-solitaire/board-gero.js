@@ -4,16 +4,12 @@ import Chip from './chip.js';
  * Board - Maneja el tablero del juego Peg Solitaire
  * Ahora con drag & drop, validación de movimientos, timer y control del juego
  */
-export default class Board {
-    constructor(root) {
-        this.root = root;
-        this.canvasSize = 700;
-        this.canvas = root.querySelector('#pegSolitaireCanvas');
-        this.ctx = this.canvas.getContext('2d');
+export default class BoardLogic {
+    constructor() {
+        this.totalSquares = 49;
         
         // Casillas no disponibles del tablero (esquinas)
         this.unavailableSquares = [0, 1, 5, 6, 7, 8, 12, 13, 35, 36, 40, 41, 42, 43, 47, 48];
-        this.totalSquares = 49;
         
         // Estado del juego
         this.isPlaying = false;

@@ -154,12 +154,7 @@ export default class Chip {
     /**
      * Actualiza la posición durante el drag
      */
-    updateDrag(mouseX, mouseY) {
-        if (!this.isDragging) return;
-        
-        this.dragX = mouseX;
-        this.dragY = mouseY;
-    }
+
 
     /**
      * Finaliza el drag
