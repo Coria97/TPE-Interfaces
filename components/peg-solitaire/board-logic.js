@@ -1,6 +1,15 @@
 import SquareLogic from './square-logic.js';
 
 export default class BoardLogic {
+    /*
+    0  1  2  3  4  5  6
+    7  8  9  10 11 12 13
+    14 15 16 17 18 19 20
+    21 22 23 24 25 26 27
+    28 29 30 31 32 33 34
+    35 36 37 38 39 40 41
+    42 43 44 45 46 47 48
+    */
     constructor() {
         this.totalSquares = 49;
         this.totalChips = 32;
@@ -54,6 +63,7 @@ export default class BoardLogic {
         const posiblesTargets = this.selectedChip.getPosibleMoves();
         const posiblesEats = this.selectedChip.getPosibleChipEats();
         
+        // Verificar cada posible target
         for (let i = 0; i < 4; i++) {
             const targetId = posiblesTargets[i];
             const eatId = posiblesEats[i];
@@ -62,11 +72,14 @@ export default class BoardLogic {
             const eatSqueare = this.squares[eatId];
 
             if (targetSqueare) {
+                // Verificar que la casilla destino esté disponible y vacía
                 if (!targetSqueare.getIsAvailable() || !targetSqueare.getIsEmpty()) {
                     continue;
                 }
                 // Verificar que la casilla a comer tenga ficha
                 if (eatSqueare && eatSqueare.getIsAvailable() && !eatSqueare.getIsEmpty()) {
+                    // Guardar target válido
+                    console.log('✔ Target válido encontrado:', targetSqueare.getId());
                     validTargets.push(targetSqueare);
                 }
             }
@@ -82,9 +95,10 @@ export default class BoardLogic {
     executeMove(targetChip) {
         // Obtengo la ficha a comer
         const posibleMoves = this.selectedChip.getPosibleMoves();
-        const eatIndex = -1;
+        let eatIndex = -1;
+        const targetChipId = targetChip.getId();
         for (let i = 0; i < posibleMoves.length; i++) {
-            if (posibleMoves[i] === targetChip.getId()) {
+            if (posibleMoves[i] === targetChipId) {
                 eatIndex = i;
             }
         }
@@ -94,7 +108,7 @@ export default class BoardLogic {
         // Actualizo los estados de las fichas
         this.selectedChip.setEmpty();
         eatChip.setEmpty();
-        targetChip.isEmpty = false;
+        this.squares[targetChipId].setOccupied();
 
         // Recalculo los posibles movimientos
         for (const square of this.squares) {
@@ -132,5 +146,11 @@ export default class BoardLogic {
         this.draggedChip = null;
         this.selectedChip = null;
         this.validTargets = [];
+    }
+
+    cancelDrag() {
+        if (this.draggedChip) {
+            this.draggedChip.endDrag();
+        }
     }
 }

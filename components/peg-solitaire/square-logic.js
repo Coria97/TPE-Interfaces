@@ -61,38 +61,17 @@ export default class SquareLogic {
     }
     
     updateSquare() {
+        // Recalcular movimientos posibles
         this.possibleChipEats = [];
         this.possibleMoves = [];
-        this.calculatePossibleMoves;
+        this.calculatePossibleMoves();
         this.calculatePossibleChipEats();
     }
 
-    calculatePossibleChipEats() {
-        if (!this.isAvailable) {
-            return;
-        }
-        
-        const chipLeft = this.id - 1;
-        const chipRight = this.id + 1;
-        const chipUp = this.id - 7;
-        const chipDown = this.id + 7;
-
-        if (chipLeft >= 0 && !this.isEmpty) {
-            this.possibleChipEats.push(chipLeft);
-        }
-        if (chipRight < 48 && !this.isEmpty) {
-            this.possibleChipEats.push(chipRight);
-        }
-        if (chipUp >= 0 && !this.isEmpty) {
-            this.possibleChipEats.push(chipUp);
-        }
-        if (chipDown < 48 && !this.isEmpty) {
-            this.possibleChipEats.push(chipDown);
-        }
-    }
-
     calculatePossibleMoves() {
-        if (!this.isAvailable) {
+        this.possibleMoves = [];
+        
+        if (!this.isAvailable || this.isEmpty) {
             return;
         }
 
@@ -101,17 +80,56 @@ export default class SquareLogic {
         const moveUp = this.id - 14;
         const moveDown = this.id + 14;
 
-        if (moveLeft >= 0 && !this.isEmpty) {
+        // Izquierda
+        if (moveLeft >= 0) {
             this.possibleMoves.push(moveLeft);
         }
-        if (moveRight < 48 && !this.isEmpty) {
+        // Derecha
+        if (moveRight < 49) {
             this.possibleMoves.push(moveRight);
         }
-        if (moveUp >= 0 && !this.isEmpty) {
+        // Arriba
+        if (moveUp >= 0) {
             this.possibleMoves.push(moveUp);
         }
-        if (moveDown < 48 && !this.isEmpty) {
+        // Abajo
+        if (moveDown < 49) {
             this.possibleMoves.push(moveDown);
+        }
+    }
+
+    calculatePossibleChipEats() {
+        this.possibleChipEats = [];
+        
+        if (!this.isAvailable || this.isEmpty) {
+            return;
+        }
+        
+        const chipLeft = this.id - 1;
+        const chipRight = this.id + 1;
+        const chipUp = this.id - 7;
+        const chipDown = this.id + 7;
+
+        const moveLeft = this.id - 2;
+        const moveRight = this.id + 2;
+        const moveUp = this.id - 14;
+        const moveDown = this.id + 14;
+
+        // Izquierda - verificar si moveLeft está en possibleMoves
+        if (moveLeft >= 0 && this.possibleMoves.includes(moveLeft)) {
+            this.possibleChipEats.push(chipLeft);
+        }
+        // Derecha
+        if (moveRight < 49 && this.possibleMoves.includes(moveRight)) {
+            this.possibleChipEats.push(chipRight);
+        }
+        // Arriba
+        if (moveUp >= 0 && this.possibleMoves.includes(moveUp)) {
+            this.possibleChipEats.push(chipUp);
+        }
+        // Abajo
+        if (moveDown < 49 && this.possibleMoves.includes(moveDown)) {
+            this.possibleChipEats.push(chipDown);
         }
     }
 
@@ -144,5 +162,14 @@ export default class SquareLogic {
         this.isSelected = false;
         this.isHovered = false;
     }
+    setOccupied() {
+        this.isEmpty = false;
+    }
 
+    endDrag() {
+        this.isDragging = false;
+        this.isSelected = false;
+        this.dragX = null;
+        this.dragY = null;
+    }
 }

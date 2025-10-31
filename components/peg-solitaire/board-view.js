@@ -9,13 +9,14 @@ export default class BoardView {
         this.ctx = this.canvas.getContext('2d');
         this.boardLogic = new BoardLogic();
         this.squaresView = [];
-        this.drawInitialBoard();
+        this.drawBoard();
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
+        this.handleMouseUp = this.handleMouseUp.bind(this);
         this.setupEventListeners();
     }
 
-    drawInitialBoard() {
+    drawBoard() {
         try {
             // Fondo
             this.ctx.fillStyle = '#0a0e13';
@@ -46,7 +47,7 @@ export default class BoardView {
     setupEventListeners() {
         this.canvas.addEventListener('mousedown', this.handleMouseDown);
         this.canvas.addEventListener('mousemove', this.handleMouseMove);
-       // this.canvas.addEventListener('mouseup', this.handleMouseUp);
+        this.canvas.addEventListener('mouseup', this.handleMouseUp);
     }
 
     getMousePos(event) {
@@ -58,6 +59,7 @@ export default class BoardView {
     }
 
     handleMouseDown(event) {
+        // Obtener posición del mouse al hacer click
         const mouse = this.getMousePos(event);
 
         // Buscar dentro del square clickeado la ficha
@@ -78,6 +80,7 @@ export default class BoardView {
     }
 
     handleMouseMove(event) {
+        // Obtener posición del mouse al mover
         const mouse = this.getMousePos(event);
 
         // Actualizar drag
@@ -97,17 +100,21 @@ export default class BoardView {
     }
 
     handleMouseUp(event) {
+        // Chequeo de si hay una ficha siendo arrastrada
         let draggedChip = this.boardLogic.getDraggedChip();
         if (!draggedChip) return;
 
+        // Obtener posición del mouse al soltar
         const mouse = this.getMousePos(event);
-        
+
         let targetChip = null;
         let minDistance = Infinity;
         
         // Buscar la casilla destino más cercana al donde solto el click
         for (const chip of this.squaresView) {
-            if (chip.isEmpty && chip.isAvailable) {
+            const squareStatus = chip.getSquareStatus();
+
+            if (squareStatus.isEmpty && squareStatus.isAvailable) {
                 const chipPos = chip.getPos();
                 const x = (mouse.x - chipPos.x) * (mouse.x - chipPos.x);
                 const y = (mouse.y - chipPos.y) * (mouse.y - chipPos.y);
@@ -121,36 +128,24 @@ export default class BoardView {
             }
         }
         
-        // Debug
-        if (targetChip) {
-            console.log('🎯 Intento de movimiento:');
-            console.log('   Desde:', draggedChip.id);
-            console.log('   Hasta:', targetChip.id);
-            console.log('   Distancia:', minDistance.toFixed(2));
-            console.log('   ¿Es válido?:', this.isValidMove(draggedChip, targetChip));
-        } else {
-            console.log('❌ No se encontró casilla destino cerca del mouse');
-        }
-        
         // Chequear si el movimiento es válido y lo hace
-        if (targetChip && this.isValidMove(targetChip)) {
-            console.log('✅ Movimiento ejecutado');
+        if (targetChip && this.validMovement(targetChip)) {
             const result = this.boardLogic.executeMove(targetChip);
             // Ver que hacer con el result:  0 sigue jugando, -1 pierde, 1 gana
+            this.drawBoard();
         } else {
-            console.log('❌ Movimiento cancelado');
             this.boardLogic.cancelDrag();
         }
         
-        this.boardLogic.resetDragState();
         // Limpiar estado de drag & hover en las fichas
+        this.boardLogic.resetDragState();
         this.canvas.style.cursor = 'default';
     }
 
     validMovement(targetChip) {
         const validTargets = this.boardLogic.getValidTargets();
         for (const vt of validTargets) {
-            if (vt.target.id === targetChip.id) {
+            if (vt.getId() === targetChip.getId()) {
                 return true;
             }
         }

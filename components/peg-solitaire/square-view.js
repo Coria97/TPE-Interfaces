@@ -118,4 +118,8 @@ export default class SquareView {
         const hoverScale = (targetScale - this.squareLogic.getHoverScale()) * 0.2;
         this.squareLogic.setHoverScale(this.squareLogic.getHoverScale() + hoverScale);
     }
+
+    getPos() {
+        return this.squareLogic.getPos();
+    }
 }
