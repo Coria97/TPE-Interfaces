@@ -1,4 +1,4 @@
-import Board from './board.js';
+import BoardController from './board-controller.js';
 
 class RushGamePegSolitaire extends HTMLElement {
   constructor() {
@@ -26,8 +26,7 @@ class RushGamePegSolitaire extends HTMLElement {
       const content = template.content.cloneNode(true);
       this.shadowRoot.appendChild(content);
 
-      this.game = new Board(this.shadowRoot);
-      this.game.draw();
+      this.game = new BoardController(this.shadowRoot);
     } catch(err) {
       console.error('Error initializing Peg Solitaire:', err);
     }

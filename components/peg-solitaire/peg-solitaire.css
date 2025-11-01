@@ -1,0 +1,40 @@
+/* ========================================
+   PEG SOLITAIRE GAME STYLES
+   Temática Green Lantern - Verde Esmeralda
+   ======================================== */
+
+:host,
+rushgame-peg-solitaire,
+.game-canvas-container {
+  display: block;
+  width: 700px;
+  box-sizing: border-box;
+}
+
+.game-canvas-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+/* ========================================
+    ANIMATIONS
+   ======================================== */
+
+
+/* Glow Pulse - Para efectos de energía */
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(126, 211, 33, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(183, 243, 77, 0.7);
+  }
+}
+
+/* Aplicar pulso a canvas cuando está activo */
+#pegSolitaireCanvas:not([disabled]) {
+  animation: glowPulse 3s ease-in-out infinite;
+}
