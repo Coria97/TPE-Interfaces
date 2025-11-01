@@ -22,7 +22,16 @@ export default class SquareView {
 
         if (squareStatus.isAvailable) {
             if (!squareStatus.isEmpty) {
-                this.drawOccupiedSquare(squareStatus.pos);
+                // Si está siendo arrastrada, dibujar el agujero en la posición original
+                if (this.squareController.getIsDragging()) {
+                    this.drawEmptySquare(squareStatus.pos);
+                    // Y dibujar la ficha en la posición de drag
+                    const dragPos = this.squareController.getDragPos();
+                    this.drawOccupiedSquare(dragPos);
+                } else {
+                    // Si no está siendo arrastrada, dibujar normalmente
+                    this.drawOccupiedSquare(squareStatus.pos);
+                }
             } else {
                 this.drawEmptySquare(squareStatus.pos);
             }
@@ -61,15 +70,26 @@ export default class SquareView {
             return;
         }
 
+        let chipRadius;
+
+        if (this.squareController.getIsDragging()) {
+            const hoverScale = this.squareController.squareModel.getHoverScale();
+            const scaleFactor = 1 + hoverScale * 0.1;
+            chipRadius = this.radius * scaleFactor;
+        } else {
+            
+            chipRadius = this.radius;
+        }
+
         // Calculate image size and position
-        const imgSize = this.radius * 2.3;
+        const imgSize = chipRadius * 2.3;
         const imgX = posSquare.x - imgSize / 2;
         const imgY = posSquare.y - imgSize / 2;
 
         // Draw chip image clipped to circle
         this.ctx.save();
         this.ctx.beginPath();
-        this.ctx.arc(posSquare.x, posSquare.y, this.radius, 0, Math.PI * 2);
+        this.ctx.arc(posSquare.x, posSquare.y, chipRadius, 0, Math.PI * 2);
         this.ctx.clip();
         this.ctx.drawImage(this.image, imgX, imgY, imgSize, imgSize);
         this.ctx.restore();
@@ -77,10 +97,28 @@ export default class SquareView {
 
         // Draw chip border
         this.ctx.beginPath();
-        this.ctx.arc(posSquare.x, posSquare.y, this.radius, 0, Math.PI * 2);
-        this.ctx.strokeStyle = 'rgba(126, 211, 33, 0.95)';
-        this.ctx.lineWidth = 3;
+        this.ctx.arc(posSquare.x, posSquare.y, chipRadius, 0, Math.PI * 2);
+        
+        // Borde diferente si está siendo arrastrada
+        if (this.squareController.getIsDragging()) {
+            this.ctx.strokeStyle = 'rgba(126, 211, 33, 1)';
+            this.ctx.lineWidth = 4;
+            // Agregar sombra para efecto de elevación
+            this.ctx.shadowColor = 'rgba(126, 211, 33, 0.5)';
+            this.ctx.shadowBlur = 15;
+        } else {
+            this.ctx.strokeStyle = 'rgba(126, 211, 33, 0.95)';
+            this.ctx.lineWidth = 3;
+        }
+        
         this.ctx.stroke();
         this.ctx.closePath();
+        
+        // Limpiar sombra
+        this.ctx.shadowColor = 'transparent';
+        this.ctx.shadowBlur = 0;
+        
+        // Restaurar radius original
+        this.radius = 30;
     }
 }

@@ -24,6 +24,9 @@ export default class SquareController {
     }
     
     getSquareView() {
+        if (this.squareView == null) {
+            return null;
+        }
         return this.squareView;
     }
 
@@ -54,6 +57,14 @@ export default class SquareController {
 
     getIsEmpty() {
         return this.squareModel.getIsEmpty();
+    }
+
+    getIsDragging() {
+        return this.squareModel.getIsDragging();
+    }
+    
+    getDragPos() {
+        return this.squareModel.getDragPos();
     }
 
     setEmpty() {

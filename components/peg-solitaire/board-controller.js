@@ -28,7 +28,8 @@ export default class BoardController {
 
         // Dibujo inicial del tablero
         console.log("Call to drawBoard from BoardController");
-        this.boardView.drawBoard();
+
+        this.boardView.drawBoard(this.draggedChipController?.getSquareView());
     }
 
     setupEventListeners() {
@@ -104,6 +105,8 @@ export default class BoardController {
             const isHovered = squareController.isMouseOver(mouse.x, mouse.y);
             squareController.updateHover(isHovered);
         }
+
+        this.boardView.drawBoard(this.draggedChipController?.getSquareView());
     }
 
     handleMouseUp(event) {
@@ -145,7 +148,7 @@ export default class BoardController {
                 console.log("GAME WON - Victoria detectada");
                 this.boardView.drawGameResult(1);
             } else {
-                this.boardView.drawBoard();
+                this.boardView.drawBoard(this.draggedChipController?.getSquareView());
             }
         } else {
             this.cancelDrag();

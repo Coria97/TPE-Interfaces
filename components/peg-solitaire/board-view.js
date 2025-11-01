@@ -15,7 +15,7 @@ export default class BoardView {
         this.canvas.addEventListener('mouseup', onMouseUp);
     }
 
-    drawBoard() {
+    drawBoard(draggedSquareView = null) {
         console.log("Drawing board...");
         try {
             // Fondo
@@ -36,6 +36,11 @@ export default class BoardView {
             this.squaresView.forEach(square => {
                 square.draw();
             });
+
+             // Dibujar la ficha arrastrada al final (encima de todo)
+            if (draggedSquareView) {
+                draggedSquareView.draw();
+            }
             console.log("Finished drawing board.");
         } catch (error) {
             console.error("Error drawing board:", error);

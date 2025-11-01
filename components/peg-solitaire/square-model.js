@@ -49,6 +49,14 @@ export default class SquareModel {
         return this.hoverScale;
     }
 
+    getIsDragging() {
+        return this.isDragging;
+    }
+
+    getDragPos() {
+        return { x: this.dragX, y: this.dragY };
+    }
+
     setHoverScale(hoverScale) {
         this.hoverScale = hoverScale;
     }
