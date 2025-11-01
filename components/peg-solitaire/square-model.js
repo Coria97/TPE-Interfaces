@@ -20,10 +20,6 @@ export default class SquareModel {
         this.calculatePossibleMoves();
         this.calculatePossibleChipEats();
     }
-
-    hasPossibleMoves() {
-        return this.possibleMoves.length > 0;
-    }
     
     getPosibleMoves() {
         return this.possibleMoves;

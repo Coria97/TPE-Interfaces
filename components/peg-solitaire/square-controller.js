@@ -98,10 +98,6 @@ export default class SquareController {
         this.squareModel.updateSquare();
     }
 
-    hasPossibleMoves() {
-        return this.squareModel.hasPossibleMoves();
-    }
-
     endDrag() {
         this.squareModel.endDrag();
     }
