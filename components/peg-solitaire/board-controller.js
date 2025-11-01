@@ -138,7 +138,15 @@ export default class BoardController {
         if (targetChip && this.validMovement(targetChip)) {
             const result = this.executeMove(targetChip);
             // Ver que hacer con el result:  0 sigue jugando, -1 pierde, 1 gana
-            this.boardView.drawBoard();
+            if (result === -1) {
+                console.log("GAME OVER - Derrota detectada");
+                this.boardView.drawGameResult(-1);
+            } else if (result === 1) {
+                console.log("GAME WON - Victoria detectada");
+                this.boardView.drawGameResult(1);
+            } else {
+                this.boardView.drawBoard();
+            }
         } else {
             this.cancelDrag();
         }
@@ -161,18 +169,8 @@ export default class BoardController {
             const targetSquareController = this.squareControllers[targetId];
             const eatSquareController = this.squareControllers[eatId];
 
-            if (targetSquareController && eatSquareController)  {
-                // Verificar que la casilla destino esté disponible y vacía
-                const targetSquareStatus = targetSquareController.getSquareStatus();
-                if (!targetSquareStatus.isAvailable || !targetSquareStatus.isEmpty) {
-                    continue;
-                }
-                // Verificar que la casilla a comer tenga ficha
-                const eatSquareStatus = eatSquareController.getSquareStatus();
-                if (eatSquareStatus.isAvailable && !eatSquareStatus.isEmpty) {
-                    // Guardar target válido
-                    validTargetsControllers.push(targetSquareController);
-                }
+            if (this.verifyMove(targetSquareController, eatSquareController)) {
+                validTargetsControllers.push(targetSquareController);
             }
         }
 
@@ -210,6 +208,7 @@ export default class BoardController {
 
         this.boardModel.incrementChipsEaten();
         
+        console.log("Checking game state after move...");
         if (this.checkLose()) {
             console.log("Game lost");
             return -1;
@@ -221,13 +220,48 @@ export default class BoardController {
         return 0; // Juego sigue
     }
 
-    checkLose() {   
+    checkLose() {
+        console.log("Checking for lose condition...");
         for (const squareController of this.squareControllers) {
-            if (squareController.hasPossibleMoves())
-                return false;
+            const squarePosibleMovesIndexes = squareController.getPosibleMoves();
+            const squarePosibleChipEatsIndexes = squareController.getPosibleChipEats();
+
+            if (!squareController.getIsEmpty()) {
+                for (let i = 0; i < squarePosibleMovesIndexes.length; i++) {
+                    const targetId = squarePosibleMovesIndexes[i];
+                    const eatId = squarePosibleChipEatsIndexes[i];
+                    
+                    const targetSquareController = this.squareControllers[targetId];
+                    const eatSquareController = this.squareControllers[eatId];
+                    console.log("Verifying move from square", squareController.getId(), "to target", targetId, "eating", eatId);
+                    if (this.verifyMove(targetSquareController, eatSquareController)) {
+                        console.log("Valid move found! Game continues.");
+                        return false; // Hay un movimiento válido
+                    }
+                }
+            }
         }
+        console.log("No valid moves found. Game lost!");
         return true;
     }
+
+    verifyMove(targetSquareController, eatSquareController) {
+        if (targetSquareController && eatSquareController)  {
+            // Verificar que la casilla destino esté disponible y vacía
+            const targetSquareStatus = targetSquareController.getSquareStatus();
+            if (!targetSquareStatus.isAvailable || !targetSquareStatus.isEmpty) {
+                return false;
+            }
+            const eatSquareStatus = eatSquareController.getSquareStatus();
+            if (!eatSquareStatus.isEmpty && eatSquareStatus.isAvailable) {
+                // La casilla a comer debe tener una ficha
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    
 
     checkVictory() {
         if (this.boardModel.getTotalChipsEaten() === this.boardModel.getTotalChips() - 1) {

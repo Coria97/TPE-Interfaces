@@ -42,6 +42,43 @@ export default class BoardView {
         }
     }
 
+    drawGameResult(result) {
+        // Limpiar el canvas
+        this.ctx.clearRect(0, 0, this.canvasSize, this.canvasSize);
+        
+        // Fondo oscuro
+        this.ctx.fillStyle = '#0a0e13';
+        this.ctx.fillRect(0, 0, this.canvasSize, this.canvasSize);
+        
+        // Configurar estilos según resultado
+        const isVictory = result === 1;
+        const bgColor = isVictory ? 'rgba(0, 255, 0, 0.2)' : 'rgba(255, 0, 0, 0.2)';
+        const textColor = isVictory ? '#00ff00' : '#ff0000';
+        const message = isVictory ? '¡VICTORIA!' : 'GAME OVER';
+        const subtitle = isVictory ? '¡Felicitaciones!' : 'No hay más movimientos';
+        
+        // Overlay semi-transparente
+        this.ctx.fillStyle = bgColor;
+        this.ctx.fillRect(0, 0, this.canvasSize, this.canvasSize);
+        
+        // Mensaje principal
+        this.ctx.fillStyle = textColor;
+        this.ctx.font = 'bold 72px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(message, this.canvasSize / 2, this.canvasSize / 2 - 40);
+        
+        // Subtítulo
+        this.ctx.font = '32px Arial';
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillText(subtitle, this.canvasSize / 2, this.canvasSize / 2 + 40);
+        
+        // Mensaje para reiniciar
+        this.ctx.font = '20px Arial';
+        this.ctx.fillStyle = '#aaaaaa';
+        this.ctx.fillText('Presiona F5 para jugar de nuevo', this.canvasSize / 2, this.canvasSize / 2 + 100);
+    }
+
     setSquareViews(squaresView) {
         this.squaresView = squaresView;
     }

@@ -52,6 +52,10 @@ export default class SquareController {
         };
     }
 
+    getIsEmpty() {
+        return this.squareModel.getIsEmpty();
+    }
+
     setEmpty() {
         this.squareModel.setEmpty(true);
     }
