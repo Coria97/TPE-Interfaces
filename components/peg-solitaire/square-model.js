@@ -1,4 +1,4 @@
-export default class SquareLogic {
+export default class SquareModel {
     constructor(id, height, width, isAvailable, isEmpty, posX, posY) {
         this.id = id;
         this.height = height; // Altura del square
@@ -14,6 +14,7 @@ export default class SquareLogic {
         this.dragX = null; // Posicion actual de arrastre X
         this.dragY = null;  // Posicion actual de arrastre Y
         this.isHovered = false; // Si la ficha está arriba de otra
+        this.hoverScale = 0; // Escala de hover
         this.possibleMoves = [];
         this.possibleChipEats = [];
         this.calculatePossibleMoves();
@@ -56,10 +57,6 @@ export default class SquareLogic {
         this.hoverScale = hoverScale;
     }
 
-    setIsHovered(isHovered) {
-        this.isHovered = isHovered;
-    }
-    
     updateSquare() {
         // Recalcular movimientos posibles
         this.possibleChipEats = [];
@@ -115,7 +112,7 @@ export default class SquareLogic {
         const moveUp = this.id - 14;
         const moveDown = this.id + 14;
 
-        // Izquierda - verificar si moveLeft está en possibleMoves
+        // Izquierda
         if (moveLeft >= 0 && this.possibleMoves.includes(moveLeft)) {
             this.possibleChipEats.push(chipLeft);
         }
@@ -132,10 +129,12 @@ export default class SquareLogic {
             this.possibleChipEats.push(chipDown);
         }
     }
-
+    
     startDrag(mouseX, mouseY) {
+        // Verificar si la ficha está vacía o no disponible
         if (this.isEmpty || !this.isAvailable) return false;
         
+        // Iniciar el arrastre
         this.isDragging = true;
         this.isSelected = true;
         this.dragX = mouseX;
@@ -152,6 +151,15 @@ export default class SquareLogic {
         this.dragY = mouseY;
     }
 
+    updateHover(isHovered) {
+        if (this.isEmpty || !this.isAvailable) return;
+        
+        this.isHovered = isHovered;
+        const targetScale = isHovered ? 1.15 : 1.0;
+        const hoverScale = (targetScale - this.hoverScale) * 0.2;
+        this.hoverScale += hoverScale;
+    }
+
     getIdChipToEatsByIndex(index) {
         return this.possibleChipEats[index];
     }
@@ -162,11 +170,14 @@ export default class SquareLogic {
         this.isSelected = false;
         this.isHovered = false;
     }
+    
     setOccupied() {
         this.isEmpty = false;
     }
 
     endDrag() {
+        this.isHovered = false;
+        this.hoverScale = 0;
         this.isDragging = false;
         this.isSelected = false;
         this.dragX = null;

@@ -1,34 +1,37 @@
-import SquareLogic from './square-logic.js';
+import SquareLogic from './square-model.js';
 
 export default class SquareView {
-    constructor(squareLogic, ctx, canvas) {
-        this.squareLogic = squareLogic;
-        this.ctx = ctx;
-        this.canvas = canvas;
+    constructor(squareController, root) {
+        this.squareController = squareController;
+        this.root = root;
+        this.canvas = root.querySelector('#pegSolitaireCanvas');
+        this.ctx = this.canvas.getContext('2d');
         this.radius = 30;
         this.image = new Image();
         this.image.src = './assets/chip.png';
     }
     
-    draw() {
-        // Get square state
-        const isAvailable = this.squareLogic.getIsAvailable();
-        const isEmpty = this.squareLogic.getIsEmpty();
-
-        if (isAvailable) {
-            if (!isEmpty) {
-                this.drawOccupiedSquare();
-            } else {
-                this.drawEmptySquare();
-            }
-        }
+    getRadius() {
+        return this.radius;
     }
 
-    drawEmptySquare() {
-        // Draw hole
-        // Get position of square
-        const posSquare = this.squareLogic.getPos();
-        
+    draw() {
+        console.log("Drawing square:", this.squareController.getId());
+        // Get square state
+        const squareStatus = this.squareController.getSquareStatus();
+
+        if (squareStatus.isAvailable) {
+            if (!squareStatus.isEmpty) {
+                this.drawOccupiedSquare(squareStatus.pos);
+            } else {
+                this.drawEmptySquare(squareStatus.pos);
+            }
+        }
+        console.log("Finished drawing square:", this.squareController.getId());
+    }
+
+    drawEmptySquare(posSquare) {
+        console.log("Drawing empty square at:", posSquare);
         // Draw hole circle
         this.ctx.beginPath();
         this.ctx.arc(posSquare.x, posSquare.y, this.radius, 0, Math.PI * 2);
@@ -49,9 +52,14 @@ export default class SquareView {
         this.ctx.closePath();
     }
 
-    drawOccupiedSquare() {
-        // Get position of square
-        const posSquare = this.squareLogic.getPos();
+    drawOccupiedSquare(posSquare) {
+        console.log("Drawing occupied square at:", posSquare);
+        if (!this.image.complete) {
+            this.image.onload = () => {
+                this.draw();
+            };
+            return;
+        }
 
         // Calculate image size and position
         const imgSize = this.radius * 2.3;
@@ -74,52 +82,5 @@ export default class SquareView {
         this.ctx.lineWidth = 3;
         this.ctx.stroke();
         this.ctx.closePath();
-    }
-
-    isMouseOver(mouseX, mouseY) {
-        if (!this.squareLogic.getIsAvailable()) return false;
-        
-        // Si está vacía, aumentar el radio de detección
-        const detectionRadius = this.squareLogic.getIsEmpty() ? this.radius * 1.8 : this.radius;
-
-        // Obtenemos la posición del square
-        const pos = this.squareLogic.getPos();
-        
-        // Calculamos la distancia entre el mouse y el centro del square
-        const distance = Math.sqrt(
-            Math.pow(mouseX - pos.x, 2) + 
-            Math.pow(mouseY - pos.y, 2)
-        );
-        
-        return distance <= detectionRadius;
-    }
-    
-    startDrag(mouseX, mouseY) {
-        return this.squareLogic.startDrag(mouseX, mouseY);
-    }
-
-    getSquareStatus() {
-        return {
-            isAvailable: this.squareLogic.getIsAvailable(),
-            isEmpty: this.squareLogic.getIsEmpty()
-        };
-    }
-
-    getId() {
-        return this.squareLogic.getId();
-    }
-
-    updateHover(isHovered) {
-        const square = this.getSquareStatus();
-        if (square.isEmpty || !square.isAvailable) return;
-        
-        this.squareLogic.setIsHovered(isHovered);
-        const targetScale = isHovered ? 1.15 : 1.0;
-        const hoverScale = (targetScale - this.squareLogic.getHoverScale()) * 0.2;
-        this.squareLogic.setHoverScale(this.squareLogic.getHoverScale() + hoverScale);
-    }
-
-    getPos() {
-        return this.squareLogic.getPos();
     }
 }
