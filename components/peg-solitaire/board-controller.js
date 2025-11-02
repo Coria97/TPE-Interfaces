@@ -105,7 +105,7 @@ export default class BoardController {
 
     render() {
         // Dibujar tablero normalmente
-        this.boardView.drawBoard(this.draggedChipController?.getSquareView());
+        this.boardView.drawBoard(this.draggedChipController?.getSquareView(), this.getHints());
         
         // Dibujar UI encima
         if (this.uiManager.showVictoryModal) {
@@ -137,7 +137,6 @@ export default class BoardController {
         this.boardView.setSquareViews(squaresView);
         
         // Limpiar estado de drag
-        this.selectedChipController = null;
         this.draggedChipController = null;
         
         // Limpiar UI
