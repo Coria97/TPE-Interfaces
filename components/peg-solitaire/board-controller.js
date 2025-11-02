@@ -17,7 +17,6 @@ export default class BoardController {
         this.boardView.setSquareViews(squaresView);
 
         // Atributos para manejar selección y arrastre
-        this.selectedChipController = null; // Ficha seleccionada
         this.draggedChipController = null;  // Ficha que se está arrastrando
 
         // Handleo de eventos
@@ -39,6 +38,18 @@ export default class BoardController {
             this.handleMouseMove,
             this.handleMouseUp
         );
+    }
+
+    getHints() {
+        if (this.draggedChipController) {
+            const hintsViews = [];
+            const hintsController = this.getValidMovement();
+            for (const hintController of hintsController) {
+                hintsViews.push(hintController.getSquareView());
+            }
+            return hintsViews;
+        }
+        return [];
     }
 
     initializeSquareControllers() {
@@ -79,7 +90,6 @@ export default class BoardController {
             if (squareController.isMouseOver(mouse.x, mouse.y) && !squareStatus.isEmpty) {
                 if (squareController.startDrag(mouse.x, mouse.y)) {
                     // Actualizar estado en boardModel
-                    this.selectedChipController = squareController;
                     this.draggedChipController = squareController;
                     this.boardView.setCursorStyle('grabbing');
                     return;
@@ -105,8 +115,8 @@ export default class BoardController {
             const isHovered = squareController.isMouseOver(mouse.x, mouse.y);
             squareController.updateHover(isHovered);
         }
-
-        this.boardView.drawBoard(this.draggedChipController?.getSquareView());
+        
+        this.boardView.drawBoard(this.draggedChipController?.getSquareView(), this.getHints());
     }
 
     handleMouseUp(event) {
@@ -152,6 +162,13 @@ export default class BoardController {
             }
         } else {
             this.cancelDrag();
+            this.boardView.drawBoard(null);
+            
+            // Después de cancelar el drag, verificar si perdió
+            if (this.checkLose()) {
+                console.log("GAME OVER - Sin movimientos válidos después de cancelar drag");
+                this.boardView.drawGameResult(-1);
+            }
         }
         
         // Limpiar estado de drag & hover en las fichas
@@ -160,9 +177,19 @@ export default class BoardController {
     }
 
     validMovement(targetChipController) {
+        // Verificar si el targetChipController está en los válidos
+        for (const vt of this.getValidMovement()) {
+            if (vt === targetChipController) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    getValidMovement() {
         const validTargetsControllers = [];
-        const posiblesTargets = this.selectedChipController.getPosibleMoves();
-        const posiblesEats = this.selectedChipController.getPosibleChipEats();
+        const posiblesTargets = this.draggedChipController.getPosibleMoves();
+        const posiblesEats = this.draggedChipController.getPosibleChipEats();
 
         // Verificar cada posible target
         for (let i = 0; i < 4; i++) {
@@ -177,18 +204,12 @@ export default class BoardController {
             }
         }
 
-        // Verificar si el targetChipController está en los válidos
-        for (const vt of validTargetsControllers) {
-            if (vt === targetChipController) {
-                return true;
-            }
-        }
-        return false;
+        return validTargetsControllers;
     }
 
     executeMove(targetChipController) {
         // Obtengo la ficha a comer
-        const posibleMoves = this.selectedChipController.getPosibleMoves();
+        const posibleMoves = this.draggedChipController.getPosibleMoves();
         let eatIndex = -1;
         const targetChipId = targetChipController.getId();
         for (let i = 0; i < posibleMoves.length; i++) {
@@ -196,11 +217,11 @@ export default class BoardController {
                 eatIndex = i;
             }
         }
-        const eatChipId = this.selectedChipController.getIdChipToEatsByIndex(eatIndex);
+        const eatChipId = this.draggedChipController.getIdChipToEatsByIndex(eatIndex);
         const eatChip = this.squareControllers[eatChipId];
 
         // Actualizo los estados de las fichas
-        this.selectedChipController.setEmpty();
+        this.draggedChipController.setEmpty();
         eatChip.setEmpty();
         targetChipController.setOccupied();
 
@@ -277,7 +298,6 @@ export default class BoardController {
         // Limpiar estado de drag & hover en las fichas
         this.draggedChipController.endDrag();
         this.draggedChipController = null;
-        this.selectedChipController = null;
     }
 
     cancelDrag() {

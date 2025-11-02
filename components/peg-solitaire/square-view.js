@@ -9,6 +9,11 @@ export default class SquareView {
         this.radius = 30;
         this.image = new Image();
         this.image.src = './assets/chip.png';
+        
+        // Propiedades para animación de hint
+        this.hintAnimationProgress = 0; // Progreso de la animación (0 a 1)
+        this.hintAnimationDirection = 1; // 1 para crecer, -1 para decrecer
+        this.hintAnimationSpeed = 0.02; // Velocidad de la animación
     }
     
     getRadius() {
@@ -120,5 +125,50 @@ export default class SquareView {
         
         // Restaurar radius original
         this.radius = 30;
+    }
+
+    updateHintAnimation() {
+        // Actualizar progreso de la animación
+        this.hintAnimationProgress += this.hintAnimationSpeed * this.hintAnimationDirection;
+        
+        // Cambiar dirección cuando llegue a los límites
+        if (this.hintAnimationProgress >= 1) {
+            this.hintAnimationProgress = 1;
+            this.hintAnimationDirection = -1;
+        } else if (this.hintAnimationProgress <= 0) {
+            this.hintAnimationProgress = 0;
+            this.hintAnimationDirection = 1;
+        }
+    }
+
+    drawHint() {
+        const posSquare = this.squareController.getSquareStatus().pos;
+        console.log("Drawing hint at:", posSquare);
+        
+        // Actualizar animación
+        this.updateHintAnimation();
+        
+        // Calcular radio actual basado en el progreso de animación
+        const minRadius = 5; // Radio mínimo desde el centro
+        const maxRadius = this.radius + 10; // Radio máximo (borde del hint)
+        const currentRadius = minRadius + (maxRadius - minRadius) * this.hintAnimationProgress;
+        
+        // Calcular opacidad inversa (más opaco cuando es pequeño, más transparente cuando es grande)
+        const opacity = 0.7 - (this.hintAnimationProgress * 0.4);
+        
+        // Dibujar círculo animado
+        this.ctx.beginPath();
+        this.ctx.arc(posSquare.x, posSquare.y, currentRadius, 0, Math.PI * 2);
+        
+        // Aplicar relleno con opacidad variable
+        this.ctx.fillStyle = `rgba(126, 211, 33, ${opacity})`;
+        this.ctx.fill();
+        
+        // Aplicar borde
+        this.ctx.strokeStyle = `rgba(126, 211, 33, ${opacity + 0.2})`;
+        this.ctx.lineWidth = 3;
+        this.ctx.stroke();
+        
+        this.ctx.closePath();
     }
 }

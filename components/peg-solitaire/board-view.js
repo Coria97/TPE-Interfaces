@@ -15,7 +15,7 @@ export default class BoardView {
         this.canvas.addEventListener('mouseup', onMouseUp);
     }
 
-    drawBoard(draggedSquareView = null) {
+    drawBoard(draggedSquareView = null, hintSquaresViews = []) {
         console.log("Drawing board...");
         try {
             // Fondo
@@ -37,8 +37,15 @@ export default class BoardView {
                 square.draw();
             });
 
-             // Dibujar la ficha arrastrada al final (encima de todo)
+             
             if (draggedSquareView) {
+                // Dibujar sugerencias
+                console.log("Drawing hint squares:", hintSquaresViews.length);
+                hintSquaresViews.forEach(hintSquare => {
+                    hintSquare.drawHint();
+                });
+                
+                // Dibujar la ficha arrastrada al final
                 draggedSquareView.draw();
             }
             console.log("Finished drawing board.");
