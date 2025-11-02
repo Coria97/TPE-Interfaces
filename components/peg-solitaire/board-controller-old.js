@@ -1,7 +1,6 @@
 import BoardView from './board-view.js';
 import BoardModel from './board-model.js';
 import SquareController from './square-controller.js';
-import UIManager from './ui-manager.js';
 
 export default class BoardController {
     constructor(root) {
@@ -11,12 +10,6 @@ export default class BoardController {
         this.boardModel = new BoardModel();
         this.boardView = new BoardView(root);
         
-        // Inicializar UI Manager
-        this.uiManager = new UIManager(
-            this.boardView.canvas,
-            this.boardView.ctx
-        );
-        
         // Inicializar controladores de casillas
         this.squareControllers = [];
         this.initializeSquareControllers();
@@ -24,6 +17,7 @@ export default class BoardController {
         this.boardView.setSquareViews(squaresView);
 
         // Atributos para manejar selección y arrastre
+        this.selectedChipController = null; // Ficha seleccionada
         this.draggedChipController = null;  // Ficha que se está arrastrando
 
         // Handleo de eventos
@@ -32,13 +26,10 @@ export default class BoardController {
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.setupEventListeners();
 
-        // Game loop para animaciones
-        this.gameLoop = this.gameLoop.bind(this);
-        this.startGameLoop();
-
         // Dibujo inicial del tablero
         console.log("Call to drawBoard from BoardController");
-        this.updateUI();
+
+        this.boardView.drawBoard(this.draggedChipController?.getSquareView());
     }
 
     setupEventListeners() {
@@ -48,18 +39,6 @@ export default class BoardController {
             this.handleMouseMove,
             this.handleMouseUp
         );
-    }
-
-    getHints() {
-        if (this.draggedChipController) {
-            const hintsViews = [];
-            const hintsController = this.getValidMovement();
-            for (const hintController of hintsController) {
-                hintsViews.push(hintController.getSquareView());
-            }
-            return hintsViews;
-        }
-        return [];
     }
 
     initializeSquareControllers() {
@@ -88,89 +67,9 @@ export default class BoardController {
         return squaresView;
     }
 
-    startGameLoop() {
-        this.gameLoop();
-    }
-
-    gameLoop() {
-        // Actualizar animaciones de UI
-        this.uiManager.updateAnimation();
-        
-        // Redibujar
-        this.render();
-        
-        // Continuar loop
-        requestAnimationFrame(this.gameLoop);
-    }
-
-    render() {
-        // Dibujar tablero normalmente
-        this.boardView.drawBoard(this.draggedChipController?.getSquareView());
-        
-        // Dibujar UI encima
-        if (this.uiManager.showVictoryModal) {
-            this.uiManager.drawVictoryModal();
-        } else if (this.uiManager.showDefeatModal) {
-            this.uiManager.drawDefeatModal();
-        } else {
-            this.uiManager.drawHUD();
-        }
-    }
-
-    updateUI() {
-        const chipsRemaining = this.boardModel.getTotalChips() - this.boardModel.getTotalChipsEaten();
-        const moveCount = this.boardModel.getTotalChipsEaten();
-        this.uiManager.updateGameState(chipsRemaining, moveCount);
-    }
-
-    resetGame() {
-        console.log("Resetting game...");
-        
-        // Reiniciar modelo
-        this.boardModel = new BoardModel();
-        
-        // Reiniciar controladores de casillas
-        this.squareControllers = [];
-        this.initializeSquareControllers();
-        
-        const squaresView = this.getSquaresView();
-        this.boardView.setSquareViews(squaresView);
-        
-        // Limpiar estado de drag
-        this.selectedChipController = null;
-        this.draggedChipController = null;
-        
-        // Limpiar UI
-        this.uiManager.clearModals();
-        
-        // Actualizar UI y redibujar
-        this.updateUI();
-        
-        console.log("Game reset complete");
-    }
-
     handleMouseDown(event) {
         // Obtener posición del mouse al hacer click
         const mouse = this.boardView.getMousePos(event);
-
-        // Verificar clicks en UI primero (modales)
-        if (this.uiManager.showVictoryModal || this.uiManager.showDefeatModal) {
-            const action = this.uiManager.checkButtonClick(mouse.x, mouse.y);
-            if (action === 'restart') {
-                this.resetGame();
-                return;
-            } else if (action === 'exit') {
-                console.log('Salir del juego');
-                // Aquí podrías navegar a otra página o cerrar
-                return;
-            }
-        }
-        
-        // Verificar botón de reset
-        if (this.uiManager.checkResetButton(mouse.x, mouse.y)) {
-            this.resetGame();
-            return;
-        }
 
         // Buscar dentro del square clickeado la ficha
         for (const squareController of this.squareControllers) {
@@ -180,6 +79,7 @@ export default class BoardController {
             if (squareController.isMouseOver(mouse.x, mouse.y) && !squareStatus.isEmpty) {
                 if (squareController.startDrag(mouse.x, mouse.y)) {
                     // Actualizar estado en boardModel
+                    this.selectedChipController = squareController;
                     this.draggedChipController = squareController;
                     this.boardView.setCursorStyle('grabbing');
                     return;
@@ -205,8 +105,8 @@ export default class BoardController {
             const isHovered = squareController.isMouseOver(mouse.x, mouse.y);
             squareController.updateHover(isHovered);
         }
-        
-        this.boardView.drawBoard(this.draggedChipController?.getSquareView(), this.getHints());
+
+        this.boardView.drawBoard(this.draggedChipController?.getSquareView());
     }
 
     handleMouseUp(event) {
@@ -240,31 +140,18 @@ export default class BoardController {
         // Chequear si el movimiento es válido y lo hace
         if (targetChip && this.validMovement(targetChip)) {
             const result = this.executeMove(targetChip);
-            
-            // Actualizar UI después del movimiento
-            this.updateUI();
-            
-            // Verificar resultado del juego
+            // Ver que hacer con el result:  0 sigue jugando, -1 pierde, 1 gana
             if (result === -1) {
                 console.log("GAME OVER - Derrota detectada");
-                setTimeout(() => {
-                    this.uiManager.drawDefeatModal();
-                }, 500);
+                this.boardView.drawGameResult(-1);
             } else if (result === 1) {
                 console.log("GAME WON - Victoria detectada");
-                setTimeout(() => {
-                    this.uiManager.drawVictoryModal();
-                }, 500);
+                this.boardView.drawGameResult(1);
+            } else {
+                this.boardView.drawBoard(this.draggedChipController?.getSquareView());
             }
         } else {
             this.cancelDrag();
-            this.boardView.drawBoard(null);
-            
-            // Después de cancelar el drag, verificar si perdió
-            if (this.checkLose()) {
-                console.log("GAME OVER - Sin movimientos válidos después de cancelar drag");
-                this.boardView.drawGameResult(-1);
-            }
         }
         
         // Limpiar estado de drag & hover en las fichas
@@ -273,19 +160,9 @@ export default class BoardController {
     }
 
     validMovement(targetChipController) {
-        // Verificar si el targetChipController está en los válidos
-        for (const vt of this.getValidMovement()) {
-            if (vt === targetChipController) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    getValidMovement() {
         const validTargetsControllers = [];
-        const posiblesTargets = this.draggedChipController.getPosibleMoves();
-        const posiblesEats = this.draggedChipController.getPosibleChipEats();
+        const posiblesTargets = this.selectedChipController.getPosibleMoves();
+        const posiblesEats = this.selectedChipController.getPosibleChipEats();
 
         // Verificar cada posible target
         for (let i = 0; i < 4; i++) {
@@ -300,12 +177,18 @@ export default class BoardController {
             }
         }
 
-        return validTargetsControllers;
+        // Verificar si el targetChipController está en los válidos
+        for (const vt of validTargetsControllers) {
+            if (vt === targetChipController) {
+                return true;
+            }
+        }
+        return false;
     }
 
     executeMove(targetChipController) {
         // Obtengo la ficha a comer
-        const posibleMoves = this.draggedChipController.getPosibleMoves();
+        const posibleMoves = this.selectedChipController.getPosibleMoves();
         let eatIndex = -1;
         const targetChipId = targetChipController.getId();
         for (let i = 0; i < posibleMoves.length; i++) {
@@ -313,11 +196,11 @@ export default class BoardController {
                 eatIndex = i;
             }
         }
-        const eatChipId = this.draggedChipController.getIdChipToEatsByIndex(eatIndex);
+        const eatChipId = this.selectedChipController.getIdChipToEatsByIndex(eatIndex);
         const eatChip = this.squareControllers[eatChipId];
 
         // Actualizo los estados de las fichas
-        this.draggedChipController.setEmpty();
+        this.selectedChipController.setEmpty();
         eatChip.setEmpty();
         targetChipController.setOccupied();
 
@@ -353,7 +236,7 @@ export default class BoardController {
                     
                     const targetSquareController = this.squareControllers[targetId];
                     const eatSquareController = this.squareControllers[eatId];
-                    
+                    console.log("Verifying move from square", squareController.getId(), "to target", targetId, "eating", eatId);
                     if (this.verifyMove(targetSquareController, eatSquareController)) {
                         console.log("Valid move found! Game continues.");
                         return false; // Hay un movimiento válido
@@ -380,6 +263,8 @@ export default class BoardController {
         }
         return false;
     }
+    
+    
 
     checkVictory() {
         if (this.boardModel.getTotalChipsEaten() === this.boardModel.getTotalChips() - 1) {
@@ -392,6 +277,7 @@ export default class BoardController {
         // Limpiar estado de drag & hover en las fichas
         this.draggedChipController.endDrag();
         this.draggedChipController = null;
+        this.selectedChipController = null;
     }
 
     cancelDrag() {
