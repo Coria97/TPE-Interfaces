@@ -5,7 +5,6 @@ import UIManager from './ui-manager.js';
 
 export default class BoardController {
     constructor(root) {
-        console.log("BoardController initialized");
         // Inicializar la lógica y la vista del tablero
         this.root = root;
         this.boardModel = new BoardModel();
@@ -37,7 +36,6 @@ export default class BoardController {
         this.startGameLoop();
 
         // Dibujo inicial del tablero
-        console.log("Call to drawBoard from BoardController");
         this.updateUI();
     }
 
@@ -123,9 +121,7 @@ export default class BoardController {
         this.uiManager.updateGameState(chipsRemaining, moveCount);
     }
 
-    resetGame() {
-        console.log("Resetting game...");
-        
+    resetGame() {        
         // Reiniciar modelo
         this.boardModel = new BoardModel();
         
@@ -145,7 +141,6 @@ export default class BoardController {
         // Actualizar UI y redibujar
         this.updateUI();
         
-        console.log("Game reset complete");
     }
 
     handleMouseDown(event) {
@@ -159,7 +154,6 @@ export default class BoardController {
                 this.resetGame();
                 return;
             } else if (action === 'exit') {
-                console.log('Salir del juego');
                 // Aquí podrías navegar a otra página o cerrar
                 return;
             }
@@ -245,12 +239,10 @@ export default class BoardController {
             
             // Verificar resultado del juego
             if (result === -1) {
-                console.log("GAME OVER - Derrota detectada");
                 setTimeout(() => {
                     this.uiManager.drawDefeatModal();
                 }, 500);
             } else if (result === 1) {
-                console.log("GAME WON - Victoria detectada");
                 setTimeout(() => {
                     this.uiManager.drawVictoryModal();
                 }, 500);
@@ -261,7 +253,6 @@ export default class BoardController {
             
             // Después de cancelar el drag, verificar si perdió
             if (this.checkLose()) {
-                console.log("GAME OVER - Sin movimientos válidos después de cancelar drag");
                 this.boardView.drawGameResult(-1);
             }
         }
@@ -327,20 +318,16 @@ export default class BoardController {
 
         this.boardModel.incrementChipsEaten();
         
-        console.log("Checking game state after move...");
         if (this.checkLose()) {
-            console.log("Game lost");
             return -1;
         }
         if (this.checkVictory()) {
-            console.log("Game won");
             return 1;
         }
         return 0; // Juego sigue
     }
 
     checkLose() {
-        console.log("Checking for lose condition...");
         for (const squareController of this.squareControllers) {
             const squarePosibleMovesIndexes = squareController.getPosibleMoves();
             const squarePosibleChipEatsIndexes = squareController.getPosibleChipEats();
@@ -354,13 +341,11 @@ export default class BoardController {
                     const eatSquareController = this.squareControllers[eatId];
                     
                     if (this.verifyMove(targetSquareController, eatSquareController)) {
-                        console.log("Valid move found! Game continues.");
                         return false; // Hay un movimiento válido
                     }
                 }
             }
         }
-        console.log("No valid moves found. Game lost!");
         return true;
     }
 

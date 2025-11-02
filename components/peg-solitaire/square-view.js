@@ -13,7 +13,7 @@ export default class SquareView {
         // Propiedades para animación de hint
         this.hintAnimationProgress = 0; // Progreso de la animación (0 a 1)
         this.hintAnimationDirection = 1; // 1 para crecer, -1 para decrecer
-        this.hintAnimationSpeed = 0.02; // Velocidad de la animación
+        this.hintAnimationSpeed = 0.01; // Velocidad de la animación
     }
     
     getRadius() {
@@ -21,7 +21,6 @@ export default class SquareView {
     }
 
     draw() {
-        console.log("Drawing square:", this.squareController.getId());
         // Get square state
         const squareStatus = this.squareController.getSquareStatus();
 
@@ -41,11 +40,9 @@ export default class SquareView {
                 this.drawEmptySquare(squareStatus.pos);
             }
         }
-        console.log("Finished drawing square:", this.squareController.getId());
     }
 
     drawEmptySquare(posSquare) {
-        console.log("Drawing empty square at:", posSquare);
         // Draw hole circle
         this.ctx.beginPath();
         this.ctx.arc(posSquare.x, posSquare.y, this.radius, 0, Math.PI * 2);
@@ -67,7 +64,6 @@ export default class SquareView {
     }
 
     drawOccupiedSquare(posSquare) {
-        console.log("Drawing occupied square at:", posSquare);
         if (!this.image.complete) {
             this.image.onload = () => {
                 this.draw();
@@ -143,7 +139,6 @@ export default class SquareView {
 
     drawHint() {
         const posSquare = this.squareController.getSquareStatus().pos;
-        console.log("Drawing hint at:", posSquare);
         
         // Actualizar animación
         this.updateHintAnimation();

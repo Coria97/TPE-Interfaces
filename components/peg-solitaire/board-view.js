@@ -16,7 +16,6 @@ export default class BoardView {
     }
 
     drawBoard(draggedSquareView = null, hintSquaresViews = []) {
-        console.log("Drawing board...");
         try {
             // Fondo
             this.ctx.fillStyle = '#0a0e13';
@@ -40,15 +39,13 @@ export default class BoardView {
              
             if (draggedSquareView) {
                 // Dibujar sugerencias
-                console.log("Drawing hint squares:", hintSquaresViews.length);
                 hintSquaresViews.forEach(hintSquare => {
                     hintSquare.drawHint();
                 });
-                
+
                 // Dibujar la ficha arrastrada al final
                 draggedSquareView.draw();
             }
-            console.log("Finished drawing board.");
         } catch (error) {
             console.error("Error drawing board:", error);
         }
