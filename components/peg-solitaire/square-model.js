@@ -82,11 +82,11 @@ export default class SquareModel {
         const moveDown = this.id + 14;
 
         // Izquierda
-        if (moveLeft >= 0) {
+        if (moveLeft >= 0 && ![21, 28].includes(this.id)) {
             this.possibleMoves.push(moveLeft);
         }
         // Derecha
-        if (moveRight < 49) {
+        if (moveRight < 49 && ![20, 27].includes(this.id)) {
             this.possibleMoves.push(moveRight);
         }
         // Arriba
