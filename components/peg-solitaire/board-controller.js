@@ -4,11 +4,13 @@ import SquareController from './square-controller.js';
 import UIManager from './ui-manager.js';
 
 export default class BoardController {
-    constructor(root) {
+    constructor(root, chipType = 1, onExitCallback) {
         // Inicializar la lógica y la vista del tablero
         this.root = root;
+        this.chipType = chipType; // Guardar el tipo de ficha
         this.boardModel = new BoardModel();
         this.boardView = new BoardView(root);
+        this.onExitCallback = onExitCallback;
         
         // Inicializar UI Manager
         this.uiManager = new UIManager(
@@ -18,7 +20,7 @@ export default class BoardController {
         
         // Inicializar controladores de casillas
         this.squareControllers = [];
-        this.initializeSquareControllers();
+        this.initializeSquareControllers(this.chipType);
         const squaresView = this.getSquaresView();
         this.boardView.setSquareViews(squaresView);
 
@@ -60,7 +62,7 @@ export default class BoardController {
         return [];
     }
 
-    initializeSquareControllers() {
+    initializeSquareControllers(chipType) {
         const totalSquares = this.boardModel.getTotalSquares();
         for (let i = 0; i < totalSquares; i++) {
             // Calculamos atributos de la casilla
@@ -69,8 +71,8 @@ export default class BoardController {
             const posX = (i % 7) * 100; 
             const posY = Math.floor(i / 7) * 100;
             
-            // Inicializamos el controlador de la casilla
-            const squareController = new SquareController(this.root)
+            // Inicializamos el controlador de la casilla con el tipo de ficha
+            const squareController = new SquareController(this.root, chipType);
             squareController.initSquareModel(i, isAvailable, isEmpty, posX, posY);
             
             // Guardamos la referencia al controlador
@@ -98,7 +100,7 @@ export default class BoardController {
         this.render();
         
         // Continuar loop
-        requestAnimationFrame(this.gameLoop);
+        this.gameLoopId = requestAnimationFrame(this.gameLoop);
     }
 
     render() {
@@ -127,7 +129,7 @@ export default class BoardController {
         
         // Reiniciar controladores de casillas
         this.squareControllers = [];
-        this.initializeSquareControllers();
+        this.initializeSquareControllers(this.chipType);
         
         const squaresView = this.getSquaresView();
         this.boardView.setSquareViews(squaresView);
@@ -140,7 +142,36 @@ export default class BoardController {
         
         // Actualizar UI y redibujar
         this.updateUI();
+    }
+
+    destroy() {
+        // Cancelar game loop
+        if (this.gameLoopId) {
+            cancelAnimationFrame(this.gameLoopId);
+            this.gameLoopId = null;
+        }
         
+        // Remover event listeners
+        if (this.boardView) {
+            this.boardView.removeEventListeners();
+        }
+        
+        // Limpiar referencias
+        this.draggedChipController = null;
+        this.squareControllers = [];
+        this.boardModel = null;
+        this.boardView = null;
+        this.uiManager = null;
+    }
+
+    exitToMenu() {
+        // Destruir el juego completamente
+        this.destroy();
+        
+        // Llamar callback para volver al menú
+        if (this.onExitCallback) {
+            this.onExitCallback();
+        }
     }
 
     handleMouseDown(event) {
@@ -152,11 +183,10 @@ export default class BoardController {
             const action = this.uiManager.checkButtonClick(mouse.x, mouse.y);
             if (action === 'restart') {
                 this.resetGame();
-                return;
             } else if (action === 'exit') {
-                // Aquí podrías navegar a otra página o cerrar
-                return;
+                this.exitToMenu();
             }
+            return;
         }
         
         // Verificar botón de reset

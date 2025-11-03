@@ -2,9 +2,9 @@ import SquareModel from './square-model.js';
 import SquareView from './square-view.js';
 
 export default class SquareController {
-    constructor(root) {
+    constructor(root, imageId) {
         this.squareModel = null;
-        this.squareView = new SquareView(this, root);
+        this.squareView = new SquareView(this, root, imageId);
     }
 
     initSquareModel(id, isAvailable, isEmpty, posX, posY){
@@ -18,7 +18,7 @@ export default class SquareController {
             posY
         );
     }
-    
+
     getId() {
         return this.squareModel.getId();
     }

@@ -1,15 +1,15 @@
 import SquareLogic from './square-model.js';
 
 export default class SquareView {
-    constructor(squareController, root) {
+    constructor(squareController, root, imageId) {
         this.squareController = squareController;
         this.root = root;
         this.canvas = root.querySelector('#pegSolitaireCanvas');
         this.ctx = this.canvas.getContext('2d');
         this.radius = 30;
+        this.imageId = imageId;
         this.image = new Image();
-        this.image.src = './assets/chip.png';
-        
+        this.image.src = this.getImageSource();
         // Propiedades para animación de hint
         this.hintAnimationProgress = 0; // Progreso de la animación (0 a 1)
         this.hintAnimationDirection = 1; // 1 para crecer, -1 para decrecer
@@ -18,6 +18,24 @@ export default class SquareView {
     
     getRadius() {
         return this.radius;
+    }
+
+    setImageId(imageId) {
+        this.imageId = imageId;
+        this.image.src = this.getImageSource();
+    }
+
+    getImageSource() {
+        switch (this.imageId) {
+            case 1:
+                return './assets/chip-1.jpeg';
+            case 2:
+                return './assets/chip-2.png';
+            case 3:
+                return './assets/chip-3.jpeg';
+            default:
+                return './assets/chip-default.png';
+        }
     }
 
     draw() {
@@ -78,7 +96,6 @@ export default class SquareView {
             const scaleFactor = 1 + hoverScale * 0.1;
             chipRadius = this.radius * scaleFactor;
         } else {
-            
             chipRadius = this.radius;
         }
 

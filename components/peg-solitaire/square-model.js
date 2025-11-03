@@ -1,5 +1,5 @@
 export default class SquareModel {
-    constructor(id, height, width, isAvailable, isEmpty, posX, posY) {
+    constructor(id, height, width, isAvailable, isEmpty, posX, posY, imageId) {
         this.id = id;
         this.height = height; // Altura del square
         this.width = width; // Ancho del square
@@ -20,7 +20,7 @@ export default class SquareModel {
         this.calculatePossibleMoves();
         this.calculatePossibleChipEats();
     }
-    
+
     getPosibleMoves() {
         return this.possibleMoves;
     }
@@ -82,11 +82,11 @@ export default class SquareModel {
         const moveDown = this.id + 14;
 
         // Izquierda
-        if (moveLeft >= 0 && ![21, 28].includes(this.id)) {
+        if (moveLeft >= 0 && ![21, 22, 28, 29].includes(this.id)) {
             this.possibleMoves.push(moveLeft);
         }
         // Derecha
-        if (moveRight < 49 && ![20, 27].includes(this.id)) {
+        if (moveRight < 49 && ![19, 20, 26, 27].includes(this.id)) {
             this.possibleMoves.push(moveRight);
         }
         // Arriba

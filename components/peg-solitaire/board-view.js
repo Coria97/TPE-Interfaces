@@ -15,6 +15,24 @@ export default class BoardView {
         this.canvas.addEventListener('mouseup', onMouseUp);
     }
 
+    removeEventListeners() {
+        // Remover listeners si existen
+        if (this.mouseDownHandler) {
+            this.canvas.removeEventListener('mousedown', this.mouseDownHandler);
+        }
+        if (this.mouseMoveHandler) {
+            this.canvas.removeEventListener('mousemove', this.mouseMoveHandler);
+        }
+        if (this.mouseUpHandler) {
+            this.canvas.removeEventListener('mouseup', this.mouseUpHandler);
+        }
+        
+        // Limpiar referencias
+        this.mouseDownHandler = null;
+        this.mouseMoveHandler = null;
+        this.mouseUpHandler = null;
+    }
+
     drawBoard(draggedSquareView = null, hintSquaresViews = []) {
         try {
             // Fondo

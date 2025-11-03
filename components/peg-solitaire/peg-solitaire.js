@@ -1,4 +1,5 @@
 import BoardController from './board-controller.js';
+import MenuView from './menu-view.js';
 
 class RushGamePegSolitaire extends HTMLElement {
   constructor() {
@@ -26,10 +27,45 @@ class RushGamePegSolitaire extends HTMLElement {
       const content = template.content.cloneNode(true);
       this.shadowRoot.appendChild(content);
 
-      this.game = new BoardController(this.shadowRoot);
+      // Mostrar menú primero
+      this.showMenu();
     } catch(err) {
       console.error('Error initializing Peg Solitaire:', err);
     }
+  }
+
+  showMenu() {
+    // Limpiar juego anterior si existe
+    if (this.game) {
+      this.game.destroy();
+      this.game = null;
+    }
+
+    // Limpiar menú anterior si existe
+    if (this.menu) {
+      this.menu.removeEventListeners();
+      this.menu = null;
+    }
+
+    // Crear nuevo menú
+    this.menu = new MenuView(this.shadowRoot, (selectedChipType) => {
+      this.startGame(selectedChipType);
+    });
+  }
+
+  startGame(chipType) {
+    console.log('Starting game with chip type:', chipType);
+    
+    // Limpiar menú
+    if (this.menu) {
+      this.menu.removeEventListeners();
+      this.menu = null;
+    }
+    
+    // Crear juego
+    this.game = new BoardController(this.shadowRoot, chipType, () => {
+      this.showMenu();
+    });
   }
 }
 
