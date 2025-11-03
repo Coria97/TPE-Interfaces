@@ -13,6 +13,9 @@ export default class UIManager {
         this.showDefeatModal = false;
         this.chipsRemaining = 32;
         this.moveCount = 0;
+        this.timeRemaining = 300; // 5 minutos
+        this.timerInterval = null;
+        this.onTimeUp = null; // Callback cuando se acaba el tiempo
         
         // Colores del theme
         this.colors = {
@@ -51,7 +54,100 @@ export default class UIManager {
     drawHUD() {
         this.drawChipCounter();
         this.drawMoveCounter();
+        this.drawTimer();
         this.drawResetButton();
+    }
+
+    /**
+     * Timer (abajo izquierda)
+     */
+    drawTimer() {
+        const size = 50;
+        const margin = 20;
+        const x = margin;
+        const y = this.canvasSize - size - margin;
+
+        // Guardar info para detección de clicks
+        this.timerButton = { x, y, width: size, height: size };
+
+        this.ctx.save();
+
+        // Determinar si queda poco tiempo
+        const timeWarning = this.timeRemaining <= 30;
+
+        // Fondo del botón
+        this.ctx.fillStyle = this.colors.background;
+        this.ctx.fillRect(x, y, size, size);
+
+        // Borde (rojo si queda poco tiempo)
+        this.ctx.strokeStyle = timeWarning ? this.colors.error : this.colors.secondary;
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(x, y, size, size);
+
+        // Icono de reloj
+        const centerX = x + size / 2;
+        const centerY = y + size / 2;
+        const radius = 14;
+
+        this.ctx.strokeStyle = timeWarning ? this.colors.error : this.colors.secondary;
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        this.ctx.stroke();
+
+        // Manecillas del reloj
+        this.ctx.beginPath();
+        this.ctx.moveTo(centerX, centerY);
+        this.ctx.lineTo(centerX, centerY - 8);
+        this.ctx.moveTo(centerX, centerY);
+        this.ctx.lineTo(centerX + 6, centerY);
+        this.ctx.stroke();
+        // Texto del tiempo (abajo del botón, más grande)
+        const minutes = Math.floor(this.timeRemaining / 60);
+        const seconds = this.timeRemaining % 60;
+        const timeText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        this.ctx.fillStyle = timeWarning ? this.colors.error : this.colors.textPrimary;
+        this.ctx.font = 'bold 20px Orbitron, sans-serif'; // No lo esta tomando
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'top';
+        this.ctx.fillText(timeText, centerX, y + size + 8);
+
+        this.ctx.restore();
+    }
+
+    /**
+     * Inicia el timer
+     */
+    startTimer(maxTime = 300) {
+        this.timeRemaining = maxTime;
+        this.timerInterval = setInterval(() => {
+            if (this.timeRemaining > 0) {
+                this.timeRemaining--;
+            } else {
+                this.stopTimer();
+                // Callback de tiempo agotado
+                if (this.onTimeUp) this.onTimeUp();
+            }
+        }, 1000);
+    }
+
+    /**
+     * Detiene el timer
+     */
+    stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+    }
+
+    /**
+     * Resetea el timer
+     */
+    resetTimer(maxTime = 300) {
+        this.stopTimer();
+        this.startTimer(maxTime);
     }
 
     /**
@@ -196,6 +292,98 @@ export default class UIManager {
         this.ctx.stroke();
 
         this.ctx.restore();
+    }
+
+    /**
+     * Timer (abajo izquierda)
+     */
+    drawTimer() {
+        const size = 50;
+        const margin = 20;
+        const x = margin;
+        const y = this.canvasSize - size - margin;
+
+        // Guardar info para detección de clicks
+        this.timerButton = { x, y, width: size, height: size };
+
+        this.ctx.save();
+
+        // Determinar si queda poco tiempo
+        const timeWarning = this.timeRemaining <= 30;
+
+        // Fondo del botón
+        this.ctx.fillStyle = this.colors.background;
+        this.ctx.fillRect(x, y, size, size);
+
+        // Borde (rojo si queda poco tiempo)
+        this.ctx.strokeStyle = timeWarning ? this.colors.error : this.colors.secondary;
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(x, y, size, size);
+
+        // Icono de reloj
+        const centerX = x + size / 2;
+        const centerY = y + size / 2;
+        const radius = 14;
+
+        this.ctx.strokeStyle = timeWarning ? this.colors.error : this.colors.secondary;
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        this.ctx.stroke();
+
+        // Manecillas del reloj
+        this.ctx.beginPath();
+        this.ctx.moveTo(centerX, centerY);
+        this.ctx.lineTo(centerX, centerY - 8);
+        this.ctx.moveTo(centerX, centerY);
+        this.ctx.lineTo(centerX + 6, centerY);
+        this.ctx.stroke();
+
+        // Texto del tiempo (abajo del botón)
+        const minutes = Math.floor(this.timeRemaining / 60);
+        const seconds = this.timeRemaining % 60;
+        const timeText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+        this.ctx.fillStyle = timeWarning ? this.colors.error : this.colors.textSecondary;
+        this.ctx.font = '12px Arial, sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'top';
+        this.ctx.fillText(timeText, centerX, y + size + 5);
+
+        this.ctx.restore();
+    }
+
+    /**
+     * Inicia el timer
+     */
+    startTimer(maxTime = 300) {
+        this.timeRemaining = maxTime;
+        this.timerInterval = setInterval(() => {
+            if (this.timeRemaining > 0) {
+                this.timeRemaining--;
+            } else {
+                this.stopTimer();
+                if (this.onTimeUp) this.onTimeUp();
+            }
+        }, 1000);
+    }
+
+    /**
+     * Detiene el timer
+     */
+    stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+    }
+
+    /**
+     * Resetea el timer
+     */
+    resetTimer(maxTime = 300) {
+        this.stopTimer();
+        this.startTimer(maxTime);
     }
 
     /**
@@ -409,5 +597,12 @@ export default class UIManager {
     updateAnimation() {
         this.animationProgress += this.animationSpeed;
         if (this.animationProgress > 1) this.animationProgress = 0;
+    }
+
+    /**
+     * Limpieza al destruir
+     */
+    destroy() {
+        this.stopTimer();
     }
 }
