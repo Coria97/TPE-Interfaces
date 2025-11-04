@@ -161,29 +161,32 @@ export default class BoardController {
         }, 500);
     }
 
-    destroy() {
-        // Detener timer
-        this.uiManager.stopTimer();
+        destroy() {
+        // 1. PRIMERO detener timer
+        if (this.uiManager) {
+            this.uiManager.stopTimer();
+        }
         
-        // Cancelar game loop
+        // 2. SEGUNDO cancelar game loop
         if (this.gameLoopId) {
             cancelAnimationFrame(this.gameLoopId);
             this.gameLoopId = null;
         }
         
-        // Remover event listeners
-        if (this.boardView) {
-            this.boardView.removeEventListeners();
+        // 3. TERCERO remover event listeners ANTES de hacer null
+        if (this.canvas) {
+            this.canvas.removeEventListener('mousedown', this.handleMouseDown);
+            this.canvas.removeEventListener('mousemove', this.handleMouseMove);
+            this.canvas.removeEventListener('mouseup', this.handleMouseUp);
         }
         
-        // Limpiar referencias
+        // 4. AHORA SÍ limpiar referencias
         this.draggedChipController = null;
         this.squareControllers = [];
         this.boardModel = null;
         this.boardView = null;
         this.uiManager = null;
     }
-
     exitToMenu() {
         // Destruir el juego completamente
         this.destroy();
@@ -214,7 +217,11 @@ export default class BoardController {
             this.resetGame();
             return;
         }
-
+        // Verificar botón de menú
+        if (this.uiManager.checkMenuButton(mouse.x, mouse.y)) {
+            this.exitToMenu();
+            return;
+        }
         // Buscar dentro del square clickeado la ficha
         for (const squareController of this.squareControllers) {
             const squareStatus = squareController.getSquareStatus();
