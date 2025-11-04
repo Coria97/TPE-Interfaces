@@ -14,6 +14,7 @@ export default class BoardModel {
         this.totalChipsEaten = 0; // Fichas comidas
         // Casillas no disponibles del tablero (esquinas)
         this.unavailableSquares = [0, 1, 5, 6, 7, 8, 12, 13, 35, 36, 40, 41, 42, 43, 47, 48];
+        this.startOccupiedSquares = [2, 3, 4, 9, 10, 11, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 44, 45, 46];
     }
 
     getTotalSquares() {
@@ -22,6 +23,10 @@ export default class BoardModel {
 
     unavailableSquaresExists(id) {
         return this.unavailableSquares.includes(id);
+    }
+
+    startOccupiedSquaresExists(id) {
+        return this.startOccupiedSquares.includes(id);
     }
 
     incrementChipsEaten() {

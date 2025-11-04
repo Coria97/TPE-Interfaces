@@ -36,6 +36,11 @@ export default class BoardController {
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.setupEventListeners();
 
+        // Draw empty board
+        this.render()
+        // Llenar el tablero con animación
+        this.fillBoardWithAnimation();
+
         // Game loop para animaciones
         this.gameLoop = this.gameLoop.bind(this);
         this.startGameLoop();
@@ -55,6 +60,27 @@ export default class BoardController {
             this.handleMouseUp
         );
     }
+ 
+    fillBoardWithAnimation() {
+        let index = 0;
+        const fillNext = () => {
+            if (index < this.squareControllers.length) {
+                let timeOut;
+                if (this.boardModel.startOccupiedSquaresExists(index)) {
+                    this.squareControllers[index].setOccupied();
+                    this.render();
+                    timeOut = 200;
+
+                }
+                else {
+                    timeOut = 0;
+                }
+                index++;
+                setTimeout(fillNext, timeOut);
+            }
+        };
+        fillNext();
+    }
 
     getHints() {
         if (this.draggedChipController) {
@@ -73,7 +99,7 @@ export default class BoardController {
         for (let i = 0; i < totalSquares; i++) {
             // Calculamos atributos de la casilla
             const isAvailable = !this.boardModel.unavailableSquaresExists(i);
-            const isEmpty = isAvailable && i === 24; // Centro vacío
+            const isEmpty = true; // Inicialmente todas vacías
             const posX = (i % 7) * 100; 
             const posY = Math.floor(i / 7) * 100;
             
