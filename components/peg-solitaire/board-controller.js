@@ -11,7 +11,8 @@ export default class BoardController {
         this.boardModel = new BoardModel();
         this.boardView = new BoardView(root);
         this.onExitCallback = onExitCallback;
-        
+        this.fillBoardTimeoutId = null; // Añadir esto
+
         // Inicializar UI Manager
         this.uiManager = new UIManager(
             this.boardView.canvas,
@@ -35,9 +36,10 @@ export default class BoardController {
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.setupEventListeners();
+        
+        // Dibujar tablero vacio
+        this.render();
 
-        // Draw empty board
-        this.render()
         // Llenar el tablero con animación
         this.fillBoardWithAnimation();
 
@@ -62,21 +64,29 @@ export default class BoardController {
     }
  
     fillBoardWithAnimation() {
+        // Cancelar animación previa si existe
+        if (this.fillBoardTimeoutId) {
+            clearTimeout(this.fillBoardTimeoutId);
+            this.fillBoardTimeoutId = null;
+        }
+
         let index = 0;
         const fillNext = () => {
             if (index < this.squareControllers.length) {
-                let timeOut;
+                let timeOut = 300;
                 if (this.boardModel.startOccupiedSquaresExists(index)) {
                     this.squareControllers[index].setOccupied();
                     this.render();
                     timeOut = 200;
-
-                }
-                else {
-                    timeOut = 0;
+                } else {
+                    if (index > 0) {
+                        timeOut = 0;
+                    }
                 }
                 index++;
-                setTimeout(fillNext, timeOut);
+                this.fillBoardTimeoutId = setTimeout(fillNext, timeOut);
+            } else {
+                this.fillBoardTimeoutId = null; // Limpiar al finalizar
             }
         };
         fillNext();
@@ -155,17 +165,25 @@ export default class BoardController {
         this.uiManager.updateGameState(chipsRemaining, moveCount);
     }
 
-    resetGame() {        
+    resetGame() {   
+        // Primero cancela la animación de llenado si está en curso
+        if (this.fillBoardTimeoutId) {
+            clearTimeout(this.fillBoardTimeoutId);
+            this.fillBoardTimeoutId = null;
+        }
+
         // Reiniciar modelo
         this.boardModel = new BoardModel();
         
         // Reiniciar controladores de casillas
         this.squareControllers = [];
         this.initializeSquareControllers(this.chipType);
-        
+        this.render();
         const squaresView = this.getSquaresView();
         this.boardView.setSquareViews(squaresView);
         
+        this.fillBoardWithAnimation();
+
         // Limpiar estado de drag
         this.draggedChipController = null;
         
@@ -188,25 +206,31 @@ export default class BoardController {
     }
 
         destroy() {
-        // 1. PRIMERO detener timer
+        // 1. Cancelar animación de llenado
+        if (this.fillBoardTimeoutId) {
+            clearTimeout(this.fillBoardTimeoutId);
+            this.fillBoardTimeoutId = null;
+        }
+
+        // 2. Detener timer
         if (this.uiManager) {
             this.uiManager.stopTimer();
         }
         
-        // 2. SEGUNDO cancelar game loop
+        // 3. Cancelar game loop
         if (this.gameLoopId) {
             cancelAnimationFrame(this.gameLoopId);
             this.gameLoopId = null;
         }
         
-        // 3. TERCERO remover event listeners ANTES de hacer null
+        // 4. Remover event listeners
         if (this.canvas) {
             this.canvas.removeEventListener('mousedown', this.handleMouseDown);
             this.canvas.removeEventListener('mousemove', this.handleMouseMove);
             this.canvas.removeEventListener('mouseup', this.handleMouseUp);
         }
         
-        // 4. AHORA SÍ limpiar referencias
+        // 5. Limpiar referencias
         this.draggedChipController = null;
         this.squareControllers = [];
         this.boardModel = null;
