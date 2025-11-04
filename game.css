@@ -17,17 +17,16 @@
   box-sizing: border-box;
 }
 
-.game-layout {
-  display: flex;
-  gap: 32px;
-  align-items: stretch;
-  justify-content: center;
-  max-width: 1400px;
-  margin: 40px auto;
-  padding: 0 20px;
-  box-sizing: border-box;
+.game-layout{
+    display: flex;
+    gap: 150px;
+    align-items: stretch;
+    justify-content: flex-start;
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
 }
-
 .game-image-container {
   flex: 1;
   display: flex;

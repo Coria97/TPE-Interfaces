@@ -18,6 +18,9 @@ export default class BoardController {
             this.boardView.ctx
         );
         
+        // Configurar callback de tiempo agotado
+        this.uiManager.onTimeUp = () => this.handleTimeUp();
+        
         // Inicializar controladores de casillas
         this.squareControllers = [];
         this.initializeSquareControllers(this.chipType);
@@ -44,6 +47,9 @@ export default class BoardController {
 
         // Dibujo inicial del tablero
         this.updateUI();
+        
+        // Iniciar timer
+        this.uiManager.startTimer(300); // 5 minutos
     }
 
     setupEventListeners() {
@@ -163,14 +169,28 @@ export default class BoardController {
         // Limpiar estado de drag
         this.draggedChipController = null;
         
-        // Limpiar UI
+        // Limpiar UI y resetear timer
         this.uiManager.clearModals();
+        this.uiManager.resetTimer(300); // 5 minutos
         
         // Actualizar UI y redibujar
         this.updateUI();
     }
 
+    handleTimeUp() {
+        // Detener timer
+        this.uiManager.stopTimer();
+        
+        // Mostrar modal de tiempo agotado
+        setTimeout(() => {
+            this.uiManager.showDefeatModal = true;
+        }, 500);
+    }
+
     destroy() {
+        // Detener timer
+        this.uiManager.stopTimer();
+        
         // Cancelar game loop
         if (this.gameLoopId) {
             cancelAnimationFrame(this.gameLoopId);
@@ -295,10 +315,12 @@ export default class BoardController {
             
             // Verificar resultado del juego
             if (result === -1) {
+                this.uiManager.stopTimer();
                 setTimeout(() => {
                     this.uiManager.drawDefeatModal();
                 }, 500);
             } else if (result === 1) {
+                this.uiManager.stopTimer();
                 setTimeout(() => {
                     this.uiManager.drawVictoryModal();
                 }, 500);
