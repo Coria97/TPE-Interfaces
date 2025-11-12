@@ -55,7 +55,7 @@ export default class UIManager {
     this.drawChipCounter();
     this.drawMoveCounter();
     this.drawTimer();
-    this.drawMenuButton(); // <-- AGREGAR ESTA LÍNEA
+    this.drawMenuButton();
     this.drawResetButton();
 }
 
@@ -112,10 +112,8 @@ export default class UIManager {
     const seconds = this.timeRemaining % 60;
     const timeText = `${minutes}:${seconds.toString().padStart(2, "0")}`;
 
-    this.ctx.fillStyle = timeWarning
-      ? this.colors.error
-      : this.colors.textPrimary;
-    this.ctx.font = "bold 20px Orbitron, sans-serif"; // No lo esta tomando
+    this.ctx.fillStyle = timeWarning ? this.colors.error : this.colors.textPrimary;
+    this.ctx.font = "bold 20px Orbitron, sans-serif";
     this.ctx.textAlign = "center";
     this.ctx.textBaseline = "top";
     this.ctx.fillText(timeText, centerX, y + size + 8);
@@ -463,8 +461,7 @@ export default class UIManager {
     this.animationProgress += this.animationSpeed;
     if (this.animationProgress > 1) this.animationProgress = 0;
 
-    const glowIntensity =
-      0.3 + Math.sin(this.animationProgress * Math.PI * 2) * 0.2;
+    const glowIntensity = 0.3 + Math.sin(this.animationProgress * Math.PI * 2) * 0.2;
     this.ctx.strokeStyle = accentColor;
     this.ctx.lineWidth = 3;
     this.ctx.shadowBlur = 20;
@@ -502,8 +499,7 @@ export default class UIManager {
     const buttonWidth = 180;
     const buttonHeight = 50;
     const buttonSpacing = 20;
-    const totalButtonWidth =
-      buttonWidth * buttons.length + buttonSpacing * (buttons.length - 1);
+    const totalButtonWidth = buttonWidth * buttons.length + buttonSpacing * (buttons.length - 1);
     const startX = modalX + (modalWidth - totalButtonWidth) / 2;
     const buttonY = modalY + modalHeight - 80;
 
@@ -550,39 +546,6 @@ export default class UIManager {
     this.ctx.restore();
   }
 
-  /**
-   * Hint para movimientos válidos
-   */
-  drawMoveHint(x, y) {
-    const pulseScale =
-      1 + Math.sin(this.animationProgress * Math.PI * 4) * 0.15;
-    const radius = 35 * pulseScale;
-
-    this.ctx.save();
-
-    // Aro exterior brillante
-    this.ctx.beginPath();
-    this.ctx.arc(x, y, radius, 0, Math.PI * 2);
-    this.ctx.strokeStyle = this.colors.primary;
-    this.ctx.lineWidth = 3;
-    this.ctx.shadowBlur = 15;
-    this.ctx.shadowColor = this.colors.primary;
-    this.ctx.globalAlpha = 0.7;
-    this.ctx.stroke();
-
-    // Aro interior
-    this.ctx.beginPath();
-    this.ctx.arc(x, y, radius - 8, 0, Math.PI * 2);
-    this.ctx.strokeStyle = this.colors.primaryLight;
-    this.ctx.lineWidth = 2;
-    this.ctx.globalAlpha = 0.5;
-    this.ctx.stroke();
-
-    this.ctx.restore();
-  }
-  /**
-   * Botón de menú (abajo derecha, al lado del reset)
-   */
   drawMenuButton() {
     const size = 50;
     const margin = 20;

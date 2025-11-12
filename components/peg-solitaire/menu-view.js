@@ -17,7 +17,7 @@ export default class MenuView {
         this.chipImages = {};
         this.loadImages();
         
-        // Colores del theme (iguales a UI-Manager y Board)
+        // Colores del theme
         this.colors = {
             primary: '#7ed321',
             primaryLight: '#b7f34d',
@@ -126,7 +126,7 @@ export default class MenuView {
             const isHovered = this.hoveredChip === chip.id;
             const chipRadius = isSelected ? this.menuConfig.chipRadius * 1.15 : 
                              isHovered ? this.menuConfig.chipRadius * 1.08 : 
-                             this.menuConfig.chipRadius;
+                            this.menuConfig.chipRadius;
             
             // Dibujar ficha usando el mismo estilo que square-view.js
             if (this.chipImages[chip.id] && this.chipImages[chip.id].complete) {

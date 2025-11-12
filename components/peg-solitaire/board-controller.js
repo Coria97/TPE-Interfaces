@@ -161,32 +161,33 @@ export default class BoardController {
         }, 500);
     }
 
-        destroy() {
-        // 1. PRIMERO detener timer
+    destroy() {
+        //detener timer
         if (this.uiManager) {
             this.uiManager.stopTimer();
         }
         
-        // 2. SEGUNDO cancelar game loop
+        // cancelar game loop
         if (this.gameLoopId) {
             cancelAnimationFrame(this.gameLoopId);
             this.gameLoopId = null;
         }
         
-        // 3. TERCERO remover event listeners ANTES de hacer null
+        // remover event listeners ANTES de hacer null
         if (this.canvas) {
             this.canvas.removeEventListener('mousedown', this.handleMouseDown);
             this.canvas.removeEventListener('mousemove', this.handleMouseMove);
             this.canvas.removeEventListener('mouseup', this.handleMouseUp);
         }
         
-        // 4. AHORA SÍ limpiar referencias
+        //limpiar referencias
         this.draggedChipController = null;
         this.squareControllers = [];
         this.boardModel = null;
         this.boardView = null;
         this.uiManager = null;
     }
+
     exitToMenu() {
         // Destruir el juego completamente
         this.destroy();
