@@ -38,6 +38,26 @@ const games = {
         instagramText: "@blocka_official",
         tiktokText: "@blocka_game",
         youtubeText: "Blocka Gameplay"
+    },
+    "flappy-bird": {
+        title: "Flappy Bird: Aventura Espacial",
+        poster: "./assets/flappy-bird.png", // Crear esta imagen después
+        rating: "4.9",
+        releaseDate: "2025-01-15",
+        clamp: "3",
+        type: "flappy-bird",
+        description:
+            "Atraviesa el cosmos esquivando asteroides y obstáculos espaciales en esta emocionante aventura. Controla tu nave con precisión mientras el universo se despliega en un espectacular efecto parallax. ¿Cuánto tiempo podrás sobrevivir en el vacío del espacio?",
+        facebook: "https://facebook.com/groups/flappybird",
+        x: "https://x.com/FlappyBirdSpace",
+        instagram: "https://instagram.com/flappybird_space",
+        tiktok: "https://tiktok.com/@flappybird",
+        youtube: "https://youtube.com/@FlappyBirdGameplay",
+        facebookText: "Flappy Bird Fans",
+        xText: "@FlappyBirdSpace",
+        instagramText: "@flappybird_space",
+        tiktokText: "@flappybird",
+        youtubeText: "Flappy Bird Gameplay"
     }
 };
 
@@ -73,6 +93,7 @@ const games = {
 
     // Show game component based on type
     const layout = document.getElementById("gameLayout");
+    
     if (data.type === "peg-solitaire") {
         layout.innerHTML = '<rushgame-peg-solitaire></rushgame-peg-solitaire>';
         layout.innerHTML += showInstructions("peg-solitaire");
@@ -91,7 +112,8 @@ const games = {
                 const pegSolitaireEl = layout.querySelector("rushgame-peg-solitaire");
                 if (pegSolitaireEl) pegSolitaireEl.replaceWith(document.createElement("div")).textContent = "No se pudo cargar el juego Peg Solitaire. Revisa la consola.";
             });
-    } else if (data.type === "blocka") {
+    } 
+    else if (data.type === "blocka") {
         layout.innerHTML = '<rushgame-blocka></rushgame-blocka>';
         layout.innerHTML += showInstructions("blocka");
 
@@ -109,6 +131,26 @@ const games = {
                 console.error("Error importando components/blocka/blocka.js:", err);
                 const blockaEl = layout.querySelector("rushgame-blocka");
                 if (blockaEl) blockaEl.replaceWith(document.createElement("div")).textContent = "No se pudo cargar el juego Blocka. Revisa la consola.";
+            });
+    }
+    else if (data.type === "flappy-bird") {
+        layout.innerHTML = '<rushgame-flappy-bird></rushgame-flappy-bird>';
+        layout.innerHTML += showInstructions("flappy-bird");
+
+        import("./components/flappy-bird/flappy-bird.js")
+            .then(() => {
+                const tag = "rushgame-flappy-bird";
+                if (!customElements.get(tag)) {
+                    return customElements.whenDefined(tag).catch((err) => {
+                        console.error(`El custom element ${tag} no se definió:`, err);
+                        layout.innerHTML = '<div class="error">Error inicializando Flappy Bird (revisá la consola).</div>';
+                    });
+                }
+            })
+            .catch((err) => {
+                console.error("Error importando components/flappy-bird/flappy-bird.js:", err);
+                const flappyEl = layout.querySelector("rushgame-flappy-bird");
+                if (flappyEl) flappyEl.replaceWith(document.createElement("div")).textContent = "No se pudo cargar el juego Flappy Bird. Revisa la consola.";
             });
     }
     
