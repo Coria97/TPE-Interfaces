@@ -99,6 +99,49 @@ class RushGameInstructions extends HTMLElement {
           </div>
         `;
 
+      case 'spacebar':
+        return `
+          <div class="icon-spacebar">
+            <svg width="70" height="48" viewBox="0 0 70 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="10" width="60" height="28" rx="6" fill="var(--neutral-surface-variant)" stroke="var(--rushgames-primary)" stroke-width="3"/>
+              <text x="35" y="30" text-anchor="middle" fill="var(--rushgames-primary)" font-size="12" font-weight="bold">SPACE</text>
+            </svg>
+          </div>
+        `;
+
+      case 'fly':
+        return `
+          <div class="icon-fly">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="30" cy="30" r="25" fill="var(--neutral-surface)" stroke="var(--rushgames-primary)" stroke-width="3"/>
+              <path d="M30 20 L30 40 M25 25 L30 20 L35 25" stroke="var(--rushgames-primary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        `;
+
+      case 'obstacle':
+        return `
+          <div class="icon-obstacle">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="10" y="5" width="15" height="50" rx="3" fill="var(--rushgames-secondary)" opacity="0.8"/>
+              <rect x="35" y="5" width="15" height="50" rx="3" fill="var(--rushgames-secondary)" opacity="0.8"/>
+              <circle cx="30" cy="30" r="8" fill="var(--rushgames-primary)"/>
+            </svg>
+          </div>
+        `;
+
+    
+
+      case 'score':
+        return `
+          <div class="icon-score">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="30" cy="30" r="25" fill="var(--neutral-surface)" stroke="var(--rushgames-accent)" stroke-width="3"/>
+              <text x="30" y="38" text-anchor="middle" fill="var(--rushgames-accent)" font-size="24" font-weight="bold">+1</text>
+            </svg>
+          </div>
+        `;
+
       case 'rotate':
         return `
           <div class="icon-rotate">
@@ -249,6 +292,13 @@ class RushGameInstructions extends HTMLElement {
         { type: 'filter', text: 'Las piezas tienen filtros que desaparecen al completar.' },
         { type: 'timer', text: 'El cronómetro mide tu tiempo en cada nivel.' },
         { type: 'target', text: 'Completa todos los niveles lo más rápido posible.' },
+      ],
+      'flappy-bird': [
+        { type: 'mouse-left', text: 'Haz clic o presiona ESPACIO para dar impulso hacia arriba.' },
+        { type: 'fly', text: 'La nave cae constantemente por gravedad. Mantén el vuelo controlado.' },
+        { type: 'obstacle', text: 'Esquiva los obstáculos espaciales que aparecen en tu camino.' },
+        { type: 'score', text: 'Gana puntos por cada obstáculo que logres superar.' },
+        { type: 'target', text: 'Sobrevive el mayor tiempo posible sin chocar.' },
       ],
     };
 

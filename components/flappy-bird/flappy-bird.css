@@ -1,0 +1,157 @@
+/* ========================================
+   FLAPPY BIRD - SPACE THEME
+   Parallax Scrolling con 4+ capas
+   ======================================== */
+
+:host,
+rushgame-flappy-bird,
+.game-container {
+  display: block;
+  width: 700px;
+  height: 700px;
+  box-sizing: border-box;
+}
+
+.game-container {
+  position: relative;
+  overflow: hidden;
+  background: #0a0e13;
+}
+
+/* ========================================
+   PARALLAX LAYERS
+   Cada capa se mueve a diferente velocidad
+   ======================================== */
+
+.parallax-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%; /* Doble ancho para scroll infinito */
+  height: 100%;
+  background-repeat: repeat-x;
+  background-size: 50% 100%; /* Cada repetición ocupa el 50% del ancho total */
+  will-change: transform;
+  image-rendering: crisp-edges;
+}
+
+/* Capa 1: Fondo más lejano (más lento) - blue-back.png */
+.layer-1 {
+  z-index: 1;
+  background-image: url('../../assets/blue-back.png');
+  background-position: 0 0;
+  animation: scrollParallax1 60s linear infinite;
+}
+
+/* Capa 2: Nebulosa media - blue-with-stars.png */
+.layer-2 {
+  z-index: 2;
+  background-image: url('../../assets/blue-with-stars.png');
+  background-position: 0 0;
+  animation: scrollParallax2 40s linear infinite;
+  opacity: 0.8;
+}
+
+/* Capa 3: Estrellas cercanas - blue-stars.png */
+.layer-3 {
+  z-index: 3;
+  background-image: url('../../assets/blue-stars.png');
+  background-position: 0 0;
+  animation: scrollParallax3 25s linear infinite;
+  opacity: 0.9;
+}
+
+/* Capa 4: Elementos más cercanos - asteroids */
+.layer-4 {
+  z-index: 4;
+  background-image: url('../../assets/asteroid-1.png');
+  background-size: 25% auto; /* Tamaño específico para asteroides */
+  background-position: 0 0;
+  animation: scrollParallax4 15s linear infinite;
+}
+
+/* ========================================
+   PARALLAX ANIMATIONS
+   Cada capa se mueve a velocidad diferente
+   ======================================== */
+
+@keyframes scrollParallax1 {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scrollParallax2 {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scrollParallax3 {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scrollParallax4 {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* ========================================
+   GAME CONTENT LAYER
+   ======================================== */
+
+.game-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* ========================================
+   BIRD (placeholder temporal - círculo)
+   ======================================== */
+
+.bird {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: var(--rushgames-primary);
+  border-radius: 50%;
+  left: 150px;
+  top: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 0 20px var(--rushgames-primary);
+  transition: top 0.1s ease-out;
+}
+
+/* Animación de aleteo (próximamente con sprite) */
+@keyframes flap {
+  0%, 100% {
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    transform: translateY(-50%) scale(1.1);
+  }
+}
+
+.bird.flapping {
+  animation: flap 0.3s ease-in-out;
+}
