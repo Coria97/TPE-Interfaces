@@ -1,3 +1,5 @@
+import Obstacle from './obstacle.js';
+
 class RushGameFlappyBird extends HTMLElement {
   constructor() {
     console.log("Initializing Flappy Bird component");
@@ -25,9 +27,10 @@ class RushGameFlappyBird extends HTMLElement {
       const content = template.content.cloneNode(true);
       this.shadowRoot.appendChild(content);
 
-      // Referencias a elementos - CORREGIDO: usar #submarine
+      // Referencias a elementos
       this.submarine = this.shadowRoot.querySelector('#submarine');
       this.gameContainer = this.shadowRoot.querySelector('.game-container');
+      this.gameContent = this.shadowRoot.querySelector('.game-content');
       
       // Estado del juego
       this.submarineY = 350; // Posición vertical del submarino
@@ -35,8 +38,17 @@ class RushGameFlappyBird extends HTMLElement {
       this.gravity = 0.6; // Gravedad
       this.jumpForce = -12; // Fuerza del salto
       this.isGameRunning = false;
+      this.score = 0;
+      
+      // Obstáculos
+      this.obstacles = [];
+      this.obstacleSpacing = 300; // Distancia entre obstáculos
+      this.obstacleTimer = 0;
+      this.obstacleInterval = 90; // Frames entre obstáculos
 
       this.setupControls();
+      this.initObstacles();
+      this.createScoreDisplay();
       this.startGame();
       
     } catch(err) {
@@ -61,6 +73,36 @@ class RushGameFlappyBird extends HTMLElement {
     
     this.gameContainer.addEventListener('click', this.handleClick);
     document.addEventListener('keydown', this.handleKeyDown);
+  }
+
+  initObstacles() {
+    // Crear 3 obstáculos iniciales más alejados (se reciclarán)
+    // Primer obstáculo empieza fuera de pantalla a la derecha
+    for (let i = 0; i < 3; i++) {
+      const obstacle = new Obstacle(this.gameContent, 900 + (i * this.obstacleSpacing));
+      this.obstacles.push(obstacle);
+    }
+  }
+
+  createScoreDisplay() {
+    // Crear display de puntaje
+    this.scoreDisplay = document.createElement('div');
+    this.scoreDisplay.style.position = 'absolute';
+    this.scoreDisplay.style.top = '20px';
+    this.scoreDisplay.style.left = '50%';
+    this.scoreDisplay.style.transform = 'translateX(-50%)';
+    this.scoreDisplay.style.fontSize = '48px';
+    this.scoreDisplay.style.fontWeight = 'bold';
+    this.scoreDisplay.style.color = 'var(--rushgames-primary)';
+    this.scoreDisplay.style.textShadow = '0 0 10px rgba(126, 211, 33, 0.5)';
+    this.scoreDisplay.style.zIndex = '20';
+    this.scoreDisplay.style.fontFamily = 'var(--text-title)';
+    this.scoreDisplay.textContent = '0';
+    this.gameContent.appendChild(this.scoreDisplay);
+  }
+
+  updateScore() {
+    this.scoreDisplay.textContent = this.score;
   }
 
   jump() {
@@ -91,10 +133,12 @@ class RushGameFlappyBird extends HTMLElement {
     if (this.submarineY < 0) {
       this.submarineY = 0;
       this.submarineVelocity = 0;
+      this.gameOver();
     }
     if (this.submarineY > 650) {
       this.submarineY = 650;
       this.submarineVelocity = 0;
+      this.gameOver();
     }
     
     // Actualizar posición del submarino
@@ -102,8 +146,121 @@ class RushGameFlappyBird extends HTMLElement {
       this.submarine.style.top = this.submarineY + 'px';
     }
     
+    // Actualizar obstáculos
+    this.updateObstacles();
+    
     // Continuar el loop
     this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
+  }
+
+  updateObstacles() {
+    const submarineX = 150; // Posición X fija del submarino
+    const submarineSize = 38;
+    
+    // Actualizar cada obstáculo
+    this.obstacles.forEach(obstacle => {
+      obstacle.update();
+      
+      // Verificar colisión
+      if (obstacle.checkCollision(submarineX, this.submarineY, submarineSize)) {
+        this.gameOver();
+      }
+      
+      // Verificar si pasó el obstáculo (sumar punto)
+      if (obstacle.checkPassed(submarineX)) {
+        this.score++;
+        this.updateScore();
+      }
+      
+      // Reciclar obstáculo si salió de pantalla
+      if (obstacle.isOffScreen()) {
+        // Encontrar el obstáculo más a la derecha
+        const maxX = Math.max(...this.obstacles.map(o => o.x));
+        obstacle.reset(maxX + this.obstacleSpacing);
+      }
+    });
+  }
+
+  gameOver() {
+    if (!this.isGameRunning) return;
+    
+    this.isGameRunning = false;
+    console.log('Game Over! Score:', this.score);
+    
+    // Mostrar mensaje de game over
+    this.showGameOver();
+  }
+
+  showGameOver() {
+    const gameOverDiv = document.createElement('div');
+    gameOverDiv.className = 'game-over-screen';
+    gameOverDiv.style.position = 'absolute';
+    gameOverDiv.style.top = '50%';
+    gameOverDiv.style.left = '50%';
+    gameOverDiv.style.transform = 'translate(-50%, -50%)';
+    gameOverDiv.style.textAlign = 'center';
+    gameOverDiv.style.zIndex = '30';
+    gameOverDiv.style.background = 'rgba(14, 15, 16, 0.95)';
+    gameOverDiv.style.padding = '40px';
+    gameOverDiv.style.borderRadius = '12px';
+    gameOverDiv.style.border = '3px solid var(--rushgames-primary)';
+    gameOverDiv.style.pointerEvents = 'auto';
+    
+    gameOverDiv.innerHTML = `
+      <div style="font-size: 48px; color: var(--rushgames-primary); font-weight: bold; margin-bottom: 20px; font-family: var(--text-title);">
+        GAME OVER
+      </div>
+      <div style="font-size: 32px; color: var(--text-primary); margin-bottom: 30px;">
+        Score: ${this.score}
+      </div>
+      <button class="restart-button" style="
+        background: var(--rushgames-primary);
+        color: var(--neutral-black);
+        border: none;
+        padding: 15px 40px;
+        font-size: 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        font-family: var(--text-title);
+        pointer-events: auto;
+      ">
+        REINTENTAR
+      </button>
+    `;
+    
+    this.gameContent.appendChild(gameOverDiv);
+    
+    // Agregar evento al botón de manera más directa
+    const restartBtn = gameOverDiv.querySelector('.restart-button');
+    restartBtn.onclick = () => {
+      gameOverDiv.remove();
+      this.restart();
+    };
+  }
+
+  restart() {
+    // Limpiar el game over display
+    const gameOverElements = this.gameContent.querySelectorAll('div');
+    gameOverElements.forEach(el => {
+      if (el.textContent.includes('GAME OVER') || el.textContent.includes('Score:')) {
+        el.remove();
+      }
+    });
+    
+    // Resetear estado
+    this.submarineY = 350;
+    this.submarineVelocity = 0;
+    this.score = 0;
+    this.updateScore();
+    
+    // Resetear obstáculos más alejados
+    this.obstacles.forEach((obstacle, index) => {
+      obstacle.reset(900 + (index * this.obstacleSpacing));
+    });
+    
+    // Reiniciar juego
+    this.startGame();
   }
 
   disconnectedCallback() {
@@ -119,6 +276,10 @@ class RushGameFlappyBird extends HTMLElement {
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }
+    
+    // Destruir obstáculos
+    this.obstacles.forEach(obstacle => obstacle.destroy());
+    this.obstacles = [];
     
     // Remover event listeners
     if (this.gameContainer && this.handleClick) {
