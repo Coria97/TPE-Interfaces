@@ -35,6 +35,7 @@ rushgame-flappy-bird,
   background-size: 50% 100%; /* Cada repetición ocupa el 50% del ancho total */
 }
 
+/* Capa 1: Fondo más lejano */
 .layer-1 {
   z-index: 1;
   background-image: url('../../assets/flappy-bird/background/background.png');
@@ -42,6 +43,7 @@ rushgame-flappy-bird,
   animation: scroll 40s linear infinite;
 }
 
+/* Capa 2: Pilares del fondo */
 .layer-2 {
   z-index: 2;
   background-image: url('../../assets/flappy-bird/background/background-pillars.png');
@@ -49,6 +51,7 @@ rushgame-flappy-bird,
   animation: scroll 25s linear infinite;
 }
 
+/* Capa 3: Luz 1 (efecto de iluminación) */
 .layer-3 {
   z-index: 3;
   background-image: url('../../assets/flappy-bird/background/light-1.png');
@@ -58,6 +61,7 @@ rushgame-flappy-bird,
   height: 200%;
 }
 
+/* Capa 4: Luz 2 (invertida) */
 .layer-4 {
   z-index: 4;
   background-image: url('../../assets/flappy-bird/background/light-2.png');
@@ -68,6 +72,7 @@ rushgame-flappy-bird,
   height: 200%;
 }
 
+/* Capa 5: Rocas inferiores (lentas) */
 .layer-5 {
   z-index: 5;
   background-image: url('../../assets/flappy-bird/background/rocks-low.png');
@@ -75,6 +80,7 @@ rushgame-flappy-bird,
   animation: scroll 15s linear infinite;
 }
 
+/* Capa 6: Rocas inferiores (rápidas) */
 .layer-6 {
   z-index: 6;
   background-image: url('../../assets/flappy-bird/background/rocks-low.png');
@@ -82,8 +88,32 @@ rushgame-flappy-bird,
   animation: scroll 5s linear infinite;
 }
 
-/* Animación de moviemiento del background */
+/* Capa 7: Elementos adicionales (opcional - agregar imagen si la tienen) */
+.layer-7 {
+  z-index: 7;
+  /* background-image: url('../../assets/flappy-bird/background/layer-7.png'); */
+  background-position: 0 0;
+  animation: scroll 8s linear infinite;
+  opacity: 0.5;
+  display: none; /* Ocultar hasta que agreguen la imagen */
+}
 
+/* Capa 8: Elementos cercanos (opcional - agregar imagen si la tienen) */
+.layer-8 {
+  z-index: 8;
+  /* background-image: url('../../assets/flappy-bird/background/layer-8.png'); */
+  background-position: 0 0;
+  animation: scroll 3s linear infinite;
+  opacity: 0.7;
+  display: none; /* Ocultar hasta que agreguen la imagen */
+}
+
+/* 
+========================================
+          PARALLAX ANIMATIONS
+======================================== */
+
+/* Animación de movimiento del background */
 @keyframes scroll {
   0% {
     transform: translateX(0);
@@ -93,6 +123,7 @@ rushgame-flappy-bird,
   }
 }
 
+/* Animación con efecto espejo (flip) */
 @keyframes scroll-flip {
   0% {
     transform: translateX(0) scaleX(-1);
@@ -129,30 +160,26 @@ rushgame-flappy-bird,
   width: 38px;
   height: 38px;
   background-image: url('../../assets/flappy-bird/sub/submarine-38x38.png');
-  border-radius: 50%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
   left: 150px;
   top: 50%;
   transform: translateY(-50%);
   transition: top 0.1s ease-out;
+  pointer-events: all;
 }
 
-/* Animación de aleteo (próximamente con sprite) */
+/* Animación de impulso */
 @keyframes flap {
   0%, 100% {
-    transform: translateY(-50%) scale(1);
+    transform: translateY(-50%) scale(1) rotate(0deg);
   }
   50% {
-    transform: translateY(-50%) scale(1.1);
+    transform: translateY(-50%) scale(1.1) rotate(-5deg);
   }
 }
 
 .submarine.flapping {
   animation: flap 0.3s ease-in-out;
 }
-
-
-/* 
-========================================
-          PARALLAX ANIMATIONS
-======================================== */
-

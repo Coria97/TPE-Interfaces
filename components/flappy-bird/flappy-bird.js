@@ -25,24 +25,16 @@ class RushGameFlappyBird extends HTMLElement {
       const content = template.content.cloneNode(true);
       this.shadowRoot.appendChild(content);
 
-      // Referencias a elementos
-      this.bird = this.shadowRoot.querySelector('#bird');
+      // Referencias a elementos - CORREGIDO: usar #submarine
+      this.submarine = this.shadowRoot.querySelector('#submarine');
       this.gameContainer = this.shadowRoot.querySelector('.game-container');
       
       // Estado del juego
-      this.birdY = 350; // Posición vertical del pájaro
-      this.birdVelocity = 0; // Velocidad vertical
+      this.submarineY = 350; // Posición vertical del submarino
+      this.submarineVelocity = 0; // Velocidad vertical
       this.gravity = 0.6; // Gravedad
       this.jumpForce = -12; // Fuerza del salto
       this.isGameRunning = false;
-      
-      // Control de parallax (velocidades relativas)
-      this.parallaxSpeeds = {
-        layer1: 0.5,  // Más lento (fondo)
-        layer2: 1.0,
-        layer3: 1.8,
-        layer4: 2.5   // Más rápido (frente)
-      };
 
       this.setupControls();
       this.startGame();
@@ -74,12 +66,12 @@ class RushGameFlappyBird extends HTMLElement {
   jump() {
     if (!this.isGameRunning) return;
     
-    this.birdVelocity = this.jumpForce;
+    this.submarineVelocity = this.jumpForce;
     
-    // Animación de aleteo
-    this.bird.classList.add('flapping');
+    // Animación de impulso
+    this.submarine.classList.add('flapping');
     setTimeout(() => {
-      this.bird.classList.remove('flapping');
+      this.submarine.classList.remove('flapping');
     }, 300);
   }
 
@@ -91,23 +83,23 @@ class RushGameFlappyBird extends HTMLElement {
   gameLoop() {
     if (!this.isGameRunning) return;
     
-    // Actualizar física del pájaro
-    this.birdVelocity += this.gravity;
-    this.birdY += this.birdVelocity;
+    // Actualizar física del submarino
+    this.submarineVelocity += this.gravity;
+    this.submarineY += this.submarineVelocity;
     
-    // Limitar el pájaro dentro del canvas
-    if (this.birdY < 0) {
-      this.birdY = 0;
-      this.birdVelocity = 0;
+    // Limitar el submarino dentro del contenedor
+    if (this.submarineY < 0) {
+      this.submarineY = 0;
+      this.submarineVelocity = 0;
     }
-    if (this.birdY > 650) {
-      this.birdY = 650;
-      this.birdVelocity = 0;
+    if (this.submarineY > 650) {
+      this.submarineY = 650;
+      this.submarineVelocity = 0;
     }
     
-    // Actualizar posición del pájaro
-    if (this.bird) {
-      this.bird.style.top = this.birdY + 'px';
+    // Actualizar posición del submarino
+    if (this.submarine) {
+      this.submarine.style.top = this.submarineY + 'px';
     }
     
     // Continuar el loop
