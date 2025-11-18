@@ -18,11 +18,11 @@ class CommentComposer extends HTMLElement {
     const img = $('avatar');
 
     // avatar (se puede sobreescribir con atributo)
-    const avatar = this.getAttribute('avatar') || './assets/avatar.svg';
+    const avatar = this.getAttribute('avatar') || './assets/icons/avatar.svg';
     img.src = avatar;
     img.alt = 'avatar';
     img.addEventListener('error', () => {
-      img.src = './assets/avatar.svg';
+      img.src = './assets/icons/avatar.svg';
     });
 
     const lineHeight = parseFloat(getComputedStyle(ta).lineHeight) || 20;

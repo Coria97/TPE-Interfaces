@@ -1,7 +1,7 @@
 const games = {
     "peg-solitaire": {
         title: "Green Lantern: El Solitario Esmeralda",
-        poster: "./assets/peg-solitaire.png",
+        poster: "./assets/game-cover/peg-solitaire.jpg",
         rating: "5.0",
         releaseDate: "2009-01-01",
         clamp: "3",
@@ -21,7 +21,7 @@ const games = {
     },
     "blocka": {
         title: "Blocka: Rompecabezas de Linterna Verde",
-        poster: "./assets/gameCover.jpg",
+        poster: "./assets/game-cover/blocka.jpg",
         rating: "4.8",
         releaseDate: "2025-01-01",
         clamp: "3",

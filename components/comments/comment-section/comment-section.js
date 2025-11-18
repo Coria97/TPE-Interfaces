@@ -24,7 +24,7 @@ class CommentSection extends HTMLElement {
         author: 'mxr_',
         when: 'hoy 16:42',
         body: 'Texto del comentario…',
-        avatar: './assets/avatar.svg',
+        avatar: './assets/icons/avatar.svg',
         replies: [],
       },
       {
@@ -32,7 +32,7 @@ class CommentSection extends HTMLElement {
         author: 'ana',
         when: 'ayer',
         body: 'Otro comentario…',
-        avatar: './assets/avatar.svg',
+        avatar: './assets/icons/avatar.svg',
         replies: [],
       },
     ];
@@ -65,7 +65,7 @@ class CommentSection extends HTMLElement {
             author: 'vos',
             when: 'ahora',
             body: text,
-            avatar: './assets/avatar.svg',
+            avatar: './assets/icons/avatar.svg',
           });
 
           pendingOpenId = c.id; // ✅ mantener este abierto
@@ -131,7 +131,7 @@ class CommentSection extends HTMLElement {
         author: 'vos',
         when: 'ahora',
         body: text,
-        avatar: './assets/avatar.svg',
+        avatar: './assets/icons/avatar.svg',
         replies: [],
       });
       // por las dudas, limpiamos one-shot

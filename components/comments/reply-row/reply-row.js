@@ -14,7 +14,7 @@ class ReplyRow extends HTMLElement {
     const author = this.getAttribute('author') || '';
     const when = this.getAttribute('when') || '';
     const body = this.getAttribute('body') || '';
-    const avatar = this.getAttribute('avatar') || './assets/avatar.svg';
+    const avatar = this.getAttribute('avatar') || './assets/icons/avatar.svg';
 
     $('author').textContent = author;
     $('when').textContent = when;
@@ -24,7 +24,7 @@ class ReplyRow extends HTMLElement {
     img.src = avatar;
     img.alt = author || 'avatar';
     img.addEventListener('error', () => {
-      img.src = './assets/avatar.svg';
+      img.src = './assets/icons/avatar.svg';
     });
   }
 }

@@ -1,7 +1,8 @@
-/* ========================================
-   FLAPPY BIRD - SPACE THEME
-   Parallax Scrolling con 4+ capas
-   ======================================== */
+/* 
+========================================
+            FLAPPY BIRD
+========================================
+   */
 
 :host,
 rushgame-flappy-bird,
@@ -18,10 +19,11 @@ rushgame-flappy-bird,
   background: #0a0e13;
 }
 
-/* ========================================
-   PARALLAX LAYERS
-   Cada capa se mueve a diferente velocidad
-   ======================================== */
+/* 
+========================================
+            PARALLAX LAYERS
+======================================== 
+*/
 
 .parallax-layer {
   position: absolute;
@@ -31,51 +33,58 @@ rushgame-flappy-bird,
   height: 100%;
   background-repeat: repeat-x;
   background-size: 50% 100%; /* Cada repetición ocupa el 50% del ancho total */
-  will-change: transform;
-  image-rendering: crisp-edges;
 }
 
-/* Capa 1: Fondo más lejano (más lento) - blue-back.png */
 .layer-1 {
   z-index: 1;
-  background-image: url('../../assets/blue-back.png');
+  background-image: url('../../assets/flappy-bird/background/background.png');
   background-position: 0 0;
-  animation: scrollParallax1 60s linear infinite;
+  animation: scroll 40s linear infinite;
 }
 
-/* Capa 2: Nebulosa media - blue-with-stars.png */
 .layer-2 {
   z-index: 2;
-  background-image: url('../../assets/blue-with-stars.png');
+  background-image: url('../../assets/flappy-bird/background/background-pillars.png');
   background-position: 0 0;
-  animation: scrollParallax2 40s linear infinite;
-  opacity: 0.8;
+  animation: scroll 25s linear infinite;
 }
 
-/* Capa 3: Estrellas cercanas - blue-stars.png */
 .layer-3 {
   z-index: 3;
-  background-image: url('../../assets/blue-stars.png');
+  background-image: url('../../assets/flappy-bird/background/light-1.png');
   background-position: 0 0;
-  animation: scrollParallax3 25s linear infinite;
-  opacity: 0.9;
+  animation: scroll 10s linear infinite;
+  opacity: 0.1;
+  height: 200%;
 }
 
-/* Capa 4: Elementos más cercanos - asteroids */
 .layer-4 {
   z-index: 4;
-  background-image: url('../../assets/asteroid-1.png');
-  background-size: 25% auto; /* Tamaño específico para asteroides */
+  background-image: url('../../assets/flappy-bird/background/light-2.png');
   background-position: 0 0;
-  animation: scrollParallax4 15s linear infinite;
+  animation: scroll-flip 20s linear infinite;
+  opacity: 0.1;
+  left: 50%;
+  height: 200%;
 }
 
-/* ========================================
-   PARALLAX ANIMATIONS
-   Cada capa se mueve a velocidad diferente
-   ======================================== */
+.layer-5 {
+  z-index: 5;
+  background-image: url('../../assets/flappy-bird/background/rocks-low.png');
+  background-position: 0 0;
+  animation: scroll 15s linear infinite;
+}
 
-@keyframes scrollParallax1 {
+.layer-6 {
+  z-index: 6;
+  background-image: url('../../assets/flappy-bird/background/rocks-low.png');
+  background-position: 0 0;
+  animation: scroll 5s linear infinite;
+}
+
+/* Animación de moviemiento del background */
+
+@keyframes scroll {
   0% {
     transform: translateX(0);
   }
@@ -84,36 +93,20 @@ rushgame-flappy-bird,
   }
 }
 
-@keyframes scrollParallax2 {
+@keyframes scroll-flip {
   0% {
-    transform: translateX(0);
+    transform: translateX(0) scaleX(-1);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translateX(-50%) scaleX(-1);
   }
 }
 
-@keyframes scrollParallax3 {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-@keyframes scrollParallax4 {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-/* ========================================
-   GAME CONTENT LAYER
-   ======================================== */
+/* 
+========================================
+            GAME CONTENT LAYER
+========================================
+*/
 
 .game-content {
   position: absolute;
@@ -125,20 +118,21 @@ rushgame-flappy-bird,
   pointer-events: none;
 }
 
-/* ========================================
-   BIRD (placeholder temporal - círculo)
-   ======================================== */
+/* 
+========================================
+            SUBMARINE
+========================================
+*/
 
-.bird {
+.submarine {
   position: absolute;
-  width: 50px;
-  height: 50px;
-  background: var(--rushgames-primary);
+  width: 38px;
+  height: 38px;
+  background-image: url('../../assets/flappy-bird/sub/submarine-38x38.png');
   border-radius: 50%;
   left: 150px;
   top: 50%;
   transform: translateY(-50%);
-  box-shadow: 0 0 20px var(--rushgames-primary);
   transition: top 0.1s ease-out;
 }
 
@@ -152,6 +146,13 @@ rushgame-flappy-bird,
   }
 }
 
-.bird.flapping {
+.submarine.flapping {
   animation: flap 0.3s ease-in-out;
 }
+
+
+/* 
+========================================
+          PARALLAX ANIMATIONS
+======================================== */
+
