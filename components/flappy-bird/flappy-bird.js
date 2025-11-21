@@ -1,4 +1,5 @@
 import Obstacle from './obstacle.js';
+import LivesManager from './lives-manager.js';
 
 class RushGameFlappyBird extends HTMLElement {
   constructor() {
@@ -45,11 +46,19 @@ class RushGameFlappyBird extends HTMLElement {
       this.obstacleSpacing = 300; // Distancia entre obstáculos
       this.obstacleTimer = 0;
       this.obstacleInterval = 90; // Frames entre obstáculos
+      
+      // Sistema de vidas
+      this.livesManager = null;
 
+      console.log('Inicializando componentes del juego...');
+      
       this.setupControls();
       this.initObstacles();
+      this.initLives();
       this.createScoreDisplay();
       this.startGame();
+      
+      console.log('Juego iniciado correctamente');
       
     } catch(err) {
       console.error('Error initializing Flappy Bird:', err);
@@ -82,6 +91,11 @@ class RushGameFlappyBird extends HTMLElement {
       const obstacle = new Obstacle(this.gameContent, 900 + (i * this.obstacleSpacing));
       this.obstacles.push(obstacle);
     }
+  }
+
+  initLives() {
+    // Inicializar sistema de vidas
+    this.livesManager = new LivesManager(this.gameContent, 3);
   }
 
   createScoreDisplay() {
@@ -133,17 +147,27 @@ class RushGameFlappyBird extends HTMLElement {
     if (this.submarineY < 0) {
       this.submarineY = 0;
       this.submarineVelocity = 0;
-      this.gameOver();
+      // No perder vida por tocar el techo
     }
     if (this.submarineY > 650) {
       this.submarineY = 650;
       this.submarineVelocity = 0;
-      this.gameOver();
+      // Perder vida por tocar el suelo
+      if (!this.livesManager.isInvulnerable()) {
+        this.handleCollision();
+      }
     }
     
     // Actualizar posición del submarino
     if (this.submarine) {
       this.submarine.style.top = this.submarineY + 'px';
+      
+      // Efecto visual de invulnerabilidad
+      if (this.livesManager.isInvulnerable()) {
+        this.submarine.style.opacity = Math.sin(Date.now() / 100) > 0 ? '1' : '0.5';
+      } else {
+        this.submarine.style.opacity = '1';
+      }
     }
     
     // Actualizar obstáculos
@@ -161,9 +185,11 @@ class RushGameFlappyBird extends HTMLElement {
     this.obstacles.forEach(obstacle => {
       obstacle.update();
       
-      // Verificar colisión
-      if (obstacle.checkCollision(submarineX, this.submarineY, submarineSize)) {
-        this.gameOver();
+      // Verificar colisión solo si no está invulnerable
+      if (!this.livesManager.isInvulnerable()) {
+        if (obstacle.checkCollision(submarineX, this.submarineY, submarineSize)) {
+          this.handleCollision();
+        }
       }
       
       // Verificar si pasó el obstáculo (sumar punto)
@@ -179,6 +205,26 @@ class RushGameFlappyBird extends HTMLElement {
         obstacle.reset(maxX + this.obstacleSpacing);
       }
     });
+  }
+
+  handleCollision() {
+    // Manejar colisión con obstáculo
+    const isDead = this.livesManager.loseLife();
+    
+    // Efecto visual de colisión
+    this.submarine.style.filter = 'brightness(2) hue-rotate(90deg)';
+    setTimeout(() => {
+      this.submarine.style.filter = 'none';
+    }, 200);
+    
+    // Si murió completamente, game over
+    if (isDead) {
+      this.gameOver();
+    } else {
+      // Si aún tiene vidas, reposicionar el submarino
+      this.submarineY = 350;
+      this.submarineVelocity = 0;
+    }
   }
 
   gameOver() {
@@ -240,13 +286,11 @@ class RushGameFlappyBird extends HTMLElement {
   }
 
   restart() {
-    // Limpiar el game over display
-    const gameOverElements = this.gameContent.querySelectorAll('div');
-    gameOverElements.forEach(el => {
-      if (el.textContent.includes('GAME OVER') || el.textContent.includes('Score:')) {
-        el.remove();
-      }
-    });
+    // Limpiar todos los elementos de game over
+    const gameOverScreen = this.gameContent.querySelector('.game-over-screen');
+    if (gameOverScreen) {
+      gameOverScreen.remove();
+    }
     
     // Resetear estado
     this.submarineY = 350;
@@ -254,13 +298,17 @@ class RushGameFlappyBird extends HTMLElement {
     this.score = 0;
     this.updateScore();
     
+    // Resetear vidas
+    this.livesManager.reset();
+    
     // Resetear obstáculos más alejados
     this.obstacles.forEach((obstacle, index) => {
       obstacle.reset(900 + (index * this.obstacleSpacing));
     });
     
     // Reiniciar juego
-    this.startGame();
+    this.isGameRunning = true;
+    this.gameLoop();
   }
 
   disconnectedCallback() {
@@ -280,6 +328,11 @@ class RushGameFlappyBird extends HTMLElement {
     // Destruir obstáculos
     this.obstacles.forEach(obstacle => obstacle.destroy());
     this.obstacles = [];
+    
+    // Destruir sistema de vidas
+    if (this.livesManager) {
+      this.livesManager.destroy();
+    }
     
     // Remover event listeners
     if (this.gameContainer && this.handleClick) {
