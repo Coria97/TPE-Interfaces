@@ -56,33 +56,5 @@ export default class CollisionManager {
     
     return false;
   }
-
-  checkObstaclesCollisions(player, obstacles) {
-    // Verifica todas las colisiones con los obstáculos
-    for (let i = 0; i < obstacles.length; i++) {
-      const obstacle = obstacles[i];
-      if (this.checkObstacleCollision(player, obstacle)) {
-        return {
-          obstacle: obstacle,
-          obstacleIndex: i,
-          hasCollision: true
-        };
-      }
-    }
-    
-    return null;
-  }
-
-  checkAllCollisions(player, obstacles) {
-    // Verifica todas las colisiones (límites y obstáculos)
-    const boundaryCollisions = this.checkBoundaryCollisions(player);
-    const obstacleCollision = this.checkObstaclesCollisions(player, obstacles);
-    
-    return {
-      boundaries: boundaryCollisions,
-      obstacle: obstacleCollision,
-      hasAnyCollision: boundaryCollisions.hasCollision || (obstacleCollision !== null)
-    };
-  }
 }
 

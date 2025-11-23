@@ -2,6 +2,7 @@ import Obstacle from './obstacle.js';
 import LivesManager from './lives-manager.js';
 import Player from './player.js';
 import CollisionManager from './collision-manager.js';
+import ScoreManager from './score-manager.js';
 
 class RushGameFlappyBird extends HTMLElement {
   constructor() {
@@ -36,19 +37,10 @@ class RushGameFlappyBird extends HTMLElement {
       this.gameContent = this.shadowRoot.querySelector('.game-content');
       
       // Inicializar jugador
-      this.player = new Player(submarineElement, {
-        initialY: 350,
-        x: 150,
-        size: 38,
-        gravity: 0.6,
-        jumpForce: -12,
-        minY: 0,
-        maxY: 650
-      });
+      this.player = new Player(submarineElement);
       
       // Estado del juego
       this.isGameRunning = false;
-      this.score = 0;
       
       // Obstáculos
       this.obstacles = [];
@@ -61,13 +53,16 @@ class RushGameFlappyBird extends HTMLElement {
       
       // Sistema de colisiones
       this.collisionManager = new CollisionManager();
+      
+      // Sistema de puntuación
+      this.scoreManager = null;
 
       console.log('Inicializando componentes del juego...');
       
       this.setupControls();
       this.initObstacles();
       this.initLives();
-      this.createScoreDisplay();
+      this.initScore();
       this.startGame();
       
       // Activar el jugador
@@ -100,8 +95,7 @@ class RushGameFlappyBird extends HTMLElement {
   }
 
   initObstacles() {
-    // Crear 3 obstáculos iniciales más alejados (se reciclarán)
-    // Primer obstáculo empieza fuera de pantalla a la derecha
+    // Crear 3 obstáculos iniciales más alejados
     for (let i = 0; i < 3; i++) {
       const obstacle = new Obstacle(this.gameContent, 900 + (i * this.obstacleSpacing));
       this.obstacles.push(obstacle);
@@ -113,25 +107,9 @@ class RushGameFlappyBird extends HTMLElement {
     this.livesManager = new LivesManager(this.gameContent, 3);
   }
 
-  createScoreDisplay() {
-    // Crear display de puntaje
-    this.scoreDisplay = document.createElement('div');
-    this.scoreDisplay.style.position = 'absolute';
-    this.scoreDisplay.style.top = '20px';
-    this.scoreDisplay.style.left = '50%';
-    this.scoreDisplay.style.transform = 'translateX(-50%)';
-    this.scoreDisplay.style.fontSize = '48px';
-    this.scoreDisplay.style.fontWeight = 'bold';
-    this.scoreDisplay.style.color = 'var(--rushgames-primary)';
-    this.scoreDisplay.style.textShadow = '0 0 10px rgba(126, 211, 33, 0.5)';
-    this.scoreDisplay.style.zIndex = '20';
-    this.scoreDisplay.style.fontFamily = 'var(--text-title)';
-    this.scoreDisplay.textContent = '0';
-    this.gameContent.appendChild(this.scoreDisplay);
-  }
-
-  updateScore() {
-    this.scoreDisplay.textContent = this.score;
+  initScore() {
+    // Inicializar sistema de puntuación
+    this.scoreManager = new ScoreManager(this.gameContent);
   }
 
   jump() {
@@ -186,8 +164,7 @@ class RushGameFlappyBird extends HTMLElement {
       
       // Verificar si pasó el obstáculo (sumar punto)
       if (obstacle.checkPassed(playerBounds.x)) {
-        this.score++;
-        this.updateScore();
+        this.scoreManager.increment();
       }
       
       // Reciclar obstáculo si salió de pantalla
@@ -219,7 +196,7 @@ class RushGameFlappyBird extends HTMLElement {
     if (!this.isGameRunning) return;
     
     this.isGameRunning = false;
-    console.log('Game Over! Score:', this.score);
+    console.log('Game Over! Score:', this.scoreManager.getScore());
     
     // Mostrar mensaje de game over
     this.showGameOver();
@@ -245,7 +222,7 @@ class RushGameFlappyBird extends HTMLElement {
         GAME OVER
       </div>
       <div style="font-size: 32px; color: var(--text-primary); margin-bottom: 30px;">
-        Score: ${this.score}
+        Score: ${this.scoreManager.getScore()}
       </div>
       <button class="restart-button" style="
         background: var(--rushgames-primary);
@@ -282,8 +259,7 @@ class RushGameFlappyBird extends HTMLElement {
     
     // Resetear estado
     this.player.reset();
-    this.score = 0;
-    this.updateScore();
+    this.scoreManager.reset();
     
     // Resetear vidas
     this.livesManager.reset();
@@ -325,6 +301,11 @@ class RushGameFlappyBird extends HTMLElement {
     // Destruir sistema de vidas
     if (this.livesManager) {
       this.livesManager.destroy();
+    }
+    
+    // Destruir sistema de puntuación
+    if (this.scoreManager) {
+      this.scoreManager.destroy();
     }
     
     // Remover event listeners
