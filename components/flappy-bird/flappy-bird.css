@@ -88,25 +88,6 @@ rushgame-flappy-bird,
   animation: scroll 5s linear infinite;
 }
 
-/* Capa 7: Elementos adicionales (opcional - agregar imagen si la tienen) */
-.layer-7 {
-  z-index: 7;
-  /* background-image: url('../../assets/flappy-bird/background/layer-7.png'); */
-  background-position: 0 0;
-  animation: scroll 8s linear infinite;
-  opacity: 0.5;
-  display: none; /* Ocultar hasta que agreguen la imagen */
-}
-
-/* Capa 8: Elementos cercanos (opcional - agregar imagen si la tienen) */
-.layer-8 {
-  z-index: 8;
-  /* background-image: url('../../assets/flappy-bird/background/layer-8.png'); */
-  background-position: 0 0;
-  animation: scroll 3s linear infinite;
-  opacity: 0.7;
-  display: none; /* Ocultar hasta que agreguen la imagen */
-}
 
 /* 
 ========================================
@@ -182,4 +163,69 @@ rushgame-flappy-bird,
 
 .submarine.flapping {
   animation: flap 0.3s ease-in-out;
+}
+
+/* 
+========================================
+            GAME OVER SCREEN
+========================================
+*/
+
+.game-over-screen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 30;
+  background: rgba(14, 15, 16, 0.95);
+  padding: 40px;
+  border-radius: 12px;
+  border: 3px solid var(--rushgames-primary);
+  pointer-events: auto;
+}
+
+.game-over-title {
+  font-size: 48px;
+  color: var(--rushgames-primary);
+  font-weight: bold;
+  margin-bottom: 20px;
+  font-family: var(--text-title);
+}
+
+.game-over-score {
+  font-size: 24px;
+  color: var(--text-primary);
+  margin-bottom: 15px;
+}
+
+.game-over-high-score {
+  font-size: 24px;
+  color: var(--rushgames-primary);
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.restart-button {
+  background: var(--rushgames-primary);
+  color: var(--neutral-black);
+  border: none;
+  padding: 15px 40px;
+  font-size: 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: var(--text-title);
+  pointer-events: auto;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.restart-button:hover {
+  transform: scale(1.05);
+  background: var(--rushgames-primary);
+  filter: brightness(1.1);
+}
+
+.restart-button:active {
+  transform: scale(0.95);
 }

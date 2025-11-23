@@ -35,6 +35,10 @@ class RushGameFlappyBird extends HTMLElement {
       const submarineElement = this.shadowRoot.querySelector('#submarine');
       this.gameContainer = this.shadowRoot.querySelector('.game-container');
       this.gameContent = this.shadowRoot.querySelector('.game-content');
+      this.gameOverScreen = this.shadowRoot.querySelector('#game-over-screen');
+      this.gameOverScoreValue = this.shadowRoot.querySelector('#game-over-score-value');
+      this.gameOverHighScoreValue = this.shadowRoot.querySelector('#game-over-high-score-value');
+      this.restartButton = this.shadowRoot.querySelector('#restart-button');
       
       // Inicializar jugador
       this.player = new Player(submarineElement);
@@ -63,6 +67,7 @@ class RushGameFlappyBird extends HTMLElement {
       this.initObstacles();
       this.initLives();
       this.initScore();
+      this.setupGameOver();
       this.startGame();
       
       // Activar el jugador
@@ -110,6 +115,16 @@ class RushGameFlappyBird extends HTMLElement {
   initScore() {
     // Inicializar sistema de puntuación
     this.scoreManager = new ScoreManager(this.gameContent);
+  }
+
+  setupGameOver() {
+    // Configurar evento del botón de reinicio
+    if (this.restartButton) {
+      this.restartButton.addEventListener('click', () => {
+        this.hideGameOver();
+        this.restart();
+      });
+    }
   }
 
   jump() {
@@ -203,60 +218,30 @@ class RushGameFlappyBird extends HTMLElement {
   }
 
   showGameOver() {
-    const gameOverDiv = document.createElement('div');
-    gameOverDiv.className = 'game-over-screen';
-    gameOverDiv.style.position = 'absolute';
-    gameOverDiv.style.top = '50%';
-    gameOverDiv.style.left = '50%';
-    gameOverDiv.style.transform = 'translate(-50%, -50%)';
-    gameOverDiv.style.textAlign = 'center';
-    gameOverDiv.style.zIndex = '30';
-    gameOverDiv.style.background = 'rgba(14, 15, 16, 0.95)';
-    gameOverDiv.style.padding = '40px';
-    gameOverDiv.style.borderRadius = '12px';
-    gameOverDiv.style.border = '3px solid var(--rushgames-primary)';
-    gameOverDiv.style.pointerEvents = 'auto';
+    // Actualizar el score en el display
+    if (this.gameOverScoreValue) {
+      this.gameOverScoreValue.textContent = this.scoreManager.getScore();
+    }
     
-    gameOverDiv.innerHTML = `
-      <div style="font-size: 48px; color: var(--rushgames-primary); font-weight: bold; margin-bottom: 20px; font-family: var(--text-title);">
-        GAME OVER
-      </div>
-      <div style="font-size: 32px; color: var(--text-primary); margin-bottom: 30px;">
-        Score: ${this.scoreManager.getScore()}
-      </div>
-      <button class="restart-button" style="
-        background: var(--rushgames-primary);
-        color: var(--neutral-black);
-        border: none;
-        padding: 15px 40px;
-        font-size: 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-        font-family: var(--text-title);
-        pointer-events: auto;
-      ">
-        REINTENTAR
-      </button>
-    `;
+    // Actualizar el high score en el display
+    if (this.gameOverHighScoreValue) {
+      this.gameOverHighScoreValue.textContent = this.scoreManager.getHighScore();
+    }
     
-    this.gameContent.appendChild(gameOverDiv);
-    
-    // Agregar evento al botón de manera más directa
-    const restartBtn = gameOverDiv.querySelector('.restart-button');
-    restartBtn.onclick = () => {
-      gameOverDiv.remove();
-      this.restart();
-    };
+    // Mostrar la pantalla de game over
+    if (this.gameOverScreen) {
+      this.gameOverScreen.style.display = 'block';
+    }
+  }
+
+  hideGameOver() {
+    // Ocultar la pantalla de game over
+    if (this.gameOverScreen) {
+      this.gameOverScreen.style.display = 'none';
+    }
   }
 
   restart() {
-    // Limpiar todos los elementos de game over
-    const gameOverScreen = this.gameContent.querySelector('.game-over-screen');
-    if (gameOverScreen) {
-      gameOverScreen.remove();
-    }
-    
     // Resetear estado
     this.player.reset();
     this.scoreManager.reset();
