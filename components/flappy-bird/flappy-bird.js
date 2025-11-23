@@ -1,5 +1,6 @@
 import Obstacle from './obstacle.js';
 import LivesManager from './lives-manager.js';
+import Player from './player.js';
 
 class RushGameFlappyBird extends HTMLElement {
   constructor() {
@@ -29,15 +30,22 @@ class RushGameFlappyBird extends HTMLElement {
       this.shadowRoot.appendChild(content);
 
       // Referencias a elementos
-      this.submarine = this.shadowRoot.querySelector('#submarine');
+      const submarineElement = this.shadowRoot.querySelector('#submarine');
       this.gameContainer = this.shadowRoot.querySelector('.game-container');
       this.gameContent = this.shadowRoot.querySelector('.game-content');
       
+      // Inicializar jugador
+      this.player = new Player(submarineElement, {
+        initialY: 350,
+        x: 150,
+        size: 38,
+        gravity: 0.6,
+        jumpForce: -12,
+        minY: 0,
+        maxY: 650
+      });
+      
       // Estado del juego
-      this.submarineY = 350; // Posición vertical del submarino
-      this.submarineVelocity = 0; // Velocidad vertical
-      this.gravity = 0.6; // Gravedad
-      this.jumpForce = -12; // Fuerza del salto
       this.isGameRunning = false;
       this.score = 0;
       
@@ -57,6 +65,9 @@ class RushGameFlappyBird extends HTMLElement {
       this.initLives();
       this.createScoreDisplay();
       this.startGame();
+      
+      // Activar el jugador
+      this.player.activate();
       
       console.log('Juego iniciado correctamente');
       
@@ -121,14 +132,7 @@ class RushGameFlappyBird extends HTMLElement {
 
   jump() {
     if (!this.isGameRunning) return;
-    
-    this.submarineVelocity = this.jumpForce;
-    
-    // Animación de impulso
-    this.submarine.classList.add('flapping');
-    setTimeout(() => {
-      this.submarine.classList.remove('flapping');
-    }, 300);
+    this.player.jump();
   }
 
   startGame() {
@@ -139,36 +143,21 @@ class RushGameFlappyBird extends HTMLElement {
   gameLoop() {
     if (!this.isGameRunning) return;
     
-    // Actualizar física del submarino
-    this.submarineVelocity += this.gravity;
-    this.submarineY += this.submarineVelocity;
+    // Actualizar física del jugador
+    this.player.update();
     
-    // Limitar el submarino dentro del contenedor
-    if (this.submarineY < 0) {
-      this.submarineY = 0;
-      this.submarineVelocity = 0;
-      // No perder vida por tocar el techo
-    }
-    if (this.submarineY > 650) {
-      this.submarineY = 650;
-      this.submarineVelocity = 0;
+    // Verificar colisiones con límites
+    const boundsCollisions = this.player.checkBounds();
+    if (boundsCollisions.bottom && !this.livesManager.isInvulnerable()) {
       // Perder vida por tocar el suelo
-      if (!this.livesManager.isInvulnerable()) {
-        this.handleCollision();
-      }
+      this.handleCollision();
     }
     
-    // Actualizar posición del submarino
-    if (this.submarine) {
-      this.submarine.style.top = this.submarineY + 'px';
-      
-      // Efecto visual de invulnerabilidad
-      if (this.livesManager.isInvulnerable()) {
-        this.submarine.style.opacity = Math.sin(Date.now() / 100) > 0 ? '1' : '0.5';
-      } else {
-        this.submarine.style.opacity = '1';
-      }
-    }
+    // Renderizar posición del jugador
+    this.player.render();
+    
+    // Efecto visual de invulnerabilidad
+    this.player.applyInvulnerabilityEffect(this.livesManager.isInvulnerable());
     
     // Actualizar obstáculos
     this.updateObstacles();
@@ -178,8 +167,7 @@ class RushGameFlappyBird extends HTMLElement {
   }
 
   updateObstacles() {
-    const submarineX = 150; // Posición X fija del submarino
-    const submarineSize = 38;
+    const playerBounds = this.player.getBounds();
     
     // Actualizar cada obstáculo
     this.obstacles.forEach(obstacle => {
@@ -187,13 +175,13 @@ class RushGameFlappyBird extends HTMLElement {
       
       // Verificar colisión solo si no está invulnerable
       if (!this.livesManager.isInvulnerable()) {
-        if (obstacle.checkCollision(submarineX, this.submarineY, submarineSize)) {
+        if (obstacle.checkCollision(playerBounds.x, playerBounds.y, playerBounds.size)) {
           this.handleCollision();
         }
       }
       
       // Verificar si pasó el obstáculo (sumar punto)
-      if (obstacle.checkPassed(submarineX)) {
+      if (obstacle.checkPassed(playerBounds.x)) {
         this.score++;
         this.updateScore();
       }
@@ -212,18 +200,14 @@ class RushGameFlappyBird extends HTMLElement {
     const isDead = this.livesManager.loseLife();
     
     // Efecto visual de colisión
-    this.submarine.style.filter = 'brightness(2) hue-rotate(90deg)';
-    setTimeout(() => {
-      this.submarine.style.filter = 'none';
-    }, 200);
+    this.player.applyCollisionEffect();
     
     // Si murió completamente, game over
     if (isDead) {
       this.gameOver();
     } else {
-      // Si aún tiene vidas, reposicionar el submarino
-      this.submarineY = 350;
-      this.submarineVelocity = 0;
+      // Si aún tiene vidas, reposicionar el jugador
+      this.player.reset();
     }
   }
 
@@ -293,8 +277,7 @@ class RushGameFlappyBird extends HTMLElement {
     }
     
     // Resetear estado
-    this.submarineY = 350;
-    this.submarineVelocity = 0;
+    this.player.reset();
     this.score = 0;
     this.updateScore();
     
@@ -308,6 +291,7 @@ class RushGameFlappyBird extends HTMLElement {
     
     // Reiniciar juego
     this.isGameRunning = true;
+    this.player.activate();
     this.gameLoop();
   }
 
@@ -323,6 +307,11 @@ class RushGameFlappyBird extends HTMLElement {
     // Cancelar animación
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
+    }
+    
+    // Destruir jugador
+    if (this.player) {
+      this.player.destroy();
     }
     
     // Destruir obstáculos

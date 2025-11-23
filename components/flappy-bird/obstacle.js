@@ -34,7 +34,7 @@ export default class Obstacle {
     this.element.style.zIndex = '9';
     this.element.style.pointerEvents = 'none';
     
-    // Crear roca superior (UNA SOLA IMAGEN ESTIRADA, invertida)
+    // Crear roca superior
     this.topPipe = document.createElement('div');
     this.topPipe.className = 'pipe pipe-top';
     this.topPipe.style.position = 'absolute';
@@ -48,7 +48,7 @@ export default class Obstacle {
     this.topPipe.style.transform = 'scaleY(-1)'; // Invertir verticalmente
     this.topPipe.style.filter = 'brightness(0.85)';
     
-    // Crear roca inferior (UNA SOLA IMAGEN ESTIRADA)
+    // Crear roca inferior
     this.bottomPipe = document.createElement('div');
     this.bottomPipe.className = 'pipe pipe-bottom';
     this.bottomPipe.style.position = 'absolute';
