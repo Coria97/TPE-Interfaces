@@ -3,6 +3,7 @@ import LivesManager from './lives-manager.js';
 import Player from './player.js';
 import CollisionManager from './collision-manager.js';
 import ScoreManager from './score-manager.js';
+import Renderer from './renderer.js';
 
 class RushGameFlappyBird extends HTMLElement {
   constructor() {
@@ -60,6 +61,9 @@ class RushGameFlappyBird extends HTMLElement {
       
       // Sistema de puntuación
       this.scoreManager = null;
+      
+      // Sistema de renderizado
+      this.renderer = null;
 
       console.log('Inicializando componentes del juego...');
       
@@ -67,6 +71,7 @@ class RushGameFlappyBird extends HTMLElement {
       this.initObstacles();
       this.initLives();
       this.initScore();
+      this.initRenderer();
       this.setupGameOver();
       this.startGame();
       
@@ -117,6 +122,16 @@ class RushGameFlappyBird extends HTMLElement {
     this.scoreManager = new ScoreManager(this.gameContent);
   }
 
+  initRenderer() {
+    // Inicializar sistema de renderizado
+    this.renderer = new Renderer(
+      this.player,
+      this.gameOverScreen,
+      this.gameOverScoreValue,
+      this.gameOverHighScoreValue
+    );
+  }
+
   setupGameOver() {
     // Configurar evento del botón de reinicio
     if (this.restartButton) {
@@ -150,11 +165,12 @@ class RushGameFlappyBird extends HTMLElement {
       this.handleCollision();
     }
     
-    // Renderizar posición del jugador
-    this.player.render();
-    
-    // Efecto visual de invulnerabilidad
-    this.player.applyInvulnerabilityEffect(this.livesManager.isInvulnerable());
+    // Renderizar todos los elementos
+    this.renderer.renderAll(
+      this.player,
+      this.obstacles,
+      this.livesManager.isInvulnerable()
+    );
     
     // Actualizar obstáculos
     this.updateObstacles();
@@ -196,7 +212,7 @@ class RushGameFlappyBird extends HTMLElement {
     const isDead = this.livesManager.loseLife();
     
     // Efecto visual de colisión
-    this.player.applyCollisionEffect();
+    this.renderer.renderPlayerCollisionEffect();
     
     // Si murió completamente, game over
     if (isDead) {
@@ -204,6 +220,7 @@ class RushGameFlappyBird extends HTMLElement {
     } else {
       // Si aún tiene vidas, reposicionar el jugador
       this.player.reset();
+      this.renderer.renderPlayer();
     }
   }
 
@@ -218,32 +235,22 @@ class RushGameFlappyBird extends HTMLElement {
   }
 
   showGameOver() {
-    // Actualizar el score en el display
-    if (this.gameOverScoreValue) {
-      this.gameOverScoreValue.textContent = this.scoreManager.getScore();
-    }
-    
-    // Actualizar el high score en el display
-    if (this.gameOverHighScoreValue) {
-      this.gameOverHighScoreValue.textContent = this.scoreManager.getHighScore();
-    }
-    
-    // Mostrar la pantalla de game over
-    if (this.gameOverScreen) {
-      this.gameOverScreen.style.display = 'block';
-    }
+    // Mostrar la pantalla de game over con scores
+    this.renderer.renderGameOver(
+      this.scoreManager.getScore(),
+      this.scoreManager.getHighScore()
+    );
   }
 
   hideGameOver() {
     // Ocultar la pantalla de game over
-    if (this.gameOverScreen) {
-      this.gameOverScreen.style.display = 'none';
-    }
+    this.renderer.hideGameOver();
   }
 
   restart() {
     // Resetear estado
     this.player.reset();
+    this.renderer.renderPlayer();
     this.scoreManager.reset();
     
     // Resetear vidas

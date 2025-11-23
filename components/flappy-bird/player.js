@@ -68,34 +68,6 @@ export default class Player {
     return collisions;
   }
 
-  render() {
-    // Actualiza la posición visual del jugador en el DOM
-    if (this.element) {
-      this.element.style.top = this.y + 'px';
-    }
-  }
-
-  applyInvulnerabilityEffect(isInvulnerable) {
-    // Aplica efecto visual de invulnerabilidad
-    if (!this.element) return;
-    
-    if (isInvulnerable) {
-      this.element.style.opacity = Math.sin(Date.now() / 100) > 0 ? '1' : '0.5';
-    } else {
-      this.element.style.opacity = '1';
-    }
-  }
-
-  applyCollisionEffect() {
-    // Aplica efecto visual de colisión
-    if (!this.element) return;
-    
-    this.element.style.filter = 'brightness(2) hue-rotate(90deg)';
-    setTimeout(() => {
-      this.element.style.filter = 'none';
-    }, 200);
-  }
-
   getX() {
     // Obtiene la posición X del jugador
     return this.x;
@@ -124,7 +96,6 @@ export default class Player {
     // Resetea la posición y velocidad del jugador
     this.y = this.initialY;
     this.velocity = 0;
-    this.render();
   }
 
   activate() {

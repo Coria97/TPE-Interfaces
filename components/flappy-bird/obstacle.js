@@ -1,14 +1,11 @@
-// obstacle.js - Clase para manejar obstáculos individuales
-
 export default class Obstacle {
-  constructor(gameContainer, initialX = 800, debugMode = false) {
+  constructor(gameContainer, initialX = 800) {
     this.gameContainer = gameContainer;
     this.x = initialX;
     this.width = 120; // Ancho del obstáculo (más ancho para las rocas)
     this.gap = 190; // Espacio entre tuberías superior e inferior
     this.speed = 3; // Velocidad de movimiento
     this.passed = false; // Si el submarino ya pasó este obstáculo
-    this.debugMode = debugMode; // Modo debug para ver hitboxes
     
     // Altura aleatoria para el gap
     this.gapY = Math.random() * (450 - 200) + 200; // Entre 200 y 650
@@ -70,9 +67,8 @@ export default class Obstacle {
   }
 
   update() {
-    // Mover el obstáculo hacia la izquierda
+    // Actualizar la posición física del obstáculo (solo lógica, no renderizado)
     this.x -= this.speed;
-    this.element.style.left = this.x + 'px';
   }
 
   isOffScreen() {
@@ -81,7 +77,7 @@ export default class Obstacle {
   }
 
   reset(newX = 900) {
-    // Resetear el obstáculo para reutilizarlo
+    // Resetear el obstáculo para reutilizarlo (solo lógica, no renderizado)
     this.x = newX;
     this.passed = false;
     this.gapY = Math.random() * (450 - 200) + 200;
@@ -90,12 +86,11 @@ export default class Obstacle {
     this.rockType = Math.floor(Math.random() * 4) + 1;
     this.rockImage = `../../assets/flappy-bird/obstacles/rocks-${this.rockType}.png`;
     
-    // Actualizar imágenes y alturas
+    // Actualizar imágenes y alturas (esto es necesario para el renderizado inicial)
     this.topPipe.style.backgroundImage = `url("${this.rockImage}")`;
     this.bottomPipe.style.backgroundImage = `url("${this.rockImage}")`;
     this.topPipe.style.height = this.gapY + 'px';
     this.bottomPipe.style.height = (700 - this.gapY - this.gap) + 'px';
-    this.element.style.left = this.x + 'px';
   }
 
   checkCollision(submarineX, submarineY, submarineSize) {
