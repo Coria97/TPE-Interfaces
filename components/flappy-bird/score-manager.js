@@ -1,44 +1,15 @@
 export default class ScoreManager {
-  constructor(gameContainer) {
-    this.gameContainer = gameContainer;
+  constructor(scoreDisplayElement) {
+    this.scoreDisplay = scoreDisplayElement;
     this.score = 0;
     this.highScore = this.loadHighScore();
     
-    this.createScoreDisplay();
-  }
-
-  createScoreDisplay() {
-    // Crear display de puntaje
-    this.scoreDisplay = document.createElement('div');
-    this.scoreDisplay.style.position = 'absolute';
-    this.scoreDisplay.style.top = '20px';
-    this.scoreDisplay.style.left = '50%';
-    this.scoreDisplay.style.transform = 'translateX(-50%)';
-    this.scoreDisplay.style.fontSize = '48px';
-    this.scoreDisplay.style.fontWeight = 'bold';
-    this.scoreDisplay.style.color = 'var(--rushgames-primary)';
-    this.scoreDisplay.style.textShadow = '0 0 10px rgba(126, 211, 33, 0.5)';
-    this.scoreDisplay.style.zIndex = '20';
-    this.scoreDisplay.style.fontFamily = 'var(--text-title)';
-    this.scoreDisplay.textContent = '0';
-    this.gameContainer.appendChild(this.scoreDisplay);
+    this.updateDisplay();
   }
 
   increment() {
     // Incrementa el score en 1
     this.score++;
-    this.updateDisplay();
-    
-    // Verificar si es un nuevo récord
-    if (this.score > this.highScore) {
-      this.highScore = this.score;
-      this.saveHighScore();
-    }
-  }
-
-  incrementBy(amount) {
-    // Incrementa el score por una cantidad específica
-    this.score += amount;
     this.updateDisplay();
     
     // Verificar si es un nuevo récord
@@ -92,10 +63,8 @@ export default class ScoreManager {
   }
 
   destroy() {
-    // Limpia el display
-    if (this.scoreDisplay && this.scoreDisplay.parentNode) {
-      this.scoreDisplay.parentNode.removeChild(this.scoreDisplay);
-    }
+    // El display se maneja en el HTML, no necesita limpieza
+    this.scoreDisplay = null;
   }
 }
 

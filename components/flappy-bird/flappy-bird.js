@@ -50,8 +50,6 @@ class RushGameFlappyBird extends HTMLElement {
       // Obstáculos
       this.obstacles = [];
       this.obstacleSpacing = 300; // Distancia entre obstáculos
-      this.obstacleTimer = 0;
-      this.obstacleInterval = 90; // Frames entre obstáculos
       
       // Sistema de vidas
       this.livesManager = null;
@@ -119,7 +117,8 @@ class RushGameFlappyBird extends HTMLElement {
 
   initScore() {
     // Inicializar sistema de puntuación
-    this.scoreManager = new ScoreManager(this.gameContent);
+    const scoreDisplayElement = this.shadowRoot.querySelector('#score-display');
+    this.scoreManager = new ScoreManager(scoreDisplayElement);
   }
 
   initRenderer() {
@@ -180,8 +179,6 @@ class RushGameFlappyBird extends HTMLElement {
   }
 
   updateObstacles() {
-    const playerBounds = this.player.getBounds();
-    
     // Actualizar cada obstáculo
     this.obstacles.forEach(obstacle => {
       obstacle.update();
@@ -194,7 +191,7 @@ class RushGameFlappyBird extends HTMLElement {
       }
       
       // Verificar si pasó el obstáculo (sumar punto)
-      if (obstacle.checkPassed(playerBounds.x)) {
+      if (obstacle.checkPassed(this.player.x)) {
         this.scoreManager.increment();
       }
       

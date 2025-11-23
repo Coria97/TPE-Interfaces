@@ -45,8 +45,6 @@ export default class LivesManager {
     heart.style.imageRendering = 'crisp-edges'; // Para sprites pixelados
     heart.dataset.state = 'full'; // full, empty
     
-    console.log('Corazón creado con imagen:', heart.style.backgroundImage);
-    
     return heart;
   }
 
@@ -92,25 +90,6 @@ export default class LivesManager {
     }, 300);
   }
 
-  gainLife() {
-    // Ganar una vida (power-up futuro)
-    if (this.currentLives >= this.maxLives) return;
-    
-    const emptyHeartIndex = this.currentLives;
-    const heart = this.hearts[emptyHeartIndex];
-    
-    this.currentLives++;
-    
-    // Animación de ganancia
-    heart.style.backgroundImage = 'url("../../assets/flappy-bird/lives/heart.png")';
-    heart.dataset.state = 'full';
-    heart.style.transform = 'scale(1.3)';
-    
-    setTimeout(() => {
-      heart.style.transform = 'scale(1)';
-    }, 300);
-  }
-
   setInvulnerable(state) {
     this.invulnerable = state;
     
@@ -124,10 +103,6 @@ export default class LivesManager {
 
   isInvulnerable() {
     return this.invulnerable;
-  }
-
-  getCurrentLives() {
-    return this.currentLives;
   }
 
   reset() {

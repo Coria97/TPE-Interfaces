@@ -93,32 +93,6 @@ export default class Obstacle {
     this.bottomPipe.style.height = (700 - this.gapY - this.gap) + 'px';
   }
 
-  checkCollision(submarineX, submarineY, submarineSize) {
-    // Verificar si el submarino está en el rango horizontal del obstáculo
-    const submarineLeft = submarineX + 5; // Padding para hitbox más justa
-    const submarineRight = submarineX + submarineSize - 5;
-    const submarineTop = submarineY + 5;
-    const submarineBottom = submarineY + submarineSize - 5;
-    
-    // Hitbox del obstáculo con padding (más pequeña que la imagen visual)
-    const obstacleLeft = this.x + this.hitboxPadding;
-    const obstacleRight = this.x + this.width - this.hitboxPadding;
-    
-    // Si el submarino está dentro del rango horizontal del obstáculo
-    if (submarineRight > obstacleLeft && submarineLeft < obstacleRight) {
-      // Verificar colisión con tubería superior (con un poco de margen)
-      if (submarineTop < this.gapY - 10) {
-        return true;
-      }
-      // Verificar colisión con tubería inferior (con un poco de margen)
-      if (submarineBottom > this.gapY + this.gap + 10) {
-        return true;
-      }
-    }
-    
-    return false;
-  }
-
   checkPassed(submarineX) {
     // Verificar si el submarino pasó el obstáculo
     if (!this.passed && submarineX > this.x + this.width) {

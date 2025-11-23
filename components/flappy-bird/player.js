@@ -68,21 +68,6 @@ export default class Player {
     return collisions;
   }
 
-  getX() {
-    // Obtiene la posición X del jugador
-    return this.x;
-  }
-
-  getY() {
-    // Obtiene la posición Y del jugador
-    return this.y;
-  }
-
-  getSize() {
-    // Obtiene el tamaño del jugador
-    return this.size;
-  }
-
   getBounds() {
     // Obtiene la posición y tamaño del jugador para detección de colisiones
     return {
@@ -108,7 +93,6 @@ export default class Player {
     this.isActive = false;
   }
 
-  
   destroy() {
     // Destruye el jugador (detiene movimiento)
     this.deactivate();

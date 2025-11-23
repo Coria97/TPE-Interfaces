@@ -167,6 +167,25 @@ rushgame-flappy-bird,
 
 /* 
 ========================================
+            SCORE DISPLAY
+========================================
+*/
+
+.score-display {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 48px;
+  font-weight: bold;
+  color: var(--rushgames-primary);
+  text-shadow: 0 0 10px rgba(126, 211, 33, 0.5);
+  z-index: 20;
+  font-family: var(--text-title);
+}
+
+/* 
+========================================
             GAME OVER SCREEN
 ========================================
 */
