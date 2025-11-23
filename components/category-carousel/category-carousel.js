@@ -14,8 +14,8 @@ class RushGameCategoryCarousel extends HTMLElement {
   async init() {
     try {
       const [html, css] = await Promise.all([
-        fetch('./components/category-carousel/category_carousel.html').then((res) => res.text()),
-        fetch('./components/category-carousel/category_carousel.css').then((res) => res.text()),
+        fetch('./components/category-carousel/category-carousel.html').then((res) => res.text()),
+        fetch('./components/category-carousel/category-carousel.css').then((res) => res.text()),
       ]);
 
       const template = document.createElement('template');

@@ -1,6 +1,7 @@
 import Obstacle from './obstacle.js';
 import LivesManager from './lives-manager.js';
 import Player from './player.js';
+import CollisionManager from './collision-manager.js';
 
 class RushGameFlappyBird extends HTMLElement {
   constructor() {
@@ -57,6 +58,9 @@ class RushGameFlappyBird extends HTMLElement {
       
       // Sistema de vidas
       this.livesManager = null;
+      
+      // Sistema de colisiones
+      this.collisionManager = new CollisionManager();
 
       console.log('Inicializando componentes del juego...');
       
@@ -147,8 +151,8 @@ class RushGameFlappyBird extends HTMLElement {
     this.player.update();
     
     // Verificar colisiones con límites
-    const boundsCollisions = this.player.checkBounds();
-    if (boundsCollisions.bottom && !this.livesManager.isInvulnerable()) {
+    const boundaryCollisions = this.collisionManager.checkBoundaryCollisions(this.player);
+    if (boundaryCollisions.bottom && !this.livesManager.isInvulnerable()) {
       // Perder vida por tocar el suelo
       this.handleCollision();
     }
@@ -175,7 +179,7 @@ class RushGameFlappyBird extends HTMLElement {
       
       // Verificar colisión solo si no está invulnerable
       if (!this.livesManager.isInvulnerable()) {
-        if (obstacle.checkCollision(playerBounds.x, playerBounds.y, playerBounds.size)) {
+        if (this.collisionManager.checkObstacleCollision(this.player, obstacle)) {
           this.handleCollision();
         }
       }
