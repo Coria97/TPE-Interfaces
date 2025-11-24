@@ -4,6 +4,7 @@ import Player from './player.js';
 import CollisionManager from './collision-manager.js';
 import ScoreManager from './score-manager.js';
 import Renderer from './renderer.js';
+import PowerUp from './power-up.js';
 
 class RushGameFlappyBird extends HTMLElement {
   constructor() {
@@ -50,6 +51,13 @@ class RushGameFlappyBird extends HTMLElement {
       // Obstáculos
       this.obstacles = [];
       this.obstacleSpacing = 300; // Distancia entre obstáculos
+      
+      // Power-ups
+      this.powerUps = [];
+      this.powerUpSpawnChance = 0.20; // 20% de chance de spawn con cada obstáculo
+      this.powerUpMinDistance = 500; // Distancia mínima entre power-ups
+      this.lastPowerUpX = 0;
+      this.powerUpTypes = ['heart', 'coin']; // Tipos de power-ups disponibles
       
       // Sistema de vidas
       this.livesManager = null;
@@ -164,15 +172,18 @@ class RushGameFlappyBird extends HTMLElement {
       this.handleCollision();
     }
     
-    // Renderizar todos los elementos
-    this.renderer.renderAll(
-      this.player,
-      this.obstacles,
-      this.livesManager.isInvulnerable()
-    );
-    
     // Actualizar obstáculos
     this.updateObstacles();
+    
+    // Actualizar power-ups
+    this.updatePowerUps();
+    
+    // Renderizar todos los elementos
+    this.renderer.renderAll(
+      this.obstacles,
+      this.livesManager.isInvulnerable(),
+      this.powerUps
+    );
     
     // Continuar el loop
     this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
@@ -199,9 +210,63 @@ class RushGameFlappyBird extends HTMLElement {
       if (obstacle.isOffScreen()) {
         // Encontrar el obstáculo más a la derecha
         const maxX = Math.max(...this.obstacles.map(o => o.x));
-        obstacle.reset(maxX + this.obstacleSpacing);
+        const newX = maxX + this.obstacleSpacing;
+        obstacle.reset(newX);
+        
+        // Posibilidad de spawn de power-up
+        this.trySpawnPowerUp(newX);
       }
     });
+  }
+
+  trySpawnPowerUp(obstacleX) {
+    // Verificar si se puede spawnear un power-up
+    const distanceFromLast = obstacleX - this.lastPowerUpX;
+    
+    if (distanceFromLast >= this.powerUpMinDistance && Math.random() < this.powerUpSpawnChance) {
+      // Seleccionar tipo de power-up aleatoriamente
+      const randomType = this.powerUpTypes[Math.floor(Math.random() * this.powerUpTypes.length)];
+      const powerUp = new PowerUp(this.gameContent, obstacleX + 150, randomType);
+      this.powerUps.push(powerUp);
+      this.lastPowerUpX = obstacleX;
+    }
+  }
+
+  updatePowerUps() {
+    // Actualizar cada power-up
+    this.powerUps.forEach((powerUp, index) => {
+      powerUp.update();
+      
+      // Verificar colisión con el jugador
+      if (this.collisionManager.checkPowerUpCollision(this.player, powerUp)) {
+        this.handlePowerUpCollection(powerUp);
+      }
+      
+      // Eliminar si salió de pantalla
+      if (powerUp.isOffScreen()) {
+        powerUp.destroy();
+        this.powerUps.splice(index, 1);
+      }
+    });
+  }
+
+  handlePowerUpCollection(powerUp) {
+    // Manejar la recolección de un power-up
+    if (powerUp.type === 'heart') {
+      const lifeGained = this.livesManager.gainLife();
+      if (lifeGained) {
+        powerUp.collect();
+        console.log('¡Vida ganada! Vidas actuales:', this.livesManager.currentLives);
+      } else {
+        // Si ya tiene todas las vidas, el power-up pasa sin ser recolectado
+        console.log('Vidas al máximo, power-up no recolectado');
+      }
+    } else if (powerUp.type === 'coin') {
+      // Siempre se puede recolectar monedas
+      powerUp.collect();
+      this.scoreManager.increment(5); // Suma 5 puntos
+      console.log('¡Moneda recolectada! +5 puntos. Score:', this.scoreManager.getScore());
+    }
   }
 
   handleCollision() {
@@ -258,6 +323,11 @@ class RushGameFlappyBird extends HTMLElement {
       obstacle.reset(900 + (index * this.obstacleSpacing));
     });
     
+    // Limpiar power-ups existentes
+    this.powerUps.forEach(powerUp => powerUp.destroy());
+    this.powerUps = [];
+    this.lastPowerUpX = 0;
+    
     // Reiniciar juego
     this.isGameRunning = true;
     this.player.activate();
@@ -286,6 +356,10 @@ class RushGameFlappyBird extends HTMLElement {
     // Destruir obstáculos
     this.obstacles.forEach(obstacle => obstacle.destroy());
     this.obstacles = [];
+    
+    // Destruir power-ups
+    this.powerUps.forEach(powerUp => powerUp.destroy());
+    this.powerUps = [];
     
     // Destruir sistema de vidas
     if (this.livesManager) {

@@ -6,8 +6,8 @@ export default class Player {
     this.initialY = 350;
     this.x = 150;
     this.size = 38;
-    this.gravity = 0.6;
-    this.jumpForce = -12;
+    this.gravity = 0.4;
+    this.jumpForce = -10;
     this.minY = 0;
     this.maxY = 650;
     

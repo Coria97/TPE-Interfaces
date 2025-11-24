@@ -45,6 +45,15 @@ export default class Renderer {
     });
   }
 
+  renderPowerUps(powerUps) {
+    // Renderiza todos los power-ups (actualiza sus posiciones visuales)
+    powerUps.forEach(powerUp => {
+      if (powerUp && powerUp.element && powerUp.isActive()) {
+        powerUp.element.style.left = powerUp.x + 'px';
+      }
+    });
+  }
+
   renderGameOver(score, highScore) {
     // Actualiza y muestra la pantalla de game over
     if (this.gameOverScoreValue) {
@@ -67,11 +76,12 @@ export default class Renderer {
     }
   }
 
-  renderAll(player, obstacles, isInvulnerable) {
+  renderAll(obstacles, isInvulnerable, powerUps) {
     // Renderiza todos los elementos del juego
     this.renderPlayer();
     this.renderPlayerInvulnerability(isInvulnerable);
     this.renderObstacles(obstacles);
+    this.renderPowerUps(powerUps);
   }
 }
 

@@ -56,5 +56,33 @@ export default class CollisionManager {
     
     return false;
   }
+
+  checkPowerUpCollision(player, powerUp) {
+    // Verifica colisiones con power-ups
+    if (!powerUp.isActive()) return false;
+    
+    const playerBounds = player.getBounds();
+    const powerUpBounds = powerUp.getBounds();
+    
+    // Aplicar padding al hitbox del jugador
+    const playerLeft = playerBounds.x + this.playerHitboxPadding;
+    const playerRight = playerBounds.x + playerBounds.size - this.playerHitboxPadding;
+    const playerTop = playerBounds.y + this.playerHitboxPadding;
+    const playerBottom = playerBounds.y + playerBounds.size - this.playerHitboxPadding;
+    
+    // Hitbox del power-up
+    const powerUpLeft = powerUpBounds.x;
+    const powerUpRight = powerUpBounds.x + powerUpBounds.width;
+    const powerUpTop = powerUpBounds.y;
+    const powerUpBottom = powerUpBounds.y + powerUpBounds.height;
+    
+    // Verificar colisión rectangular
+    return (
+      playerRight > powerUpLeft &&
+      playerLeft < powerUpRight &&
+      playerBottom > powerUpTop &&
+      playerTop < powerUpBottom
+    );
+  }
 }
 

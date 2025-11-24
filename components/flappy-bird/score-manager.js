@@ -7,9 +7,9 @@ export default class ScoreManager {
     this.updateDisplay();
   }
 
-  increment() {
-    // Incrementa el score en 1
-    this.score++;
+  increment(amount = 1) {
+    // Incrementa el score en la cantidad especificada
+    this.score += amount;
     this.updateDisplay();
     
     // Verificar si es un nuevo récord

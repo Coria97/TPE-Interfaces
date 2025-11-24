@@ -105,6 +105,42 @@ export default class LivesManager {
     return this.invulnerable;
   }
 
+  gainLife() {
+    // Ganar una vida (si no está al máximo)
+    if (this.currentLives >= this.maxLives) {
+      return false; // Ya tiene todas las vidas
+    }
+
+    const gainedHeartIndex = this.currentLives;
+    const heart = this.hearts[gainedHeartIndex];
+    
+    // Cambiar a corazón lleno
+    heart.style.backgroundImage = 'url("../../assets/flappy-bird/lives/heart.png")';
+    heart.dataset.state = 'full';
+    
+    // Animación de ganancia
+    this.animateHeartGain(heart);
+    
+    this.currentLives++;
+    
+    return true; // Vida ganada exitosamente
+  }
+
+  animateHeartGain(heart) {
+    // Animación de corazón al ganarse
+    heart.style.transform = 'scale(0)';
+    heart.style.opacity = '0';
+    
+    setTimeout(() => {
+      heart.style.transform = 'scale(1.5)';
+      heart.style.opacity = '1';
+    }, 50);
+    
+    setTimeout(() => {
+      heart.style.transform = 'scale(1)';
+    }, 300);
+  }
+
   reset() {
     // Resetear todas las vidas
     this.currentLives = this.maxLives;

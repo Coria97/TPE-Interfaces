@@ -184,6 +184,47 @@ rushgame-flappy-bird,
 
 /* 
 ========================================
+            POWER-UPS
+========================================
+*/
+
+.power-up {
+  position: absolute;
+  pointer-events: none;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+}
+
+.power-up-heart {
+  animation: heart-rotate 0.8s steps(12) infinite;
+}
+
+@keyframes heart-rotate {
+  /* El sprite escalado x2: 12 frames de 64px cada uno = 768px total */
+  0% { 
+    background-position: 0 0;
+  }
+  100% { 
+    background-position: -768px 0;
+  }
+}
+
+.power-up-coin {
+  animation: coin-spin 0.6s steps(8) infinite;
+}
+
+@keyframes coin-spin {
+  /* El sprite escalado x3: 8 frames de 48px cada uno = 384px total */
+  0% { 
+    background-position: 0 0;
+  }
+  100% { 
+    background-position: -384px 0;
+  }
+}
+
+/* 
+========================================
             SCORE DISPLAY
 ========================================
 */
