@@ -149,20 +149,37 @@ rushgame-flappy-bird,
   transform: translateY(-50%);
   transition: top 0.1s ease-out;
   pointer-events: all;
+  overflow: visible;
 }
 
-/* Animación de impulso */
-@keyframes flap {
-  0%, 100% {
-    transform: translateY(-50%) scale(1) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-50%) scale(1.1) rotate(-5deg);
-  }
+.propulsion-bubble {
+  position: absolute;
+  width: 30px; /* Tamaño de la viñeta individual */
+  height: 30px;
+  left: -34px;
+  top: 50%;
+  margin-top: -15px;
+  background: url('../../assets/flappy-bird/sub/propulsion-bubble-30x30.png') no-repeat;
+  pointer-events: none;
+  /* Invisible por defecto */
+  opacity: 0;
 }
 
-.submarine.flapping {
-  animation: flap 0.3s ease-in-out;
+/* Aplicamos la animación cuando el submarino hace flapping */
+.submarine.flapping .propulsion-bubble {
+  opacity: 1;
+  animation: propulsion-bubble 0.4s steps(8);
+}
+
+@keyframes propulsion-bubble {
+  /* Partimos de la primera viñeta del sprite sheet */
+  0% { 
+    background-position: 0 0;
+  }
+  /* El tamaño total de ancho del sprite es de 240px */
+  100% { 
+    background-position: -240px 0;
+  }
 }
 
 /* 

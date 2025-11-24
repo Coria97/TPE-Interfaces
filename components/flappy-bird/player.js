@@ -29,7 +29,7 @@ export default class Player {
     this.element.classList.add('flapping');
     setTimeout(() => {
       this.element.classList.remove('flapping');
-    }, 300);
+    }, 400);
   }
 
   update() {
