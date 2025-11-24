@@ -54,7 +54,7 @@ export default class Renderer {
     });
   }
 
-  renderGameOver(score, highScore) {
+  renderGameOver(score, highScore, won = false) {
     // Actualiza y muestra la pantalla de game over
     if (this.gameOverScoreValue) {
       this.gameOverScoreValue.textContent = score;
@@ -65,6 +65,18 @@ export default class Renderer {
     }
     
     if (this.gameOverScreen) {
+      // Cambiar el título según si ganó o perdió
+      const titleElement = this.gameOverScreen.querySelector('.game-over-title');
+      if (titleElement) {
+        if (won) {
+          titleElement.textContent = '¡GANASTE!';
+          titleElement.style.color = '#FFD700'; // Dorado
+        } else {
+          titleElement.textContent = 'GAME OVER';
+          titleElement.style.color = 'var(--rushgames-primary)';
+        }
+      }
+      
       this.gameOverScreen.style.display = 'block';
     }
   }
@@ -84,4 +96,3 @@ export default class Renderer {
     this.renderPowerUps(powerUps);
   }
 }
-

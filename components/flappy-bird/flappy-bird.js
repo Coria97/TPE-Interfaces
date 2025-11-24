@@ -5,6 +5,7 @@ import CollisionManager from './collision-manager.js';
 import ScoreManager from './score-manager.js';
 import Renderer from './renderer.js';
 import PowerUp from './power-up.js';
+import AudioManager from './audio-manager.js';
 
 class RushGameFlappyBird extends HTMLElement {
   constructor() {
@@ -47,17 +48,19 @@ class RushGameFlappyBird extends HTMLElement {
       
       // Estado del juego
       this.isGameRunning = false;
+      this.hasWon = false; // Nuevo: flag para saber si ganó
+      this.winScore = 35; // Puntuación para ganar
       
       // Obstáculos
       this.obstacles = [];
-      this.obstacleSpacing = 300; // Distancia entre obstáculos
+      this.obstacleSpacing = 300;
       
       // Power-ups
       this.powerUps = [];
-      this.powerUpSpawnChance = 0.20; // 20% de chance de spawn con cada obstáculo
-      this.powerUpMinDistance = 500; // Distancia mínima entre power-ups
+      this.powerUpSpawnChance = 0.20;
+      this.powerUpMinDistance = 500;
       this.lastPowerUpX = 0;
-      this.powerUpTypes = ['heart', 'coin']; // Tipos de power-ups disponibles
+      this.powerUpTypes = ['heart', 'coin'];
       
       // Sistema de vidas
       this.livesManager = null;
@@ -70,6 +73,9 @@ class RushGameFlappyBird extends HTMLElement {
       
       // Sistema de renderizado
       this.renderer = null;
+      
+      // Sistema de audio
+      this.audioManager = null;
 
       console.log('Inicializando componentes del juego...');
       
@@ -78,6 +84,7 @@ class RushGameFlappyBird extends HTMLElement {
       this.initLives();
       this.initScore();
       this.initRenderer();
+      this.initAudio();
       this.setupGameOver();
       this.startGame();
       
@@ -139,6 +146,11 @@ class RushGameFlappyBird extends HTMLElement {
     );
   }
 
+  initAudio() {
+    // Inicializar sistema de audio
+    this.audioManager = new AudioManager();
+  }
+
   setupGameOver() {
     // Configurar evento del botón de reinicio
     if (this.restartButton) {
@@ -156,6 +168,12 @@ class RushGameFlappyBird extends HTMLElement {
 
   startGame() {
     this.isGameRunning = true;
+    
+    // Reproducir música de inicio
+    if (this.audioManager) {
+      this.audioManager.playGameStart();
+    }
+    
     this.gameLoop();
   }
 
@@ -204,6 +222,11 @@ class RushGameFlappyBird extends HTMLElement {
       // Verificar si pasó el obstáculo (sumar punto)
       if (obstacle.checkPassed(this.player.x)) {
         this.scoreManager.increment();
+        
+        // Verificar si ganó
+        if (this.scoreManager.getScore() >= this.winScore && !this.hasWon) {
+          this.winGame();
+        }
       }
       
       // Reciclar obstáculo si salió de pantalla
@@ -256,6 +279,12 @@ class RushGameFlappyBird extends HTMLElement {
       const lifeGained = this.livesManager.gainLife();
       if (lifeGained) {
         powerUp.collect();
+        
+        // Reproducir sonido de ganar vida
+        if (this.audioManager) {
+          this.audioManager.playLifeUpSound();
+        }
+        
         console.log('¡Vida ganada! Vidas actuales:', this.livesManager.currentLives);
       } else {
         // Si ya tiene todas las vidas, el power-up pasa sin ser recolectado
@@ -272,6 +301,11 @@ class RushGameFlappyBird extends HTMLElement {
   handleCollision() {
     // Manejar colisión con obstáculo
     const isDead = this.livesManager.loseLife();
+    
+    // Reproducir sonido de daño
+    if (this.audioManager) {
+      this.audioManager.playDamageSound();
+    }
     
     // Efecto visual de colisión
     this.renderer.renderPlayerCollisionEffect();
@@ -292,15 +326,38 @@ class RushGameFlappyBird extends HTMLElement {
     this.isGameRunning = false;
     console.log('Game Over! Score:', this.scoreManager.getScore());
     
+    // Reproducir música de game over
+    if (this.audioManager) {
+      this.audioManager.playGameEnd();
+    }
+    
     // Mostrar mensaje de game over
-    this.showGameOver();
+    this.showGameOver(false); // false = no ganó
   }
 
-  showGameOver() {
+  winGame() {
+    // El jugador ganó al llegar a 35 puntos
+    if (!this.isGameRunning) return;
+    
+    this.isGameRunning = false;
+    this.hasWon = true;
+    console.log('¡Ganaste! Score:', this.scoreManager.getScore());
+    
+    // Reproducir música de game over (o puedes usar otra música si tienes)
+    if (this.audioManager) {
+      this.audioManager.playGameEnd();
+    }
+    
+    // Mostrar mensaje de victoria
+    this.showGameOver(true); // true = ganó
+  }
+
+  showGameOver(won = false) {
     // Mostrar la pantalla de game over con scores
     this.renderer.renderGameOver(
       this.scoreManager.getScore(),
-      this.scoreManager.getHighScore()
+      this.scoreManager.getHighScore(),
+      won
     );
   }
 
@@ -314,6 +371,7 @@ class RushGameFlappyBird extends HTMLElement {
     this.player.reset();
     this.renderer.renderPlayer();
     this.scoreManager.reset();
+    this.hasWon = false; // Resetear flag de victoria
     
     // Resetear vidas
     this.livesManager.reset();
@@ -327,6 +385,11 @@ class RushGameFlappyBird extends HTMLElement {
     this.powerUps.forEach(powerUp => powerUp.destroy());
     this.powerUps = [];
     this.lastPowerUpX = 0;
+    
+    // Reiniciar música
+    if (this.audioManager) {
+      this.audioManager.playGameStart();
+    }
     
     // Reiniciar juego
     this.isGameRunning = true;
@@ -369,6 +432,11 @@ class RushGameFlappyBird extends HTMLElement {
     // Destruir sistema de puntuación
     if (this.scoreManager) {
       this.scoreManager.destroy();
+    }
+    
+    // Destruir sistema de audio
+    if (this.audioManager) {
+      this.audioManager.destroy();
     }
     
     // Remover event listeners
