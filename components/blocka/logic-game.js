@@ -29,12 +29,12 @@ export class LogicGame {
     this.levelFilters = [null, 'grayscale', 'brightness', 'invert', 'grayscale', 'brightness'];
 
     this.imageBank = [
-      './assets/gl-1.jpg',
-      './assets/gl-2.jpg',
-      './assets/gl-3.jpg',
-      './assets/gl-4.jpg',
-      './assets/gl-5.jpg',
-      './assets/gl-6.jpg',
+      './assets/blocka/gl-1.jpg',
+      './assets/blocka/gl-2.jpg',
+      './assets/blocka/gl-3.jpg',
+      './assets/blocka/gl-4.jpg',
+      './assets/blocka/gl-5.jpg',
+      './assets/blocka/gl-6.jpg',
     ];
 
     this.preloadedLevelImages = [];

@@ -1,0 +1,318 @@
+/* 
+========================================
+            FLAPPY BIRD
+========================================
+*/
+
+:host,
+rushgame-flappy-bird,
+.game-container {
+  display: block;
+  width: 700px;
+  height: 700px;
+  box-sizing: border-box;
+}
+
+.game-container {
+  position: relative;
+  overflow: hidden;
+  background: #0a0e13;
+}
+
+/* 
+========================================
+            PARALLAX LAYERS
+======================================== 
+*/
+
+.parallax-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%; /* Doble ancho para scroll infinito */
+  height: 100%;
+  background-repeat: repeat-x;
+  background-size: 50% 100%; /* Cada repetición ocupa el 50% del ancho total */
+}
+
+/* Capa 1: Fondo más lejano */
+.layer-1 {
+  z-index: 1;
+  background-image: url('../../assets/flappy-bird/background/background.png');
+  background-position: 0 0;
+  animation: scroll 40s linear infinite;
+}
+
+/* Capa 2: Pilares del fondo */
+.layer-2 {
+  z-index: 2;
+  background-image: url('../../assets/flappy-bird/background/background-pillars.png');
+  background-position: 0 0;
+  animation: scroll 25s linear infinite;
+}
+
+/* Capa 3: Luz 1 (efecto de iluminación) */
+.layer-3 {
+  z-index: 3;
+  background-image: url('../../assets/flappy-bird/background/light-1.png');
+  background-position: 0 0;
+  animation: scroll 10s linear infinite;
+  opacity: 0.1;
+  height: 200%;
+}
+
+/* Capa 4: Luz 2 (invertida) */
+.layer-4 {
+  z-index: 4;
+  background-image: url('../../assets/flappy-bird/background/light-2.png');
+  background-position: 0 0;
+  animation: scroll-flip 20s linear infinite;
+  opacity: 0.1;
+  left: 50%;
+  height: 200%;
+}
+
+/* Capa 5: Rocas inferiores (lentas) */
+.layer-5 {
+  z-index: 5;
+  background-image: url('../../assets/flappy-bird/background/rocks-low.png');
+  background-position: 0 0;
+  animation: scroll 15s linear infinite;
+}
+
+/* Capa 6: Rocas inferiores (rápidas) */
+.layer-6 {
+  z-index: 6;
+  background-image: url('../../assets/flappy-bird/background/rocks-low.png');
+  background-position: 0 0;
+  animation: scroll 5s linear infinite;
+}
+
+
+/* 
+========================================
+          PARALLAX ANIMATIONS
+======================================== */
+
+/* Animación de movimiento del background */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Animación con efecto espejo (flip) */
+@keyframes scroll-flip {
+  0% {
+    transform: translateX(0) scaleX(-1);
+  }
+  100% {
+    transform: translateX(-50%) scaleX(-1);
+  }
+}
+
+/* Animación de parpadeo */
+@keyframes blink {
+  0%, 100% { 
+    opacity: 1; 
+  }
+  50% { 
+    opacity: 0.3; 
+  }
+}
+
+/* 
+========================================
+            GAME CONTENT LAYER
+========================================
+*/
+
+.game-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* 
+========================================
+            SUBMARINE
+========================================
+*/
+
+.submarine {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  background-image: url('../../assets/flappy-bird/sub/submarine-38x38.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  left: 150px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: top 0.1s ease-out;
+  pointer-events: all;
+  overflow: visible;
+}
+
+.propulsion-bubble {
+  position: absolute;
+  width: 30px; /* Tamaño de la viñeta individual */
+  height: 30px;
+  left: -34px;
+  top: 50%;
+  margin-top: -15px;
+  background: url('../../assets/flappy-bird/sub/propulsion-bubble-30x30.png') no-repeat;
+  pointer-events: none;
+  /* Invisible por defecto */
+  opacity: 0;
+}
+
+/* Animación cuando el submarino hace flapping */
+.submarine.flapping .propulsion-bubble {
+  opacity: 1;
+  animation: propulsion-bubble 0.4s steps(8);
+}
+
+@keyframes propulsion-bubble {
+  /* De la primera viñeta del sprite sheet */
+  0% { 
+    background-position: 0 0;
+  }
+  /* El tamaño total de ancho del sprite es de 240px */
+  100% { 
+    background-position: -240px 0;
+  }
+}
+
+/* 
+========================================
+            POWER-UPS
+========================================
+*/
+
+.power-up {
+  position: absolute;
+  pointer-events: none;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+}
+
+.power-up-heart {
+  animation: heart-rotate 0.8s steps(12) infinite;
+}
+
+@keyframes heart-rotate {
+  /* El sprite escalado x2: 12 frames de 64px cada uno = 768px total */
+  0% { 
+    background-position: 0 0;
+  }
+  100% { 
+    background-position: -768px 0;
+  }
+}
+
+.power-up-coin {
+  animation: coin-spin 0.6s steps(8) infinite;
+}
+
+@keyframes coin-spin {
+  /* El sprite escalado x3: 8 frames de 48px cada uno = 384px total */
+  0% { 
+    background-position: 0 0;
+  }
+  100% { 
+    background-position: -384px 0;
+  }
+}
+
+/* 
+========================================
+            SCORE DISPLAY
+========================================
+*/
+
+.score-display {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 48px;
+  font-weight: bold;
+  color: var(--rushgames-primary);
+  text-shadow: 0 0 10px rgba(126, 211, 33, 0.5);
+  z-index: 20;
+  font-family: var(--text-title);
+}
+
+/* 
+========================================
+            GAME OVER SCREEN
+========================================
+*/
+
+.game-over-screen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 30;
+  background: rgba(14, 15, 16, 0.95);
+  padding: 40px;
+  border-radius: 12px;
+  border: 3px solid var(--rushgames-primary);
+  pointer-events: auto;
+}
+
+.game-over-title {
+  font-size: 48px;
+  color: var(--rushgames-primary);
+  font-weight: bold;
+  margin-bottom: 20px;
+  font-family: var(--text-title);
+}
+
+.game-over-score {
+  font-size: 24px;
+  color: var(--text-primary);
+  margin-bottom: 15px;
+}
+
+.game-over-high-score {
+  font-size: 24px;
+  color: var(--rushgames-primary);
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.restart-button {
+  background: var(--rushgames-primary);
+  color: var(--neutral-black);
+  border: none;
+  padding: 15px 40px;
+  font-size: 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: var(--text-title);
+  pointer-events: auto;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.restart-button:hover {
+  transform: scale(1.05);
+  background: var(--rushgames-primary);
+  filter: brightness(1.1);
+}
+
+.restart-button:active {
+  transform: scale(0.95);
+}

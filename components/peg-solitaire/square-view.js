@@ -28,13 +28,13 @@ export default class SquareView {
     getImageSource() {
         switch (this.imageId) {
             case 1:
-                return './assets/chip-1.jpeg';
+                return './assets/peg-solitaire/chip-1.jpeg';
             case 2:
-                return './assets/chip-2.png';
+                return './assets/peg-solitaire/chip-2.png';
             case 3:
-                return './assets/chip-3.jpeg';
+                return './assets/peg-solitaire/chip-3.jpeg';
             default:
-                return './assets/chip-default.png';
+                return './assets/peg-solitaire/chip-default.png';
         }
     }
 

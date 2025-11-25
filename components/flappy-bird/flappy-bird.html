@@ -1,0 +1,36 @@
+<template id="flappy-bird-template">
+  <link rel="stylesheet" href="./components/flappy-bird/flappy-bird.css" />
+  <link rel="stylesheet" href="./main.css" />
+
+  <div class="game-container">
+    <!-- Parallax Background Layers  -->
+    <div class="parallax-layer layer-1" id="layer1"></div>
+    <div class="parallax-layer layer-2" id="layer2"></div>
+    <div class="parallax-layer layer-3" id="layer3"></div>
+    <div class="parallax-layer layer-4" id="layer4"></div>
+    <div class="parallax-layer layer-5" id="layer5"></div>
+    <div class="parallax-layer layer-6" id="layer6"></div>
+    
+    <!-- Game Content -->
+    <div class="game-content">
+      <div class="submarine" id="submarine">
+        <div class="propulsion-bubble"></div>
+      </div>
+      
+      <!-- Score Display -->
+      <div class="score-display" id="score-display">0</div>
+      
+      <!-- Game Over Screen -->
+      <div class="game-over-screen" id="game-over-screen" style="display: none;">
+        <div class="game-over-title">GAME OVER</div>
+        <div class="game-over-score">
+          Score: <span id="game-over-score-value">0</span>
+        </div>
+        <div class="game-over-high-score">
+          High Score: <span id="game-over-high-score-value">0</span>
+        </div>
+        <button class="restart-button" id="restart-button">REINTENTAR</button>
+      </div>
+    </div>
+  </div>
+</template>

@@ -7,10 +7,10 @@ export default class MenuView {
         
         // Tipos de fichas disponibles
         this.chipTypes = [
-            { id: 1, name: 'Ficha 1', image: './assets/chip-1.jpeg' },
-            { id: 2, name: 'Ficha 2', image: './assets/chip-2.png' },
-            { id: 3, name: 'Ficha 3', image: './assets/chip-3.jpeg' },
-            { id: 4, name: 'Ficha 4', image: './assets/chip-default.png' }
+            { id: 1, name: 'Ficha 1', image: './assets/peg-solitaire/chip-1.jpeg' },
+            { id: 2, name: 'Ficha 2', image: './assets/peg-solitaire/chip-2.png' },
+            { id: 3, name: 'Ficha 3', image: './assets/peg-solitaire/chip-3.jpeg' },
+            { id: 4, name: 'Ficha 4', image: './assets/peg-solitaire/chip-default.png' }
         ];
         
         this.selectedChipType = 1; // Por defecto

@@ -13,11 +13,11 @@ class InputRow extends HTMLElement {
     this._ta = $('text');
     this._img = $('avatar');
 
-    const avatar = this.getAttribute('avatar') || './assets/avatar.svg';
+    const avatar = this.getAttribute('avatar') || './assets/icons/avatar.svg';
     this._img.src = avatar;
     this._img.alt = 'avatar';
     this._img.addEventListener('error', () => {
-      this._img.src = './assets/avatar.svg';
+      this._img.src = './assets/icons/avatar.svg';
     });
 
     const lineHeight = parseFloat(getComputedStyle(this._ta).lineHeight) || 18;
