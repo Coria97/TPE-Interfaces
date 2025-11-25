@@ -114,12 +114,15 @@ rushgame-flappy-bird,
   }
 }
 
+<<<<<<< HEAD
 /* 
 ========================================
             Lives Blink Animation
 ========================================
 */
 
+=======
+>>>>>>> main
 /* Animación de parpadeo */
 @keyframes blink {
   0%, 100% { 

@@ -89,11 +89,8 @@ class RushGameFlappyBird extends HTMLElement {
       this.initRenderer();
       this.initAudio();
       this.setupGameOver();
-      
-      // NO iniciar el juego automáticamente
-      // this.startGame();
-      
-      // Activar el jugador (pero el juego no corre hasta presionar PLAY)
+  
+      // Activar el jugador
       this.player.activate();
       
       console.log('Juego iniciado correctamente');
