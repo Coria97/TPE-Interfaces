@@ -36,7 +36,7 @@ export default class LivesManager {
     const heart = document.createElement('div');
     heart.style.width = '40px';
     heart.style.height = '40px';
-    heart.style.backgroundImage = 'url("./assets/flappy-bird/lives/heart.png")';
+    heart.style.backgroundImage = 'url("../../assets/flappy-bird/lives/heart.png")';
     heart.style.backgroundSize = 'contain';
     heart.style.backgroundRepeat = 'no-repeat';
     heart.style.backgroundPosition = 'center';
@@ -65,7 +65,7 @@ export default class LivesManager {
     
     // Cambiar a corazón vacío
     setTimeout(() => {
-      heart.style.backgroundImage = 'url("./assets/flappy-bird/lives/heart-empty.png")';
+      heart.style.backgroundImage = 'url("../../assets/flappy-bird/lives/heart-empty.png")';
       heart.dataset.state = 'empty';
     }, 300);
     
@@ -115,7 +115,7 @@ export default class LivesManager {
     const heart = this.hearts[gainedHeartIndex];
     
     // Cambiar a corazón lleno
-    heart.style.backgroundImage = 'url("./assets/flappy-bird/lives/heart.png")';
+    heart.style.backgroundImage = 'url("../../assets/flappy-bird/lives/heart.png")';
     heart.dataset.state = 'full';
     
     // Animación de ganancia
@@ -147,7 +147,7 @@ export default class LivesManager {
     this.invulnerable = false;
     
     this.hearts.forEach(heart => {
-      heart.style.backgroundImage = 'url("./assets/flappy-bird/lives/heart.png")';
+      heart.style.backgroundImage = 'url("../../assets/flappy-bird/lives/heart.png")';
       heart.dataset.state = 'full';
       heart.style.transform = 'scale(1)';
       heart.style.opacity = '1';
