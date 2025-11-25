@@ -7,17 +7,27 @@ export default class Obstacle {
     this.speed = 3; // Velocidad de movimiento
     this.passed = false; // Si el submarino ya pasó este obstáculo
     
+    // Obtener la ruta base correcta
+    this.basePath = this.getBasePath();
+    
     // Altura aleatoria para el gap
     this.gapY = Math.random() * (450 - 200) + 200; // Entre 200 y 650
     
     // Seleccionar imagen de roca aleatoria (1-4)
     this.rockType = Math.floor(Math.random() * 4) + 1;
-    this.rockImage = `../../assets/flappy-bird/obstacles/rocks-${this.rockType}.png`;
+    this.rockImage = `${this.basePath}/assets/flappy-bird/obstacles/rocks-${this.rockType}.png`;
     
     // Hitbox más pequeña que la imagen visible para facilitar el paso
     this.hitboxPadding = 60; // 60px de margen a cada lado
     
     this.createElement();
+  }
+
+  getBasePath() {
+    // Obtener la ruta base del proyecto
+    const path = window.location.pathname;
+    const base = path.substring(0, path.lastIndexOf('/'));
+    return base || '.';
   }
 
   createElement() {
@@ -84,7 +94,7 @@ export default class Obstacle {
     
     // Cambiar a una roca aleatoria diferente
     this.rockType = Math.floor(Math.random() * 4) + 1;
-    this.rockImage = `../../assets/flappy-bird/obstacles/rocks-${this.rockType}.png`;
+    this.rockImage = `${this.basePath}/assets/flappy-bird/obstacles/rocks-${this.rockType}.png`;
     
     // Actualizar imágenes y alturas
     this.topPipe.style.backgroundImage = `url("${this.rockImage}")`;

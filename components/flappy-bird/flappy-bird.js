@@ -15,6 +15,13 @@ class RushGameFlappyBird extends HTMLElement {
     this.init();
   }
 
+  getBasePath() {
+    // Obtener la ruta base del proyecto
+    const path = window.location.pathname;
+    const base = path.substring(0, path.lastIndexOf('/'));
+    return base || '.';
+  }
+
   async init() {
     try {
       const [html, css] = await Promise.all([
@@ -22,9 +29,15 @@ class RushGameFlappyBird extends HTMLElement {
         fetch('./components/flappy-bird/flappy-bird.css').then((res) => res.text()),
       ]);
 
+      // Obtener la ruta base correcta para los assets
+      const basePath = this.getBasePath();
+      
+      // Reemplazar las rutas relativas en el CSS con rutas absolutas
+      const fixedCss = css.replace(/\.\.\/\.\.\//g, `${basePath}/`);
+
       const template = document.createElement('template');
       template.innerHTML = `
-        <style>${css}</style>
+        <style>${fixedCss}</style>
         ${html
           .replace('<template id="flappy-bird-template">', '')
           .replace('</template>', '')
@@ -482,12 +495,16 @@ class RushGameFlappyBird extends HTMLElement {
     }
     
     // Destruir obstáculos
-    this.obstacles.forEach(obstacle => obstacle.destroy());
-    this.obstacles = [];
+    if (this.obstacles && Array.isArray(this.obstacles)) {
+      this.obstacles.forEach(obstacle => obstacle.destroy());
+      this.obstacles = [];
+    }
     
     // Destruir power-ups
-    this.powerUps.forEach(powerUp => powerUp.destroy());
-    this.powerUps = [];
+    if (this.powerUps && Array.isArray(this.powerUps)) {
+      this.powerUps.forEach(powerUp => powerUp.destroy());
+      this.powerUps = [];
+    }
     
     // Destruir sistema de vidas
     if (this.livesManager) {

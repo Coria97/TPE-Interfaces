@@ -8,18 +8,28 @@ export default class AudioManager {
     this.sfxVolume = 0.7; // Volumen de efectos de sonido
     this.isMuted = false;
     
+    // Obtener la ruta base correcta
+    this.basePath = this.getBasePath();
+    
     this.loadSounds();
+  }
+
+  getBasePath() {
+    // Obtener la ruta base del proyecto
+    const path = window.location.pathname;
+    const base = path.substring(0, path.lastIndexOf('/'));
+    return base || '.';
   }
 
   loadSounds() {
     // Cargar música
-    this.sounds.gameStart = this.createAudio('../../assets/flappy-bird/audio/game-start.mp3', this.musicVolume);
-    this.sounds.gameLoop = this.createAudio('../../assets/flappy-bird/audio/game-loop.mp3', this.musicVolume);
-    this.sounds.gameEnd = this.createAudio('../../assets/flappy-bird/audio/game-end.mp3', this.musicVolume);
+    this.sounds.gameStart = this.createAudio(`${this.basePath}/assets/flappy-bird/audio/game-start.mp3`, this.musicVolume);
+    this.sounds.gameLoop = this.createAudio(`${this.basePath}/assets/flappy-bird/audio/game-loop.mp3`, this.musicVolume);
+    this.sounds.gameEnd = this.createAudio(`${this.basePath}/assets/flappy-bird/audio/game-end.mp3`, this.musicVolume);
     
     // Cargar efectos de sonido (SFX)
-    this.sounds.fxDamage = this.createAudio('../../assets/flappy-bird/audio/fxDMG.wav', this.sfxVolume);
-    this.sounds.fxLifeUp = this.createAudio('../../assets/flappy-bird/audio/fxUP.wav', this.sfxVolume);
+    this.sounds.fxDamage = this.createAudio(`${this.basePath}/assets/flappy-bird/audio/fxDMG.wav`, this.sfxVolume);
+    this.sounds.fxLifeUp = this.createAudio(`${this.basePath}/assets/flappy-bird/audio/fxUP.wav`, this.sfxVolume);
     
     // La música se reproduce en loop
     this.sounds.gameLoop.loop = true;
