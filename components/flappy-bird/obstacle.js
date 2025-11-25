@@ -12,7 +12,7 @@ export default class Obstacle {
     
     // Seleccionar imagen de roca aleatoria (1-4)
     this.rockType = Math.floor(Math.random() * 4) + 1;
-    this.rockImage = `../../assets/flappy-bird/obstacles/rocks-${this.rockType}.png`;
+    this.rockImage = `./assets/flappy-bird/obstacles/rocks-${this.rockType}.png`;
     
     // Hitbox más pequeña que la imagen visible para facilitar el paso
     this.hitboxPadding = 60; // 60px de margen a cada lado
@@ -84,7 +84,7 @@ export default class Obstacle {
     
     // Cambiar a una roca aleatoria diferente
     this.rockType = Math.floor(Math.random() * 4) + 1;
-    this.rockImage = `../../assets/flappy-bird/obstacles/rocks-${this.rockType}.png`;
+    this.rockImage = `./assets/flappy-bird/obstacles/rocks-${this.rockType}.png`;
     
     // Actualizar imágenes y alturas
     this.topPipe.style.backgroundImage = `url("${this.rockImage}")`;

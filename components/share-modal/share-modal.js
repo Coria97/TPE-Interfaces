@@ -39,7 +39,7 @@ class ShareModal extends HTMLElement {
 
   async #loadSocialIcons() {
     try {
-      const SOCIAL_BASE = new URL('../../assets/icons/social/', import.meta.url);
+      const SOCIAL_BASE = new URL('./assets/icons/social/', import.meta.url);
       const platforms = ['email', 'facebook', 'instagram', 'twitter', 'whatsapp'];
 
       for (const platform of platforms) {

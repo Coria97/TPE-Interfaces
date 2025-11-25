@@ -38,7 +38,7 @@ rushgame-flappy-bird,
 /* Capa 1: Fondo más lejano */
 .layer-1 {
   z-index: 1;
-  background-image: url('../../assets/flappy-bird/background/background.png');
+  background-image: url('./assets/flappy-bird/background/background.png');
   background-position: 0 0;
   animation: scroll 40s linear infinite;
 }
@@ -46,7 +46,7 @@ rushgame-flappy-bird,
 /* Capa 2: Pilares del fondo */
 .layer-2 {
   z-index: 2;
-  background-image: url('../../assets/flappy-bird/background/background-pillars.png');
+  background-image: url('./assets/flappy-bird/background/background-pillars.png');
   background-position: 0 0;
   animation: scroll 25s linear infinite;
 }
@@ -54,7 +54,7 @@ rushgame-flappy-bird,
 /* Capa 3: Luz 1 (efecto de iluminación) */
 .layer-3 {
   z-index: 3;
-  background-image: url('../../assets/flappy-bird/background/light-1.png');
+  background-image: url('./assets/flappy-bird/background/light-1.png');
   background-position: 0 0;
   animation: scroll 10s linear infinite;
   opacity: 0.1;
@@ -64,7 +64,7 @@ rushgame-flappy-bird,
 /* Capa 4: Luz 2 (invertida) */
 .layer-4 {
   z-index: 4;
-  background-image: url('../../assets/flappy-bird/background/light-2.png');
+  background-image: url('./assets/flappy-bird/background/light-2.png');
   background-position: 0 0;
   animation: scroll-flip 20s linear infinite;
   opacity: 0.1;
@@ -75,7 +75,7 @@ rushgame-flappy-bird,
 /* Capa 5: Rocas inferiores (lentas) */
 .layer-5 {
   z-index: 5;
-  background-image: url('../../assets/flappy-bird/background/rocks-low.png');
+  background-image: url('./assets/flappy-bird/background/rocks-low.png');
   background-position: 0 0;
   animation: scroll 15s linear infinite;
 }
@@ -83,7 +83,7 @@ rushgame-flappy-bird,
 /* Capa 6: Rocas inferiores (rápidas) */
 .layer-6 {
   z-index: 6;
-  background-image: url('../../assets/flappy-bird/background/rocks-low.png');
+  background-image: url('./assets/flappy-bird/background/rocks-low.png');
   background-position: 0 0;
   animation: scroll 5s linear infinite;
 }
@@ -113,6 +113,12 @@ rushgame-flappy-bird,
     transform: translateX(-50%) scaleX(-1);
   }
 }
+
+/* 
+========================================
+            Lives Blink Animation
+========================================
+*/
 
 /* Animación de parpadeo */
 @keyframes blink {
@@ -150,7 +156,7 @@ rushgame-flappy-bird,
   position: absolute;
   width: 38px;
   height: 38px;
-  background-image: url('../../assets/flappy-bird/sub/submarine-38x38.png');
+  background-image: url('./assets/flappy-bird/sub/submarine-38x38.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -169,7 +175,7 @@ rushgame-flappy-bird,
   left: -34px;
   top: 50%;
   margin-top: -15px;
-  background: url('../../assets/flappy-bird/sub/propulsion-bubble-30x30.png') no-repeat;
+  background: url('./assets/flappy-bird/sub/propulsion-bubble-30x30.png') no-repeat;
   pointer-events: none;
   /* Invisible por defecto */
   opacity: 0;

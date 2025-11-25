@@ -37,14 +37,14 @@ export default class PowerUp {
     this.element.style.pointerEvents = 'none';
     
     if (this.type === 'heart') {
-      this.element.style.backgroundImage = 'url("../../assets/flappy-bird/lives/heart-rotate32x32.png")';
+      this.element.style.backgroundImage = 'url("./assets/flappy-bird/lives/heart-rotate32x32.png")';
       // El sprite tiene 384px de ancho (12 frames de 32px), escalamos a 768px (12 frames de 64px)
       this.element.style.backgroundSize = '768px 64px'; // 384px * 2 = 768px
       this.element.style.backgroundRepeat = 'no-repeat';
       this.element.style.backgroundPosition = '0 0';
       this.element.style.imageRendering = 'crisp-edges';
     } else if (this.type === 'coin') {
-      this.element.style.backgroundImage = 'url("../../assets/flappy-bird/coin/coin-16x16.png")';
+      this.element.style.backgroundImage = 'url("./assets/flappy-bird/coin/coin-16x16.png")';
       // El sprite tiene 128px de ancho (8 frames de 16px), escalamos a 384px (8 frames de 48px)
       this.element.style.backgroundSize = '384px 48px'; // 128px * 3 = 384px
       this.element.style.backgroundRepeat = 'no-repeat';
