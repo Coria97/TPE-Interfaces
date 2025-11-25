@@ -53,7 +53,7 @@ class GameDescription extends HTMLElement {
 
     // === Icon masks: share + star ===
     try {
-      const UI_BASE = new URL('../../assets/icons/ui/', import.meta.url);
+      const UI_BASE = new URL('./assets/icons/ui/', import.meta.url);
       const shareURL = new URL('share.svg', UI_BASE).href;
       const starURL = new URL('star.svg', UI_BASE).href;
       const ico = this.$('.gd__share-ico');
@@ -137,7 +137,7 @@ class GameDescription extends HTMLElement {
 
   async #loadSocialIcons() {
     try {
-      const SOCIAL_BASE = new URL('../../assets/icons/social/', import.meta.url);
+      const SOCIAL_BASE = new URL('./assets/icons/social/', import.meta.url);
       const platforms = ['facebook', 'x', 'instagram', 'tiktok', 'youtube'];
 
       for (const platform of platforms) {
@@ -204,7 +204,7 @@ class GameDescription extends HTMLElement {
     const img = this.$('.gd__poster img');
     if (img) {
       const p = this.getAttribute('poster');
-      img.src = p ? p : new URL('../../assets/placeholders/poster.webp', import.meta.url).href;
+      img.src = p ? p : new URL('./assets/placeholders/poster.webp', import.meta.url).href;
     }
 
     // Rating as fractional stars (0..5)

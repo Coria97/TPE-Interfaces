@@ -43,6 +43,9 @@ class RushGameFlappyBird extends HTMLElement {
       this.gameOverHighScoreValue = this.shadowRoot.querySelector('#game-over-high-score-value');
       this.restartButton = this.shadowRoot.querySelector('#restart-button');
       
+      // Crear botón de inicio
+      this.createStartButton();
+      
       // Inicializar jugador
       this.player = new Player(submarineElement);
       
@@ -86,8 +89,7 @@ class RushGameFlappyBird extends HTMLElement {
       this.initRenderer();
       this.initAudio();
       this.setupGameOver();
-      this.startGame();
-      
+  
       // Activar el jugador
       this.player.activate();
       
@@ -115,6 +117,69 @@ class RushGameFlappyBird extends HTMLElement {
     
     this.gameContainer.addEventListener('click', this.handleClick);
     document.addEventListener('keydown', this.handleKeyDown);
+  }
+
+  createStartButton() {
+    // Crear pantalla de inicio con botón PLAY
+    this.startScreen = document.createElement('div');
+    this.startScreen.style.position = 'absolute';
+    this.startScreen.style.top = '50%';
+    this.startScreen.style.left = '50%';
+    this.startScreen.style.transform = 'translate(-50%, -50%)';
+    this.startScreen.style.textAlign = 'center';
+    this.startScreen.style.zIndex = '30';
+    this.startScreen.style.background = 'rgba(14, 15, 16, 0.95)';
+    this.startScreen.style.padding = '40px';
+    this.startScreen.style.borderRadius = '12px';
+    this.startScreen.style.border = '3px solid var(--rushgames-primary)';
+    this.startScreen.style.pointerEvents = 'auto';
+    
+    // Título
+    const title = document.createElement('div');
+    title.textContent = 'FLAPPY SUBMARINE';
+    title.style.fontSize = '42px';
+    title.style.color = 'var(--rushgames-primary)';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '30px';
+    title.style.fontFamily = 'var(--text-title)';
+    
+    // Botón PLAY
+    const playButton = document.createElement('button');
+    playButton.textContent = 'PLAY';
+    playButton.style.background = 'var(--rushgames-primary)';
+    playButton.style.color = 'var(--neutral-black)';
+    playButton.style.border = 'none';
+    playButton.style.padding = '15px 50px';
+    playButton.style.fontSize = '28px';
+    playButton.style.borderRadius = '8px';
+    playButton.style.cursor = 'pointer';
+    playButton.style.fontWeight = 'bold';
+    playButton.style.fontFamily = 'var(--text-title)';
+    playButton.style.transition = 'transform 0.2s ease';
+    
+    playButton.addEventListener('mouseenter', () => {
+      playButton.style.transform = 'scale(1.1)';
+    });
+    
+    playButton.addEventListener('mouseleave', () => {
+      playButton.style.transform = 'scale(1)';
+    });
+    
+    playButton.addEventListener('click', () => {
+      this.hideStartScreen();
+      this.startGame();
+    });
+    
+    this.startScreen.appendChild(title);
+    this.startScreen.appendChild(playButton);
+    this.gameContent.appendChild(this.startScreen);
+  }
+
+  hideStartScreen() {
+    // Ocultar pantalla de inicio
+    if (this.startScreen) {
+      this.startScreen.style.display = 'none';
+    }
   }
 
   initObstacles() {
