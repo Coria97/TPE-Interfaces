@@ -2,7 +2,7 @@
 ========================================
             FLAPPY BIRD
 ========================================
-   */
+*/
 
 :host,
 rushgame-flappy-bird,
@@ -114,6 +114,16 @@ rushgame-flappy-bird,
   }
 }
 
+/* Animación de parpadeo */
+@keyframes blink {
+  0%, 100% { 
+    opacity: 1; 
+  }
+  50% { 
+    opacity: 0.3; 
+  }
+}
+
 /* 
 ========================================
             GAME CONTENT LAYER
@@ -165,14 +175,14 @@ rushgame-flappy-bird,
   opacity: 0;
 }
 
-/* Aplicamos la animación cuando el submarino hace flapping */
+/* Animación cuando el submarino hace flapping */
 .submarine.flapping .propulsion-bubble {
   opacity: 1;
   animation: propulsion-bubble 0.4s steps(8);
 }
 
 @keyframes propulsion-bubble {
-  /* Partimos de la primera viñeta del sprite sheet */
+  /* De la primera viñeta del sprite sheet */
   0% { 
     background-position: 0 0;
   }

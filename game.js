@@ -40,23 +40,23 @@ const games = {
         youtubeText: "Blocka Gameplay"
     },
     "flappy-bird": {
-        title: "Flappy Bird: Aventura Espacial",
-        poster: "./assets/flappy-bird.png", // Crear esta imagen después
+        title: "Deep sea adventure: Flappy Bird Edition",
+        poster: "./assets/game-cover/flappy-bird.jpg",
         rating: "4.9",
         releaseDate: "2025-01-15",
         clamp: "3",
         type: "flappy-bird",
         description:
-            "Atraviesa el cosmos esquivando asteroides y obstáculos espaciales en esta emocionante aventura. Controla tu nave con precisión mientras el universo se despliega en un espectacular efecto parallax. ¿Cuánto tiempo podrás sobrevivir en el vacío del espacio?",
+            "Sumérgete en las profundidades del océano en esta emocionante aventura de Flappy Bird. Controla tu submarino mientras esquivas rocas y obstáculos marinos en un entorno submarino vibrante. ¿Cuánto tiempo podrás sobrevivir en las misteriosas aguas profundas?",
         facebook: "https://facebook.com/groups/flappybird",
-        x: "https://x.com/FlappyBirdSpace",
-        instagram: "https://instagram.com/flappybird_space",
-        tiktok: "https://tiktok.com/@flappybird",
+        x: "https://x.com/FlappyBirdSea",
+        instagram: "https://instagram.com/flappybird_sea",
+        tiktok: "https://tiktok.com/@flappybird_sea",
         youtube: "https://youtube.com/@FlappyBirdGameplay",
         facebookText: "Flappy Bird Fans",
-        xText: "@FlappyBirdSpace",
-        instagramText: "@flappybird_space",
-        tiktokText: "@flappybird",
+        xText: "@FlappyBirdSea",
+        instagramText: "@flappybird_sea",
+        tiktokText: "@flappybird_sea",
         youtubeText: "Flappy Bird Gameplay"
     }
 };

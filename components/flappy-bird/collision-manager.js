@@ -44,11 +44,11 @@ export default class CollisionManager {
     
     // Verificar si el jugador está dentro del rango horizontal del obstáculo
     if (playerRight > obstacleLeft && playerLeft < obstacleRight) {
-      // Verificar colisión con tubería superior (con un poco de margen)
+      // Verificar colisión con tubería superior
       if (playerTop < obstacle.gapY - 10) {
         return true;
       }
-      // Verificar colisión con tubería inferior (con un poco de margen)
+      // Verificar colisión con tubería inferior
       if (playerBottom > obstacle.gapY + obstacle.gap + 10) {
         return true;
       }

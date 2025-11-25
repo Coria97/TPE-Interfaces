@@ -2,7 +2,7 @@ export default class Obstacle {
   constructor(gameContainer, initialX = 800) {
     this.gameContainer = gameContainer;
     this.x = initialX;
-    this.width = 120; // Ancho del obstáculo (más ancho para las rocas)
+    this.width = 120; // Ancho del obstáculo
     this.gap = 190; // Espacio entre tuberías superior e inferior
     this.speed = 3; // Velocidad de movimiento
     this.passed = false; // Si el submarino ya pasó este obstáculo
@@ -14,8 +14,8 @@ export default class Obstacle {
     this.rockType = Math.floor(Math.random() * 4) + 1;
     this.rockImage = `../../assets/flappy-bird/obstacles/rocks-${this.rockType}.png`;
     
-    // Hitbox más pequeña que la imagen visible (para colisión más justa)
-    this.hitboxPadding = 60; // 20px de margen a cada lado
+    // Hitbox más pequeña que la imagen visible para facilitar el paso
+    this.hitboxPadding = 60; // 60px de margen a cada lado
     
     this.createElement();
   }
@@ -39,7 +39,7 @@ export default class Obstacle {
     this.topPipe.style.width = '100%';
     this.topPipe.style.height = this.gapY + 'px';
     this.topPipe.style.backgroundImage = `url("${this.rockImage}")`;
-    this.topPipe.style.backgroundSize = '100% 100%'; // Estirar completamente la imagen
+    this.topPipe.style.backgroundSize = '100% 100%';
     this.topPipe.style.backgroundRepeat = 'no-repeat';
     this.topPipe.style.backgroundPosition = 'center';
     this.topPipe.style.transform = 'scaleY(-1)'; // Invertir verticalmente
@@ -67,7 +67,7 @@ export default class Obstacle {
   }
 
   update() {
-    // Actualizar la posición física del obstáculo (solo lógica, no renderizado)
+    // Actualizar la posición física del obstáculo
     this.x -= this.speed;
   }
 
@@ -77,7 +77,7 @@ export default class Obstacle {
   }
 
   reset(newX = 900) {
-    // Resetear el obstáculo para reutilizarlo (solo lógica, no renderizado)
+    // Resetear el obstáculo para reutilizarlo
     this.x = newX;
     this.passed = false;
     this.gapY = Math.random() * (450 - 200) + 200;
@@ -86,7 +86,7 @@ export default class Obstacle {
     this.rockType = Math.floor(Math.random() * 4) + 1;
     this.rockImage = `../../assets/flappy-bird/obstacles/rocks-${this.rockType}.png`;
     
-    // Actualizar imágenes y alturas (esto es necesario para el renderizado inicial)
+    // Actualizar imágenes y alturas
     this.topPipe.style.backgroundImage = `url("${this.rockImage}")`;
     this.bottomPipe.style.backgroundImage = `url("${this.rockImage}")`;
     this.topPipe.style.height = this.gapY + 'px';

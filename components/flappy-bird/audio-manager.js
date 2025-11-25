@@ -4,7 +4,7 @@ export default class AudioManager {
   constructor() {
     this.sounds = {};
     this.currentMusic = null;
-    this.musicVolume = 0.5; // Volumen de la música (0.0 - 1.0)
+    this.musicVolume = 0.5; // Volumen de la música
     this.sfxVolume = 0.7; // Volumen de efectos de sonido
     this.isMuted = false;
     
@@ -21,7 +21,7 @@ export default class AudioManager {
     this.sounds.fxDamage = this.createAudio('../../assets/flappy-bird/audio/fxDMG.wav', this.sfxVolume);
     this.sounds.fxLifeUp = this.createAudio('../../assets/flappy-bird/audio/fxUP.wav', this.sfxVolume);
     
-    // La música del loop debe repetirse
+    // La música se reproduce en loop
     this.sounds.gameLoop.loop = true;
   }
 
@@ -62,7 +62,7 @@ export default class AudioManager {
   }
 
   playSFX(soundName) {
-    // Reproducir efecto de sonido (no se detiene la música)
+    // Reproducir efecto de sonido
     if (this.isMuted) return;
     
     const sound = this.sounds[soundName];
@@ -104,11 +104,10 @@ export default class AudioManager {
     sound.currentTime = 0;
     const playPromise = sound.play();
     
-    // Manejar promesa (algunos navegadores requieren interacción del usuario)
+    // Manejar promesa de reproducción
     if (playPromise !== undefined) {
       playPromise.catch(error => {
         console.warn('No se pudo reproducir el audio automáticamente:', error);
-        // El usuario debe interactuar con la página primero
       });
     }
   }

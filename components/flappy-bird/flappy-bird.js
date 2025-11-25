@@ -48,7 +48,7 @@ class RushGameFlappyBird extends HTMLElement {
       
       // Estado del juego
       this.isGameRunning = false;
-      this.hasWon = false; // Nuevo: flag para saber si ganó
+      this.hasWon = false; // Flag para saber si ganó
       this.winScore = 35; // Puntuación para ganar
       
       // Obstáculos
@@ -118,7 +118,7 @@ class RushGameFlappyBird extends HTMLElement {
   }
 
   initObstacles() {
-    // Crear 3 obstáculos iniciales más alejados
+    // 3 obstáculos iniciales más alejados
     for (let i = 0; i < 3; i++) {
       const obstacle = new Obstacle(this.gameContent, 900 + (i * this.obstacleSpacing));
       this.obstacles.push(obstacle);
@@ -336,14 +336,14 @@ class RushGameFlappyBird extends HTMLElement {
   }
 
   winGame() {
-    // El jugador ganó al llegar a 35 puntos
+    // El jugador ganó al llegar a 35 (default) puntos
     if (!this.isGameRunning) return;
     
     this.isGameRunning = false;
     this.hasWon = true;
     console.log('¡Ganaste! Score:', this.scoreManager.getScore());
     
-    // Reproducir música de game over (o puedes usar otra música si tienes)
+    // Reproducir música de game over
     if (this.audioManager) {
       this.audioManager.playGameEnd();
     }
@@ -449,7 +449,6 @@ class RushGameFlappyBird extends HTMLElement {
   }
 }
 
-// Solo definir si no está ya definido
 if (!customElements.get('rushgame-flappy-bird')) {
   customElements.define('rushgame-flappy-bird', RushGameFlappyBird);
 }

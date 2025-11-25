@@ -6,8 +6,8 @@ export default class LivesManager {
     this.maxLives = maxLives;
     this.currentLives = maxLives;
     this.hearts = [];
-    this.invulnerable = false; // Para evitar perder múltiples vidas en una colisión
-    this.invulnerableTime = 2000; // 2 segundos de invulnerabilidad después de perder una vida
+    this.invulnerable = false; // Flag de invulnerabilidad
+    this.invulnerableTime = 3000; // 3 segundos de invulnerabilidad después de perder una vida
     
     this.createHeartsDisplay();
   }
@@ -42,14 +42,14 @@ export default class LivesManager {
     heart.style.backgroundPosition = 'center';
     heart.style.transition = 'all 0.3s ease';
     heart.style.filter = 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))';
-    heart.style.imageRendering = 'crisp-edges'; // Para sprites pixelados
+    heart.style.imageRendering = 'crisp-edges';
     heart.dataset.state = 'full'; // full, empty
     
     return heart;
   }
 
   loseLife() {
-    // No perder vida si está invulnerable
+    //Si está invulnerable o no tiene vidas, no pierde vida
     if (this.invulnerable || this.currentLives <= 0) {
       return false;
     }
@@ -123,7 +123,7 @@ export default class LivesManager {
     
     this.currentLives++;
     
-    return true; // Vida ganada exitosamente
+    return true;
   }
 
   animateHeartGain(heart) {
@@ -163,13 +163,3 @@ export default class LivesManager {
     }
   }
 }
-
-// Agregar animación de parpadeo al CSS global (si no existe)
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-`;
-document.head.appendChild(style);

@@ -8,10 +8,10 @@ export default class PowerUp {
     
     // Configuración según el tipo
     if (type === 'coin') {
-      this.width = 48; // 16 * 3 (escalado x3 para mejor visibilidad)
+      this.width = 48; // 16px se le hace un escalado x3 para mejor visibilidad
       this.height = 48;
     } else {
-      this.width = 64; // 32 * 2 (corazón)
+      this.width = 64; // 32px se le hace un escalado x2 para mejor visibilidad
       this.height = 64;
     }
     
@@ -19,8 +19,8 @@ export default class PowerUp {
     this.active = true;
     this.collected = false;
     
-    // Posición Y aleatoria (evitando extremos)
-    this.y = 150 + Math.random() * 400; // Entre 150 y 550
+    // Posición Y aleatoria
+    this.y = 150 + Math.random() * 400; // Entre 150 y 550 para evitar extremos
     
     this.createElement();
   }
@@ -44,7 +44,7 @@ export default class PowerUp {
       this.element.style.backgroundPosition = '0 0';
       this.element.style.imageRendering = 'crisp-edges';
     } else if (this.type === 'coin') {
-      this.element.style.backgroundImage = 'url("../../assets/flappy-bird/sub/coin-16x16.png")';
+      this.element.style.backgroundImage = 'url("../../assets/flappy-bird/coin/coin-16x16.png")';
       // El sprite tiene 128px de ancho (8 frames de 16px), escalamos a 384px (8 frames de 48px)
       this.element.style.backgroundSize = '384px 48px'; // 128px * 3 = 384px
       this.element.style.backgroundRepeat = 'no-repeat';
@@ -58,7 +58,7 @@ export default class PowerUp {
   update() {
     if (!this.active || this.collected) return;
     
-    // Mover hacia la izquierda (solo la lógica, el rendering se hace en Renderer)
+    // Mover hacia la izquierda
     this.x -= this.speed;
   }
 
